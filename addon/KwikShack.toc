@@ -1,0 +1,10 @@
+## Interface: 120100
+## Title: KwikShack
+## Notes: Housing layout sharing — resolve blueprints, capture placements, export to kwikshack.com
+## Version: 0.1.0
+## Author: postblink
+## SavedVariables: KwikShackDB
+
+Init.lua
+Core.lua
+BlueprintManifest.lua

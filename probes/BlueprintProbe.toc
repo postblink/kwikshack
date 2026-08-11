@@ -1,0 +1,7 @@
+## Interface: 120100
+## Title: BlueprintProbe
+## Notes: Dumps the full HOUSING_BLUEPRINT_CONTENTS_RECEIVED payload to SavedVariables
+## Version: 0.1
+## SavedVariables: BlueprintProbeDB
+
+BlueprintProbe.lua
