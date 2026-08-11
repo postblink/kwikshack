@@ -207,6 +207,27 @@ Build
 auto-populates structured build data, and provides a web-based gallery with
 real item lists and budget analysis.
 
+## Decor Catalog (seeded 2026-08-11)
+
+`decor_items` is seeded from the Housing Decor Guide addon's data files
+(MIT-licensed, generated from the in-game housing catalog) + Wowhead tooltip
+enrichment. Pipeline in `web/scripts/`:
+
+1. `extract_catalog.mjs` — parses HDGR_FacetDB.lua (1906 items, names,
+   categories, expansions) + HDGR_DecorDB.lua (430 crafted, adds profession
+   source) into `scripts/seed/catalog.json`
+2. `enrich_icons.mjs` — fetches icon FileDataIDs from
+   `nether.wowhead.com/tooltip/item/{id}` (throttled, resumable) →
+   `catalog.enriched.json` (1796/1906 icons)
+3. `seed_db.mjs` — idempotent upsert into `decor_items`
+
+Icons render via `wow.zamimg.com/images/wow/icons/large/{FileDataID}.jpg`
+(verified working for both FileDataIDs and icon names).
+
+Refresh when the housing catalog grows: re-run against an updated HDGR checkout,
+or pull from wow.tools DB2 (`ItemSparse` / `HousingCatalog`) directly — wow.tools
+is back up (verified 2026-08-11).
+
 ## Risks and Caveats
 
 - **Code rot**: blueprint codes die when the author deletes the blueprint.
