@@ -88,19 +88,36 @@ in the raw payload and simply ignored by existing addons.
 
 ## Spatial Data Path (separate from codes)
 
-For the player's OWN house, spatial placement data may be accessible through
-`C_HousingLayout` and `C_HouseEditor` APIs. The Housing Decor Guide addon has a
-"Snapshots" feature that captures everything placed in a house, suggesting
-enumeration of placed decor is possible. This path is NOT yet verified in code
-— it's the next research priority after the probe.
+**Status: researched — item transforms are NOT currently accessible via addon
+APIs (as of 12.1 PTR/live).**
 
-If transforms are readable in the editor:
-- Author-exported builds include full placement data → website renders 2D plan.
-- Blueprint-resolved builds (third-party codes) remain manifest-only.
+Findings from analysing the Housing Decor Guide addon's `HousingObserver`
+module (2026-08-11):
 
-If transforms are NOT readable:
-- All builds are manifest-only; the website is a "building plan" platform.
-- 2D plans are drawn by the author in the website's floorplan tool.
+- `C_HousingDecor.GetAllPlacedDecor` (direct enumeration of placed decor) is
+  **policy-gated** by Blizzard: declared `HasRestrictions = true`, an addon call
+  returns `ADDON_ACTION_FORBIDDEN`. Blizzard's own documentation says it's
+  "potentially very expensive" and "may be reworked & opened up in the future".
+  The addon re-tests each patch.
+- Workaround in use: observing `HOUSING_DECOR_CUSTOMIZATION_CHANGED` /
+  `HOUSING_DECOR_REMOVED` events builds a **complete placed-decor inventory**
+  (verified 21/21 against Blizzard's own panel) — but entries only carry
+  `decorGUID, decorID, areaID, itemID, name`. **No positions, no rotations.**
+- Area is indoors-vs-outdoors only, NOT rooms ("every interior room shares one
+  area"). Room association is unavailable from the observed data.
+- Layout-mode pin frames expose only screen-space geometry (`GetRect`,
+  `GetCenter` etc.), gated behind a debug flag and "not yet driving layout" —
+  not world coordinates, not item placements.
+- `C_HousingLayout.GetRoomPlayerIsIn` gives the current room GUID (used for
+  room blueprint export) — no transform data.
+
+Conclusion: spatial transforms exist only server-side (during import) and in
+the game's render state. Addons cannot currently read them. If the
+BlueprintProbe confirms transforms are absent from the blueprint contents
+payload, KwikShack v0 is a **manifest-first** platform: item lists, budgets,
+requirements — with screenshots for visuals and an optional in-site floorplan
+tool for authors. Re-check the policy gate each patch; Blizzard has flagged it
+as temporary.
 
 ## Website Architecture
 
