@@ -75,7 +75,55 @@ the open question the BlueprintProbe addon tests.
 - **Showcases** (announced, future): themed in-game showcases with voting
   and decor trophy.
 
-## Existing Housing Tools (Competition Analysis)
+## Blueprint Contents — VERIFIED LIVE PAYLOAD (2026-08-11)
+
+The BlueprintProbe addon captured a real payload from a live 12.1 import
+(share code `AgEKQrFXbkpJV5snBnjUGnTF`). This is the authoritative shape:
+
+```
+{
+  shareCode = "AgEKQrFXbkpJV5snBnjUGnTF",     -- ~24-char opaque reference token
+  targetHouseGUID = "Opaque-1",                -- opaque house reference
+  blockingRequirementFlags = 0,                -- 0 = importable
+  unmetRequirementFlags = 0,
+  contentGroups = {
+    { contentType = 1, entries = { { recordID=55, total=1, name="Night Elf House Small",
+                                     invalid=false, contentType=1, numMissing=0 } } },  -- house type
+    { contentType = 2, entries = { { recordID=1,  total=1, name="Square Room (Small)", ... } } },  -- rooms
+    { contentType = 5, entries = { { recordID=601, total=4, name="Relic Dormer", ... },
+                                   { recordID=606, total=3, name="Embellished Window", ... } } },  -- fixtures
+    { contentType = 3, entries = { { recordID=726, total=1, name="Wrought Iron Chandelier", ... },
+                                   { recordID=9144,total=1, name="Founder's Point Front Door", ... },
+                                   { recordID=1435,total=1, name="Sturdy Fireplace", ... },
+                                   { recordID=1994,total=2, name="Carved Wooden Crate", ... },
+                                   { recordID=389, total=2, name="Goldshire Window", ... } } },  -- decor
+  },
+  budgetInfo = {
+    interiorBudgets = { { budgetType=0, max=36,  cost=5,  current=16 },  -- rooms
+                        { budgetType=1, max=1745, cost=17, current=16 },  -- decor
+                        { budgetType=2, max=100, cost=0,  current=0  } }, -- pet decor
+    exteriorBudgets = { { budgetType=1, max=250, cost=0 },
+                        { budgetType=2, max=25,  cost=0 } },
+  },
+}
+```
+
+### Differences from HDG's documented shape (verified live)
+- Group field is `contentType` (HDG called it `groupType`): 1=house type,
+  2=room, 3=decor, 5=fixture (no dye group observed — likely 4).
+- Entries carry `recordID` (decor catalog ID) + display `name` — NOT `itemID`.
+  Mapping decorID → itemID requires an in-game C_HousingCatalog lookup.
+- `total` is the count (not `count`).
+- `targetHouseGUID` is an opaque reference ("Opaque-1").
+- `budgetType`: 0=rooms, 1=decor, 2=pet decor. `cost` = blueprint contribution,
+  `current` = target house's existing spend, `max` = cap.
+
+### Spatial verdict — CONFIRMED ABSENT
+The live payload contains **no positions, rotations, or transforms**. Entries
+are recordID + name + total + contentType + numMissing + invalid. Blueprint
+codes cannot provide spatial previews. Manifest-first scope is locked.
+
+## Existing Tools (Competition)
 
 | Tool | Type | Code Import? | Automatic Data? | Notes |
 |---|---|---|---|---|

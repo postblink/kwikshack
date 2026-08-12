@@ -79,7 +79,7 @@
 	<section>
 		<h2>Decor ({data.items.length} unique)</h2>
 		<div class="items">
-			{#each data.items as item (item.itemID)}
+			{#each data.items as item (item.key)}
 				<div class="item">
 					{#if iconUrl(item.icon)}
 						<img src={iconUrl(item.icon)} alt="" width="36" height="36" />

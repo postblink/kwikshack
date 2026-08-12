@@ -127,39 +127,56 @@ export function manifestItemIDs(manifest: BuildManifest): number[] {
 }
 
 export interface EnrichedItem {
-	itemID: number;
+	// recordID (decor catalog ID) or itemID — whichever the payload carried
+	key: number;
+	itemID: number | null;
+	recordID: number | null;
 	name: string;
 	icon: string | null;
 	count: number;
 }
 
-/** Enrich manifest item IDs with catalog metadata (icons, names). */
+/**
+ * Enrich manifest entries with catalog metadata (icons, names).
+ * Works with the live payload shape (recordID + name + total) and falls back
+ * to itemID-based catalog lookup when the addon enriched the manifest.
+ */
 export function enrichItems(manifest: BuildManifest): EnrichedItem[] {
-	const ids = manifestItemIDs(manifest);
-	if (ids.length === 0) return [];
-	const rows = db.select().from(decorItems).where(inArray(decorItems.itemID, ids)).all();
-	const byID = new Map(rows.map((r) => [r.itemID, r]));
+	interface Acc {
+		name: string;
+		icon: string | null;
+		count: number;
+		itemID: number | null;
+	}
+	const acc = new Map<number, Acc>();
 
-	// Aggregate counts from manifest, fall back to catalog metadata.
-	// Only decor groups (3) carry placement counts; dye groups (4) reference
-	// the same itemIDs without a count and must not inflate the total.
-	const counts = new Map<number, number>();
 	for (const group of manifest.contentGroups ?? []) {
 		for (const entry of group.entries ?? []) {
-			if (typeof entry.itemID !== 'number') continue;
-			if (group.groupType === 3 && typeof entry.count === 'number') {
-				counts.set(entry.itemID, (counts.get(entry.itemID) ?? 0) + entry.count);
-			}
+			const id = typeof entry.itemID === 'number' ? entry.itemID : typeof entry.recordID === 'number' ? entry.recordID : null;
+			if (id === null) continue;
+			// Count: live payload uses `total`; legacy uses `count`; default 1
+			const n = typeof entry.total === 'number' ? entry.total : typeof entry.count === 'number' ? entry.count : 1;
+			const cur = acc.get(id) ?? { name: typeof entry.name === 'string' ? entry.name : '', icon: null, count: 0, itemID: typeof entry.itemID === 'number' ? entry.itemID : null };
+			cur.count += n;
+			if (!cur.name && typeof entry.name === 'string') cur.name = entry.name;
+			acc.set(id, cur);
 		}
 	}
 
-	return ids.map((itemID) => {
-		const cat = byID.get(itemID);
+	// Catalog lookup for itemID-keyed entries (icons + canonical names)
+	const ids = [...acc.values()].flatMap((a) => (a.itemID !== null ? [a.itemID] : []));
+	const rows = ids.length ? db.select().from(decorItems).where(inArray(decorItems.itemID, ids)).all() : [];
+	const byID = new Map(rows.map((r) => [r.itemID, r]));
+
+	return [...acc.entries()].map(([key, a]) => {
+		const cat = a.itemID !== null ? byID.get(a.itemID) : undefined;
 		return {
-			itemID,
-			name: cat?.name ?? `Item ${itemID}`,
+			key,
+			itemID: a.itemID,
+			recordID: a.itemID === null ? key : null,
+			name: cat?.name ?? a.name ?? (a.itemID !== null ? `Item ${a.itemID}` : `Decor ${key}`),
 			icon: cat?.icon ?? null,
-			count: counts.get(itemID) ?? 0
+			count: a.count
 		};
 	});
 }

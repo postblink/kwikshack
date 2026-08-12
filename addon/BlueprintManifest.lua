@@ -123,9 +123,10 @@ end
 --- @field blockingRequirementFlags integer
 
 --- Normalise the raw Blizzard payload into a stable JSON-exportable structure.
---- The raw payload shape is documented above. This strips out any transient or
---- non-serialisable fields (userdata, functions, etc.) and produces a flat
---- dictionary suitable for HTTP POST.
+--- Shape verified live 2026-08-11 (see docs/research.md): groups carry
+--- `contentType`, entries carry `recordID` (decor catalog ID) + `name` +
+--- `total` (count). NO itemID in the payload — resolved in-game via
+--- C_HousingCatalog where available (decorID -> itemID mapping).
 ---@param raw table
 ---@return table
 function BM:NormaliseManifest(raw)
@@ -136,24 +137,34 @@ function BM:NormaliseManifest(raw)
         budgetInfo = {},
         blockingRequirements = {},
     }
-    -- Content groups — each group = { groupType, entries = [{...}] }
+    -- Content groups — contentType: 1=house type, 2=room, 3=decor, 5=fixture
     if raw.contentGroups then
         for _, group in ipairs(raw.contentGroups) do
             local g = {
-                groupType = group.groupType,  -- numeric enum: 3=Decor, 4=Dye, etc.
+                contentType = group.contentType,
                 entries = {},
             }
             if group.entries then
                 for _, entry in ipairs(group.entries) do
-                    table.insert(g.entries, entry)  -- passthrough; serialise as-is
+                    table.insert(g.entries, {
+                        recordID = entry.recordID,
+                        name = entry.name,
+                        total = entry.total,
+                        invalid = entry.invalid,
+                        numMissing = entry.numMissing,
+                        itemID = self:ResolveItemID(entry.recordID),  -- nil unless catalog lookup available
+                    })
                 end
             end
             table.insert(m.contentGroups, g)
         end
     end
-    -- Budget info
+    -- Budget info — keep raw arrays; budgetType: 0=rooms, 1=decor, 2=pet decor
     if raw.budgetInfo then
-        m.budgetInfo = raw.budgetInfo
+        m.budgetInfo = {
+            interiorBudgets = raw.budgetInfo.interiorBudgets or {},
+            exteriorBudgets = raw.budgetInfo.exteriorBudgets or {},
+        }
     end
     -- Blocking requirements
     if raw.blockingRequirementFlags then
@@ -167,6 +178,16 @@ function BM:NormaliseManifest(raw)
         }
     end
     return m
+end
+
+--- Resolve a decor catalog recordID to an itemID.
+--- TODO: find the correct C_HousingCatalog lookup (decorID -> itemID) and
+--- populate this. Until verified, returns nil and the site falls back to the
+--- display name + recordID.
+---@param recordID number
+---@return number|nil
+function BM:ResolveItemID(recordID)
+    return nil
 end
 
 --- Fires when the server returns blueprint contents.

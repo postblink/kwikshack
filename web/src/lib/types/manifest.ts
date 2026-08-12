@@ -4,11 +4,22 @@
 export interface BudgetEntry {
 	cost: number;
 	max: number;
-	current: number;
+	current?: number;
+	budgetType?: number; // 0=rooms, 1=decor, 2=pet decor
 }
 
 export interface ManifestContentGroupEntry {
+	// Live payload (verified 2026-08-11): recordID + name + total.
+	// itemID is optional — the addon may enrich recordID→itemID in-game; the
+	// site falls back to name + recordID when absent.
 	itemID?: number;
+	recordID?: number;
+	name?: string;
+	total?: number;
+	invalid?: boolean;
+	numMissing?: number;
+	contentType?: number;
+	// Legacy/HDG-documented fields kept for compat
 	count?: number;
 	decorID?: number;
 	dyeVariant?: number;
@@ -17,7 +28,10 @@ export interface ManifestContentGroupEntry {
 }
 
 export interface ManifestContentGroup {
-	groupType: number; // 3=Decor, 4=Dye, Room/Fixture/HouseType (structural)
+	// Live payload uses contentType: 1=house type, 2=room, 3=decor, 5=fixture
+	contentType?: number;
+	// Legacy field from HDG documentation
+	groupType?: number;
 	entries: ManifestContentGroupEntry[];
 }
 
