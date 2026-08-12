@@ -201,21 +201,45 @@ function BM:ResolveItemID(recordID)
     return itemID, icon
 end
 
+--- @return table|nil  -- the most recently resolved normalised manifest
+function BM:GetLatestManifest()
+    if not KwikShackDB.resolvedManifests then return nil end
+    local latest, code
+    for c, m in pairs(KwikShackDB.resolvedManifests) do
+        if type(m) == "table" and m.shareCode then
+            if not code or (m._resolvedAt or 0) > (latest and latest._resolvedAt or 0) then
+                latest, code = m, c
+            end
+        end
+    end
+    return latest
+end
+
 --- Fires when the server returns blueprint contents.
 --- Normalise + log; pass to the export pipeline if auto-export is enabled.
 function BM:OnContentsReceived(raw)
     local m = self:NormaliseManifest(raw)
+    m._resolvedAt = GetTime()
+    local itemCount = 0
+    for _, g in ipairs(m.contentGroups or {}) do
+        if g.contentType == 3 then  -- decor groups
+            for _, e in ipairs(g.entries or {}) do
+                itemCount = itemCount + 1
+            end
+        end
+    end
     KwikShack:Log(string.format(
-        "Blueprint resolved: %s | type=%s | groups=%d | budget=%s | blocks=%s",
+        "Resolved: %s | type=%s | items=%d | %s",
         m.shareCode,
         m.blueprintType,
-        #(m.contentGroups or {}),
-        m.budgetInfo and "yes" or "no",
-        m.blockingRequirements.factionMismatch and "faction-mismatch" or "ok"
+        itemCount,
+        (m.blockingRequirements or {}).factionMismatch and "faction-mismatch" or "importable"
     ))
     -- Store in saved variables for the session
     KwikShackDB.resolvedManifests = KwikShackDB.resolvedManifests or {}
     KwikShackDB.resolvedManifests[m.shareCode] = m
+    KwikShackDB._lastResolved = m.shareCode
+    print("|cFF00FF00[KwikShack]|r Manifest ready. /kshack copy to view JSON — paste at kwikshack.com/submit")
     -- Auto-export if enabled
     if KwikShackDB.autoExport then
         KwikShack:ExportToAPI(m)
@@ -227,6 +251,25 @@ function BM:OnContentsFailure(shareCode, reasonCode)
 end
 
 -- =============================================================================
+-- Export capture — hooks EXPORT_SUCCESS to record the generated share code
+-- =============================================================================
+
+function BM:OnExportSuccess(shareCode)
+    KwikShackDB.exportedCodes = KwikShackDB.exportedCodes or {}
+    KwikShackDB.exportedCodes[shareCode] = {
+        code = shareCode,
+        exportedAt = date(),
+    }
+    KwikShackDB._lastExported = shareCode
+    print("|cFF00FF00[KwikShack]|r Exported! Share code: " .. shareCode)
+end
+
+function BM:OnExportFailure(reasonCode)
+    local map = _G.HousingResultToErrorText
+    KwikShack:Log("Export failed: " .. (map and map[reasonCode] or "unknown reason (" .. tostring(reasonCode) .. ")"))
+end
+
+-- =============================================================================
 -- Register events (hooked during ADDON_LOADED in Init.lua)
 -- =============================================================================
 
@@ -234,11 +277,20 @@ function BM:RegisterEvents()
     local frame = CreateFrame("Frame")
     frame:RegisterEvent("HOUSING_BLUEPRINT_CONTENTS_RECEIVED")
     frame:RegisterEvent("HOUSING_BLUEPRINT_CONTENTS_FAILURE")
+    frame:RegisterEvent("HOUSING_BLUEPRINT_EXPORT_SUCCESS")
+    frame:RegisterEvent("HOUSING_BLUEPRINT_EXPORT_FAILURE")
+    frame:RegisterEvent("HOUSING_BLUEPRINT_COLLECTION_RECEIVED")
     frame:SetScript("OnEvent", function(_, event, ...)
         if event == "HOUSING_BLUEPRINT_CONTENTS_RECEIVED" then
             BM:OnContentsReceived(...)
         elseif event == "HOUSING_BLUEPRINT_CONTENTS_FAILURE" then
             BM:OnContentsFailure(...)
+        elseif event == "HOUSING_BLUEPRINT_EXPORT_SUCCESS" then
+            BM:OnExportSuccess(...)
+        elseif event == "HOUSING_BLUEPRINT_EXPORT_FAILURE" then
+            BM:OnExportFailure(...)
+        elseif event == "HOUSING_BLUEPRINT_COLLECTION_RECEIVED" then
+            -- collection updated (export/delete/rename side effect); no action needed
         end
     end)
 end
