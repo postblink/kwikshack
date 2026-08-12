@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { page } from '$app/state';
 
 	let { data } = $props<{ data: PageData }>();
+	const typeLabels: Record<string, string> = { '1': 'Room', '2': 'Interior', '3': 'House', '4': 'Exterior' };
 	let q = $state('');
 	let type = $state('');
 	let faction = $state('');
@@ -55,7 +55,7 @@
 			{#each data.builds as b (b.id)}
 				<a class="card" href={`/builds/${b.id}`}>
 					<div class="card-head">
-						<span class="type">{b.blueprintType}</span>
+						<span class="type">{typeLabels[b.blueprintType] ?? b.blueprintType}</span>
 						<span class="status {b.codeStatus}">{b.codeStatus}</span>
 					</div>
 					<h2>{b.title}</h2>
