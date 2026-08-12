@@ -196,8 +196,13 @@ function BM:ResolveItemID(recordID)
     local ok, info = pcall(cat.GetCatalogEntryInfoByRecordID, 1, recordID)
     if not ok or type(info) ~= "table" then return nil, nil end
     local itemID = type(info.itemID) == "number" and info.itemID or nil
-    local icon = type(info.iconTexture) == "string" and info.iconTexture
-              or type(info.iconAtlas) == "string" and info.iconAtlas or nil
+    local icon = nil
+    if type(info.iconTexture) == "string" then
+        icon = info.iconTexture
+    elseif type(info.iconTexture) == "number" then
+        icon = tostring(info.iconTexture)  -- fileDataID may arrive as a number
+    end
+    if not icon and type(info.iconAtlas) == "string" then icon = info.iconAtlas end
     return itemID, icon
 end
 
