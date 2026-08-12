@@ -29,20 +29,25 @@
 --   HOUSING_BLUEPRINT_DELETE_SUCCESS
 --   HOUSING_BLUEPRINT_DELETE_FAILURE
 --
--- Known manifest structure (from HDGR PTR testing):
---   .shareCode               — the code this manifest belongs to
---   .contentGroups[]         — each group has a type and entries
---     Decor=3  — items with counts, dye variants
---     Dye=4    — dye info
---     Room/Fixture/HouseType — structural types
---   .budgetInfo              — { interiorBudgets, exteriorBudgets }
---     Budget array by type:
---       [0] = Rooms, [1] = Interior decor, [2] = Pet decor
---       each: { cost, max, current }
---   .blockingRequirementFlags — bitmask of what's missing
---     bit 1 = budgets, bit 2 = rooms, bit 8 = decor
---     bit 32 = faction mismatch
---   .numMissing — per content group, for acquirable types
+-- Known manifest structure (VERIFIED from BlueprintProbe captures, 2026-08-11):
+--   .shareCode                 — the code this manifest belongs to (~22 chars,
+--                                base64-ish, contains + and / — URL-encode in links)
+--   .targetHouseGUID           — "Opaque-1" (opaque; no useful info)
+--   .blockingRequirementFlags  — bitmask of what's missing (0 = importable)
+--   .unmetRequirementFlags     — second flag field (0 = all met)
+--   .contentGroups[]           — each group: { contentType, entries }
+--     contentType 1 = House type      (entry: recordID, name like "Night Elf House Small")
+--     contentType 2 = Rooms           (entry: recordID, name like "Square Room (Small)")
+--     contentType 3 = Decor           (entry: recordID, total=count, name)
+--     contentType 5 = Exterior structural (dormers, windows)
+--     Each entry: { recordID, total, name, invalid, contentType, numMissing }
+--     NOTE: recordID is the HOUSING CATALOG id, NOT an itemID. Names come free.
+--   .budgetInfo                — { interiorBudgets, exteriorBudgets }
+--     Each budget: { budgetType, cost, max, current? }
+--       budgetType 0 = Rooms, 1 = Decor, 2 = Pet decor
+--       cost = -1 means "not used by this blueprint"
+--     NO POSITIONS, NO ROTATIONS — the payload is a shopping list + budget
+--     report, never geometry (verified against 3 real captures).
 --
 -- WARNING: server can silently drop requests for certain foreign codes.
 -- Manifest requests take 5-10s for large builds.
