@@ -12,13 +12,24 @@ add decor, so the catalog drifts from reality until someone re-runs this path.
 
 2. **Enrich** — `enrich_icons.mjs` attaches real icon IDs → `scripts/seed/catalog.enriched.json`.
 
-3. **Seed** — `seed_db.mjs` UPSERTs `catalog.enriched.json` into `decor_items`.
+3. **Merge DB2** — `merge_db2.mjs` fetches the authoritative `HouseDecor` DB2
+   table from wago.tools and merges it into `catalog.enriched.json`. HDGR is a
+   community snapshot that misses items; DB2 has the full catalog (2268 items
+   vs HDGR's ~1906) plus a `recordID` (housing catalog id) and thumbnail icon
+   for every item — but **no style facets** (mood/culture/size are HDGR-only).
+   The merge backfills `recordID`/`icon` on items we already have, adds DB2-only
+   items (name + icon + recordID; tags/category left null for HDGR to fill
+   later), and keeps HDGR-only items (reclassified/removed). Run
+   `node web/scripts/merge_db2.mjs` after each patch (it fetches the latest
+   build itself; pass a local CSV path to work offline).
+
+4. **Seed** — `seed_db.mjs` UPSERTs `catalog.enriched.json` into `decor_items`.
    It does **not** create the schema or the demo builds.
 
-4. **Schema** — `drizzle-kit push` (see below) applies `schema.ts` to a SQLite
+5. **Schema** — `drizzle-kit push` (see below) applies `schema.ts` to a SQLite
    DB. A fresh DB needs `db:push` first, then `seed_db.mjs`.
 
-5. **Bake + deploy** — the Docker image copies `deploy/kwikshack.db` to
+6. **Bake + deploy** — the Docker image copies `deploy/kwikshack.db` to
    `/app/seed/kwikshack.db`; `deploy/entrypoint.sh` copies it to the `/data`
    volume **on first boot only** (empty volume).
 
@@ -62,6 +73,7 @@ or overwrite user data.
 - [ ] Re-pull the latest HDGR data (it updates per patch).
 - [ ] `node web/scripts/extract_catalog.mjs` → inspect item count + tag coverage.
 - [ ] `node web/scripts/enrich_icons.mjs`
+- [ ] `node web/scripts/merge_db2.mjs` → fetch latest HouseDecor, backfill recordID/icon, add DB2-only items.
 - [ ] Regenerate `deploy/kwikshack.db` (fresh `db:push` + `seed_db.mjs`) for next clean deploy.
 - [ ] `make verify` (luac/luacheck + svelte-check + vitest + companion decode still green).
 - [ ] Run the live-volume migration above if the catalog should update the running site now.
