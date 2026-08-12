@@ -8,3 +8,4 @@
 Init.lua
 Core.lua
 BlueprintManifest.lua
+CompactCode.lua

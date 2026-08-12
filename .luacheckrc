@@ -6,7 +6,7 @@ globals = {
 	"HousingResultToErrorText", "C_Timer", "GetTime", "CreateFrame", "Enum",
 	"print", "select", "pairs", "ipairs", "tostring", "tonumber", "math",
 	"string", "table", "type", "pcall", "error", "assert", "date", "strsplit",
-	"SlashCmdList", "SLASH_KWIKSHACK1", "SLASH_KWIKSHACK2",
+	"bit", "SlashCmdList", "SLASH_KWIKSHACK1", "SLASH_KWIKSHACK2",
 	"KwikShackDB", "BlueprintProbeDB", "BlueprintEventShowerDB", "GuidInfoProbeDB",
 }
 

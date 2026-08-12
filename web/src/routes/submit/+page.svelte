@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { decodeCompact, compactToPayload } from '$lib/compact-code';
 	let shareCode = $state('');
 	let title = $state('');
 	let blueprintType = $state('House');
@@ -146,7 +147,23 @@
 			</div>
 		{/if}
 		<label>
-			Manifest JSON
+			Compact code (paste from /kshack ccode)
+			<input
+				placeholder="Paste the short code from in-game here — auto-fills everything below"
+				onpaste={async (e) => {
+					const text = (e.clipboardData ?? (await navigator.clipboard.readText()).then((t) => ({ getData: () => t })))?.getData?.('text') ?? '';
+					if (!text) return;
+					try {
+						const decoded = decodeCompact(text);
+						const payload = compactToPayload(decoded);
+						shareCode = payload.shareCode;
+						title = payload.title;
+						blueprintType = payload.blueprintType;
+						manifestText = JSON.stringify(payload.manifest, null, 2);
+					} catch (_) { /* not a compact code — ignore */ }
+				}}
+			/>
+		</label>
 			<textarea bind:value={manifestText} rows="14" placeholder={example}></textarea>
 		</label>
 

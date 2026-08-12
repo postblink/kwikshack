@@ -144,6 +144,21 @@ SlashCmdList["KWIKSHACK"] = function(msg)
             print("|cFFFF0000[KwikShack]|r No code captured yet.")
         end
 
+    elseif cmd == "ccode" then
+        local CC = KwikShack.CompactCode
+        if not CC then
+            print("|cFFFF0000[KwikShack]|r CompactCode module not loaded")
+            return
+        end
+        local code, err = CC:EncodeLatest()
+        if not code then
+            print("|cFFFFAA00[KwikShack]|r " .. (err or "Unknown error"))
+        else
+            print("|cFF00FF00[KwikShack]|r Compact code (" .. #code .. " chars):")
+            print("|cFFFFFFFF    " .. code)
+            print("|cFF00FF00[KwikShack]|r Paste this at kwikshack.com/submit")
+        end
+
     elseif cmd == "export" then
         if rest == "" then
             print("|cFFFF0000[KwikShack]|r Usage: /kshack export <type> <name>")
