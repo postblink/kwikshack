@@ -143,14 +143,34 @@ HOUSING_DECOR_CUSTOMIZATION_CHANGED   arg1 = "Housing-1-<plot>-<decorID>-<hash>"
 - All event payloads are flat state tables or GUID strings. Event stream is a
   dead end for spatial data.
 
-### Last untested surface — GetDecorInstanceInfoForGUID
+### Last untested surface — GetDecorInstanceInfoForGUID — VERDICT: METADATA ONLY
 
-`C_HousingDecor.GetDecorInstanceInfoForGUID(guid)` is called on every decor
-GUID the client hands out. Housing Decor Guide only reads `decorID` + `name`
-from its return. The GuidInfoProbe (probes/GuidInfoProbe) dumps the COMPLETE
-return to find whether position/rotation/roomGUID/floor hide there. It also
-re-confirms the `GetAllPlacedDecor` policy gate. Test: place/move/remove a
-piece in the house editor, or do another import.
+Tested in-game 2026-08-12 (GuidInfoProbe, 5 placement events). The complete
+return for a placed piece:
+
+```
+{
+  decorGUID, decorID, name,
+  size (tag id: 66=Small, 67=Medium, ...),
+  dataTagsByID = { [66]="Small", [110]="Midnight", [174]="Gray", [202]="path pathing", ... },
+  dyeSlots = { { ID, channel, dyeColorCategoryID, dyeColorID, orderIndex } },
+  canAttachPet, canBeCustomized, canBeRemoved, isAllowedIndoors,
+  isAllowedOutdoors, isLocked, isRefundable
+}
+```
+
+**No position, rotation, roomGUID, floor, or itemID.** Useful as enrichment
+tags (size/expansion/color), but no geometry.
+
+Also confirmed: `GetAllPlacedDecor` pops Blizzard's "blocked from an action
+only available to the Blizzard UI" dialog on the first addon call (naming the
+addon), then silently returns nil afterwards. Do not call it from addon code.
+
+### SPATIAL VERDICT — CLOSED
+Every surface is now tested. Addons cannot obtain positions/rotations of
+placed decor through any known API. Manifest-first is the product. Re-test
+GetAllPlacedDecor each patch — Blizzard flagged it as temporarily restricted
+("may be reworked & opened up in the future").
 
 ## Existing Tools (Competition)
 
