@@ -1,7 +1,0 @@
-## Interface: 120100
-## Title: PlacedDecorProbe
-## Notes: Discovers C_HousingDecor.GetAllPlacedDecor signature + return shape (position data hunt)
-## Version: 0.1
-## SavedVariables: PlacedDecorProbeDB
-
-PlacedDecorProbe.lua
