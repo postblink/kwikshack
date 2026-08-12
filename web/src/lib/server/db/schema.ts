@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 // =============================================================================
 // KwikShack data model — v0
@@ -37,11 +37,15 @@ export const builds = sqliteTable(
 		manifest: text('manifest', { mode: 'json' }).notNull(),
 		// Optional spatial data (positions/rotations) — from author's own house
 		placementData: text('placement_data', { mode: 'json' }),
+		// Last time this share code was verified as still importable (code-rot
+		// plumbing). null = never verified. Full expiry detection lives in the
+		// in-game addon; this column only records the timestamp.
+		lastVerifiedAt: integer('last_verified_at', { mode: 'timestamp' }),
 		createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
 	},
 	(t) => [
-		index('builds_share_code_idx').on(t.shareCode),
+		uniqueIndex('builds_share_code_idx').on(t.shareCode),
 		index('builds_type_idx').on(t.blueprintType),
 		index('builds_faction_idx').on(t.faction)
 	]

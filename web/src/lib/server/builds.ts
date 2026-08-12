@@ -14,6 +14,7 @@ export interface BuildRecord {
 	authorName: string | null;
 	manifest: BuildManifest;
 	placementData: PlacementData | null;
+	lastVerifiedAt: Date | null;
 	createdAt: Date;
 }
 
@@ -89,25 +90,46 @@ export function createBuild(input: {
 			description: input.description ?? '',
 			authorId,
 			manifest: input.manifest,
-			placementData: input.placementData ?? null
+			placementData: input.placementData ?? null,
+			lastVerifiedAt: new Date()
+		})
+		.onConflictDoUpdate({
+			target: builds.shareCode,
+			set: {
+				codeStatus: 'unverified',
+				blueprintType: input.blueprintType,
+				faction: input.faction,
+				title: input.title,
+				description: input.description ?? '',
+				authorId,
+				manifest: input.manifest,
+				placementData: input.placementData ?? null,
+				lastVerifiedAt: new Date(),
+				updatedAt: new Date()
+			}
 		})
 		.run();
 	// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
 	ingestRecordPairs(input.manifest);
-	// Insert screenshots if provided
-	for (let i = 0; i < (input.screenshotUrls?.length ?? 0); i++) {
-		db.insert(screenshots)
-			.values({
-				id: crypto.randomUUID(),
-				buildId: id,
-				url: input.screenshotUrls![i],
-				caption: '',
-				isPrimary: i === 0,
-				sortOrder: i
-			})
-			.run();
+	// Resolve the persisted row — new id on insert, existing id on conflict.
+	const record = getBuildByCode(input.shareCode)!;
+	// Replace screenshots when the submission carries any (idempotent on re-submit).
+	if (input.screenshotUrls?.length) {
+		db.delete(screenshots).where(eq(screenshots.buildId, record.id)).run();
+		for (let i = 0; i < input.screenshotUrls.length; i++) {
+			db.insert(screenshots)
+				.values({
+					id: crypto.randomUUID(),
+					buildId: record.id,
+					url: input.screenshotUrls[i],
+					caption: '',
+					isPrimary: i === 0,
+					sortOrder: i
+				})
+				.run();
+		}
 	}
-	return getBuild(id)!;
+	return record;
 }
 
 export function listBuilds(
@@ -209,6 +231,7 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 		authorName,
 		manifest: b.manifest as unknown as BuildManifest,
 		placementData: b.placementData as unknown as PlacementData | null,
+		lastVerifiedAt: b.lastVerifiedAt,
 		createdAt: b.createdAt
 	};
 }
