@@ -7,6 +7,10 @@ WORKDIR /app
 COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml web/.npmrc ./
 RUN pnpm install --frozen-lockfile
 COPY web/ ./
+# SvelteKit's postbuild analyse imports the server code, which opens SQLite —
+# give it a valid (empty) DB path so the build doesn't crash.
+ENV DATABASE_URL=/app/data/kwikshack.db
+RUN mkdir -p /app/data
 RUN pnpm build
 
 FROM node:22-alpine AS run
