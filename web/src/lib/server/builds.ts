@@ -1,5 +1,5 @@
 import { db } from './db';
-import { builds, decorItems, users } from './db/schema';
+import { builds, decorItems, screenshots, users } from './db/schema';
 import { eq, inArray, like, and } from 'drizzle-orm';
 import type { BuildManifest, PlacementData } from '$lib/types/manifest';
 
@@ -36,6 +36,7 @@ export function createBuild(input: {
 	authorName?: string;
 	manifest: BuildManifest;
 	placementData?: PlacementData | null;
+	screenshotUrls?: string[];
 }): BuildRecord {
 	const id = crypto.randomUUID();
 	const authorId = input.authorName ? ensureUser(input.authorName) : null;
@@ -53,6 +54,19 @@ export function createBuild(input: {
 			placementData: input.placementData ?? null
 		})
 		.run();
+	// Insert screenshots if provided
+	for (let i = 0; i < (input.screenshotUrls?.length ?? 0); i++) {
+		db.insert(screenshots)
+			.values({
+				id: crypto.randomUUID(),
+				buildId: id,
+				url: input.screenshotUrls![i],
+				caption: '',
+				isPrimary: i === 0,
+				sortOrder: i
+			})
+			.run();
+	}
 	return getBuild(id)!;
 }
 

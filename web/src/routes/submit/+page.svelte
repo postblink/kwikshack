@@ -5,8 +5,40 @@
 	let faction = $state('');
 	let authorName = $state('');
 	let manifestText = $state('');
-	let status = $state<'idle' | 'sending' | 'done' | 'error'>('idle');
+	let status = $state<'idle' | 'uploading' | 'sending' | 'done' | 'error'>('idle');
 	let errorMsg = $state('');
+	let screenshots = $state<string[]>([]);
+	let uploadCount = $state(0);
+
+	async function uploadImage(file: File) {
+		const form = new FormData();
+		form.append('file', file);
+		const res = await fetch('/api/uploads', { method: 'POST', body: form });
+		if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
+		const data = await res.json();
+		return data.url as string;
+	}
+
+	async function handleImages(e: Event) {
+		const files = (e.target as HTMLInputElement).files;
+		if (!files) return;
+		status = 'uploading';
+		errorMsg = '';
+		for (const file of files) {
+			try {
+				const url = await uploadImage(file);
+				screenshots = [...screenshots, url];
+				uploadCount++;
+			} catch (err) {
+				errorMsg = (err as Error).message;
+			}
+		}
+		status = 'idle';
+	}
+
+	function removeScreenshot(url: string) {
+		screenshots = screenshots.filter((u) => u !== url);
+	}
 
 	async function submit() {
 		status = 'sending';
@@ -28,7 +60,8 @@
 				blueprintType,
 				faction: faction || null,
 				authorName,
-				manifest
+				manifest,
+				screenshotUrls: screenshots.length ? screenshots : undefined
 			})
 		});
 		const body = await res.json().catch(() => ({}));
@@ -49,7 +82,7 @@
   ],
   "budgetInfo": {
     "interiorBudgets": [ { "cost": 4, "max": 10, "current": 2 } ],
-    "exteriorBudgets": [ { "cost": -1, "max": -1, "current": 0 } ]
+    "exteriorBudgets": []
   },
   "blockingRequirements": { "missingBudgets": false, "missingRooms": false, "missingDecor": false, "factionMismatch": false, "rawFlags": 0 }
 }`;
@@ -63,8 +96,7 @@
 	<a class="back" href="/">← All builds</a>
 	<h1>Submit a build</h1>
 	<p class="tag">
-		In v0, paste the manifest your addon exported (or hand-edit the example). The addon → API
-		pipeline will automate this.
+		Use <code>/kshack copy</code> in-game, paste the JSON here. Screenshots are auto-uploaded.
 	</p>
 
 	<form onsubmit={(e) => { e.preventDefault(); submit(); }}>
@@ -100,6 +132,20 @@
 			</label>
 		</div>
 		<label>
+			Screenshots
+			<input type="file" accept="image/*" multiple onchange={(e) => handleImages(e)} />
+		</label>
+		{#if screenshots.length > 0}
+			<div class="thumbs">
+				{#each screenshots as url (url)}
+					<div class="thumb">
+						<img src={url} alt="" />
+						<button type="button" class="rm" onclick={() => removeScreenshot(url)}>×</button>
+					</div>
+				{/each}
+			</div>
+		{/if}
+		<label>
 			Manifest JSON
 			<textarea bind:value={manifestText} rows="14" placeholder={example}></textarea>
 		</label>
@@ -108,8 +154,8 @@
 			<p class="error">{errorMsg}</p>
 		{/if}
 
-		<button type="submit" disabled={status === 'sending'}>
-			{status === 'sending' ? 'Submitting…' : 'Submit build'}
+		<button type="submit" disabled={status === 'sending' || status === 'uploading'}>
+			{status === 'sending' ? 'Submitting…' : status === 'uploading' ? `Uploading ${uploadCount}…` : 'Submit build'}
 		</button>
 	</form>
 </div>
@@ -162,6 +208,37 @@
 	}
 	.error {
 		color: #e07a5f;
+	}
+	.thumbs {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.thumb {
+		position: relative;
+		width: 80px;
+		height: 80px;
+		border-radius: 6px;
+		overflow: hidden;
+		border: 1px solid #333;
+	}
+	.thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.rm {
+		position: absolute;
+		top: 2px;
+		right: 2px;
+		background: #3a1f1f;
+		color: #e07a5f;
+		border: none;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		cursor: pointer;
+		padding: 0 4px;
+		line-height: 1.2;
 	}
 	button[type='submit'] {
 		background: #2f6f3f;

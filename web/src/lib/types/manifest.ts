@@ -82,6 +82,7 @@ export interface SubmitBuildPayload {
 	authorName?: string;
 	manifest: BuildManifest;
 	placementData?: PlacementData | null;
+	screenshotUrls?: string[];
 }
 
 // Minimal validation — enough to reject garbage without being pedantic about

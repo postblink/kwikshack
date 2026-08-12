@@ -25,7 +25,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		faction: body.faction ?? null,
 		authorName: body.authorName,
 		manifest: body.manifest,
-		placementData: body.placementData ?? null
+		placementData: body.placementData ?? null,
+		screenshotUrls: Array.isArray(body.screenshotUrls) ? body.screenshotUrls : undefined
 	});
 
 	return json({ id: record.id, shareCode: record.shareCode });
@@ -40,18 +41,18 @@ export const GET: RequestHandler = async ({ url }) => {
 	const q = url.searchParams.get('q') ?? undefined;
 
 	const records = listBuilds({ limit, offset, type, faction, q });
-	return json({
-		builds: records.map((b) => ({
-			id: b.id,
-			shareCode: b.shareCode,
-			codeStatus: b.codeStatus,
-			blueprintType: b.blueprintType,
-			faction: b.faction,
-			title: b.title,
-			authorName: b.authorName,
-			createdAt: b.createdAt
-		})),
-		limit,
-		offset
+		return json({
+			builds: records.map((b) => ({
+				id: b.id,
+				shareCode: b.shareCode,
+				codeStatus: b.codeStatus,
+				blueprintType: b.blueprintType,
+				faction: b.faction,
+				title: b.title,
+				authorName: b.authorName,
+				createdAt: b.createdAt
+			})),
+			limit,
+			offset
 	});
 };

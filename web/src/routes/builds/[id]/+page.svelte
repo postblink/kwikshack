@@ -95,6 +95,17 @@
 		</div>
 	</section>
 
+	{#if data.screenshots && data.screenshots.length > 0}
+		<section>
+			<h2>Screenshots</h2>
+			<div class="screenshots">
+				{#each data.screenshots as s (s.id)}
+					<img src={s.url} alt={s.caption || ''} />
+				{/each}
+			</div>
+		</section>
+	{/if}
+
 	{#if b.description}
 		<section>
 			<h2>About this build</h2>
@@ -230,6 +241,16 @@
 	}
 	.item img {
 		border-radius: 4px;
+	}
+	.screenshots {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		gap: 0.75rem;
+	}
+	.screenshots img {
+		width: 100%;
+		border-radius: 10px;
+		border: 1px solid #333;
 	}
 	.no-icon {
 		width: 36px;
