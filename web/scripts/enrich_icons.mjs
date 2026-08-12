@@ -26,7 +26,7 @@ let rows = JSON.parse(readFileSync(IN, 'utf8'));
 try {
 	const prev = JSON.parse(readFileSync(OUT, 'utf8'));
 	const byID = new Map(prev.map((r) => [r.itemID, r]));
-	rows = rows.map((r) => byID.get(r.itemID) ?? r);
+	rows = rows.map((r) => ({ ...r, icon: byID.get(r.itemID)?.icon ?? r.icon }));
 } catch {
 	/* first run */
 }

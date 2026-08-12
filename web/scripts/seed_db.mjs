@@ -23,9 +23,10 @@ try {
 
 const db = new Database(DB_PATH);
 const upsert = db.prepare(`
-	INSERT INTO decor_items (item_id, name, icon, category, source, expansion, updated_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?)
+	INSERT INTO decor_items (item_id, record_id, name, icon, category, source, expansion, updated_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	ON CONFLICT (item_id) DO UPDATE SET
+		record_id = excluded.record_id,
 		name = excluded.name,
 		icon = excluded.icon,
 		category = excluded.category,
@@ -39,7 +40,7 @@ const tx = db.transaction((items) => {
 	let updated = 0;
 	for (const r of items) {
 		const now = Math.floor(Date.now() / 1000);
-		const result = upsert.run(r.itemID, r.name, r.icon, r.category, r.source, r.expansion, now);
+		const result = upsert.run(r.itemID, r.recordID ?? null, r.name, r.icon, r.category, r.source, r.expansion, now);
 		if (result.changes > 0) {
 			if (result.changes === 1) updated++;
 			else inserted++;

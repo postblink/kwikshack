@@ -174,8 +174,9 @@ export function enrichItems(manifest: BuildManifest): EnrichedItem[] {
 		icon: string | null;
 		count: number;
 		itemID: number | null;
+		recordID: number | null;
 	}
-	const acc = new Map<number, Acc>();
+	const acc = new Map<string, Acc>();
 
 	for (const group of manifest.contentGroups ?? []) {
 		// Only decor groups (contentType/groupType 3) belong in the item grid.
@@ -184,28 +185,41 @@ export function enrichItems(manifest: BuildManifest): EnrichedItem[] {
 		const isDecor = group.groupType === 3 || group.contentType === 3;
 		if (!isDecor) continue;
 		for (const entry of group.entries ?? []) {
-			const id = typeof entry.itemID === 'number' ? entry.itemID : typeof entry.recordID === 'number' ? entry.recordID : null;
+			const itemID = typeof entry.itemID === 'number' ? entry.itemID : null;
+			const recordID = typeof entry.recordID === 'number' ? entry.recordID : null;
+			const id = itemID ?? recordID;
 			if (id === null) continue;
+			const key = itemID !== null ? `item:${itemID}` : `record:${recordID}`;
 			// Count: live payload uses `total`; legacy uses `count`; default 1
 			const n = typeof entry.total === 'number' ? entry.total : typeof entry.count === 'number' ? entry.count : 1;
-			const cur = acc.get(id) ?? { name: typeof entry.name === 'string' ? entry.name : '', icon: null, count: 0, itemID: typeof entry.itemID === 'number' ? entry.itemID : null };
+			const cur = acc.get(key) ?? {
+				name: typeof entry.name === 'string' ? entry.name : '',
+				icon: null,
+				count: 0,
+				itemID,
+				recordID
+			};
 			cur.count += n;
 			if (!cur.name && typeof entry.name === 'string') cur.name = entry.name;
-			acc.set(id, cur);
+			acc.set(key, cur);
 		}
 	}
 
-	// Catalog lookup for itemID-keyed entries (icons + canonical names)
+	// Catalog lookups for both compact itemID entries and live recordID entries.
 	const ids = [...acc.values()].flatMap((a) => (a.itemID !== null ? [a.itemID] : []));
-	const rows = ids.length ? db.select().from(decorItems).where(inArray(decorItems.itemID, ids)).all() : [];
-	const byID = new Map(rows.map((r) => [r.itemID, r]));
+	const recordIDs = [...acc.values()].flatMap((a) => (a.itemID === null && a.recordID !== null ? [a.recordID] : []));
+	const itemRows = ids.length ? db.select().from(decorItems).where(inArray(decorItems.itemID, ids)).all() : [];
+	const recordRows = recordIDs.length ? db.select().from(decorItems).where(inArray(decorItems.recordID, recordIDs)).all() : [];
+	const byItemID = new Map(itemRows.map((r) => [r.itemID, r]));
+	const byRecordID = new Map(recordRows.flatMap((r) => (r.recordID === null ? [] : [[r.recordID, r] as const])));
 
-	return [...acc.entries()].map(([key, a]) => {
-		const cat = a.itemID !== null ? byID.get(a.itemID) : undefined;
+	return [...acc.values()].map((a) => {
+		const cat = a.itemID !== null ? byItemID.get(a.itemID) : a.recordID !== null ? byRecordID.get(a.recordID) : undefined;
+		const key = a.itemID ?? a.recordID!;
 		return {
 			key,
-			itemID: a.itemID,
-			recordID: a.itemID === null ? key : null,
+			itemID: cat?.itemID ?? a.itemID,
+			recordID: a.recordID,
 			name: cat?.name ?? a.name ?? (a.itemID !== null ? `Item ${a.itemID}` : `Decor ${key}`),
 			icon: cat?.icon ?? null,
 			count: a.count

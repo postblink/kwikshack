@@ -12,9 +12,9 @@
  *   HDGR_CatalogOverrides.lua — itemID → source classification (optional)
  *
  * Output: scripts/seed/catalog.json
- *   [{ itemID, name, category, expansion, source, icon (null) }]
+ *   [{ itemID, recordID (when known), name, category, expansion, source, icon (null) }]
  */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -143,13 +143,16 @@ for (const { id, body, name } of iterEntries(facetSrc)) {
 // DecorDB — crafted items add profession + expansion detail
 // ---------------------------------------------------------------------------
 const decorSrc = readFileSync(join(DATA, 'HDGR_DecorDB.lua'), 'utf8');
+const recordIDs = new Map();
 for (const { id, body, name } of iterEntries(decorSrc)) {
 	const f = parseFields(body);
 	const itemID = f.itemID;
 	if (!itemID) continue;
+	if (f.decorID) recordIDs.set(itemID, f.decorID);
 	const existing = catalog.get(itemID) ?? {
 		itemID, name, category: null, expansion: null, source: null, icon: null
 	};
+	if (f.decorID) existing.recordID = f.decorID;
 	if (!existing.name && name) existing.name = name;
 	if (!existing.category) existing.category = f.category ?? null;
 	if (!existing.expansion) existing.expansion = f.expansion ?? null;
@@ -175,11 +178,24 @@ const outPath = join(__dirname, 'seed', 'catalog.json');
 mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, JSON.stringify(rows, null, 1));
 
+// Preserve fetched icons while merging recordID mappings into the seed used by
+// seed_db.mjs. enrich_icons.mjs also carries these fields forward on later runs.
+const enrichedPath = join(__dirname, 'seed', 'catalog.enriched.json');
+if (existsSync(enrichedPath)) {
+	const enrichedRows = JSON.parse(readFileSync(enrichedPath, 'utf8'));
+	for (const row of enrichedRows) {
+		const recordID = recordIDs.get(row.itemID);
+		if (recordID !== undefined) row.recordID = recordID;
+		else delete row.recordID;
+	}
+	writeFileSync(enrichedPath, JSON.stringify(enrichedRows, null, 1));
+}
+
 console.log(`Extracted ${rows.length} items → ${outPath}`);
 const withName = rows.filter((r) => r.name).length;
 const withCat = rows.filter((r) => r.category).length;
 const withExp = rows.filter((r) => r.expansion).length;
 const crafted = rows.filter((r) => r.source).length;
-console.log(`names: ${withName} | categories: ${withCat} | expansion: ${withExp} | crafted: ${crafted}`);
+console.log(`names: ${withName} | categories: ${withCat} | expansion: ${withExp} | crafted: ${crafted} | recordIDs: ${recordIDs.size}`);
 console.log('Samples:');
 for (const r of rows.slice(0, 4)) console.log(' ', r.itemID, '|', r.name, '|', r.category, '|', r.expansion, '|', r.source);

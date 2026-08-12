@@ -92,11 +92,15 @@ export function isBuildManifest(v: unknown): v is BuildManifest {
 	const m = v as Record<string, unknown>;
 	if (typeof m.shareCode !== 'string' || m.shareCode.length === 0) return false;
 	if (!Array.isArray(m.contentGroups)) return false;
-	return true;
+	return m.contentGroups.every((group) => {
+		if (typeof group !== 'object' || group === null) return false;
+		const entries = (group as Record<string, unknown>).entries;
+		return Array.isArray(entries) && entries.every((entry) => typeof entry === 'object' && entry !== null);
+	});
 }
 
 export function isSubmitPayload(v: unknown): v is SubmitBuildPayload {
 	if (typeof v !== 'object' || v === null) return false;
 	const p = v as Record<string, unknown>;
-	return typeof p.shareCode === 'string' && isBuildManifest(p.manifest);
+	return typeof p.shareCode === 'string' && p.shareCode.length > 0 && isBuildManifest(p.manifest);
 }

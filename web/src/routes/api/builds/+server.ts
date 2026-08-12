@@ -8,12 +8,14 @@ import type { RequestHandler } from './$types';
 // Body: SubmitBuildPayload — see $lib/types/manifest.ts
 // Auth: if KWIKSHACK_SUBMIT_KEY is set (production), require
 // `x-kwikshack-key` header to match. Unset = open (local dev).
+export function isSubmitKeyAllowed(submitKey: string | undefined, providedKey: string | null): boolean {
+	return !submitKey || providedKey === submitKey;
+}
+
 export const POST: RequestHandler = async ({ request }) => {
 	const submitKey = env.KWIKSHACK_SUBMIT_KEY;
-	if (submitKey) {
-		const got = request.headers.get('x-kwikshack-key');
-		if (got !== submitKey) error(401, 'Invalid submit key');
-	}
+	const providedKey = request.headers.get('x-kwikshack-key');
+	if (!isSubmitKeyAllowed(submitKey, providedKey)) error(401, 'Invalid submit key');
 
 	let body: unknown;
 	try {

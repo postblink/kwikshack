@@ -91,11 +91,13 @@ export const decorItems = sqliteTable(
 	'decor_items',
 	{
 		itemID: integer('item_id').primaryKey(),
+		recordID: integer('record_id'),
 		name: text('name').notNull(),
 		icon: text('icon').default(''),
 		category: text('category').default(''),
 		source: text('source').default(''),
 		expansion: text('expansion').default(''),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
-	}
+	},
+	(t) => [index('decor_items_record_id_idx').on(t.recordID)]
 );

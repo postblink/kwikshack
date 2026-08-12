@@ -189,7 +189,8 @@
   "category": "food-drink",
   "expansion": "The War Within",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 759
  },
  {
   "itemID": 239177,
@@ -221,7 +222,8 @@
   "category": "seating",
   "expansion": "The War Within",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 829
  },
  {
   "itemID": 239606,
@@ -341,7 +343,8 @@
   "category": "rug",
   "expansion": "Dragonflight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1119
  },
  {
   "itemID": 242951,
@@ -365,7 +368,8 @@
   "category": "seating",
   "expansion": "Midnight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1157
  },
  {
   "itemID": 243101,
@@ -373,7 +377,8 @@
   "category": "rug",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 1168
  },
  {
   "itemID": 243106,
@@ -445,7 +450,8 @@
   "category": "rug",
   "expansion": "The War Within",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1273
  },
  {
   "itemID": 243334,
@@ -469,7 +475,8 @@
   "category": "rug",
   "expansion": "Classic",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 1282
  },
  {
   "itemID": 243337,
@@ -525,7 +532,8 @@
   "category": "outdoor",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1405
  },
  {
   "itemID": 244314,
@@ -533,7 +541,8 @@
   "category": "table",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 1406
  },
  {
   "itemID": 244315,
@@ -557,7 +566,8 @@
   "category": "container",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1409
  },
  {
   "itemID": 244318,
@@ -565,7 +575,8 @@
   "category": "container",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 1410
  },
  {
   "itemID": 244319,
@@ -573,7 +584,8 @@
   "category": "storage",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1411
  },
  {
   "itemID": 244320,
@@ -605,7 +617,8 @@
   "category": "bed",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1415
  },
  {
   "itemID": 244324,
@@ -1237,7 +1250,8 @@
   "category": "seating",
   "expansion": "The War Within",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 1275
  },
  {
   "itemID": 245307,
@@ -1277,7 +1291,8 @@
   "category": "seating",
   "expansion": "The War Within",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 1260
  },
  {
   "itemID": 245313,
@@ -1349,7 +1364,8 @@
   "category": "storage",
   "expansion": "The War Within",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 1270
  },
  {
   "itemID": 245324,
@@ -1365,7 +1381,8 @@
   "category": "food-drink",
   "expansion": "The War Within",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 765
  },
  {
   "itemID": 245327,
@@ -1717,7 +1734,8 @@
   "category": "storage",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1219
  },
  {
   "itemID": 245397,
@@ -1789,7 +1807,8 @@
   "category": "outdoor",
   "expansion": "Legion",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1242
  },
  {
   "itemID": 245407,
@@ -1797,7 +1816,8 @@
   "category": "outdoor",
   "expansion": "Legion",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1243
  },
  {
   "itemID": 245408,
@@ -1805,7 +1825,8 @@
   "category": "food-drink",
   "expansion": "Legion",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 1314
  },
  {
   "itemID": 245410,
@@ -1821,7 +1842,8 @@
   "category": "musical",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1241
  },
  {
   "itemID": 245413,
@@ -1837,7 +1859,8 @@
   "category": "lighting",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1200
  },
  {
   "itemID": 245415,
@@ -1845,7 +1868,8 @@
   "category": "structural",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1313
  },
  {
   "itemID": 245416,
@@ -1853,7 +1877,8 @@
   "category": "structural",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1312
  },
  {
   "itemID": 245417,
@@ -1869,7 +1894,8 @@
   "category": "wall-art",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 1311
  },
  {
   "itemID": 245421,
@@ -1877,7 +1903,8 @@
   "category": "bed",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 929
  },
  {
   "itemID": 245423,
@@ -1925,7 +1952,8 @@
   "category": "food-drink",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 749
  },
  {
   "itemID": 245429,
@@ -1957,7 +1985,8 @@
   "category": "bed",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1321
  },
  {
   "itemID": 245433,
@@ -1989,7 +2018,8 @@
   "category": "weapon-armor",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 1325
  },
  {
   "itemID": 245437,
@@ -2029,7 +2059,8 @@
   "category": "outdoor",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1351
  },
  {
   "itemID": 245442,
@@ -2157,7 +2188,8 @@
   "category": "storage",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1308
  },
  {
   "itemID": 245460,
@@ -2357,7 +2389,8 @@
   "category": "food-drink",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 755
  },
  {
   "itemID": 245485,
@@ -2445,7 +2478,8 @@
   "category": "wall-art",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1161
  },
  {
   "itemID": 245497,
@@ -2461,7 +2495,8 @@
   "category": "table",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1217
  },
  {
   "itemID": 245500,
@@ -2485,7 +2520,8 @@
   "category": "container",
   "expansion": "Classic",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 854
  },
  {
   "itemID": 245503,
@@ -2493,7 +2529,8 @@
   "category": "container",
   "expansion": "Classic",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 922
  },
  {
   "itemID": 245504,
@@ -2533,7 +2570,8 @@
   "category": "structural",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1194
  },
  {
   "itemID": 245512,
@@ -2549,7 +2587,8 @@
   "category": "table",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1169
  },
  {
   "itemID": 245514,
@@ -2557,7 +2596,8 @@
   "category": "table",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1187
  },
  {
   "itemID": 245515,
@@ -2581,7 +2621,8 @@
   "category": "utility",
   "expansion": "Cataclysm",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 855
  },
  {
   "itemID": 245518,
@@ -2637,7 +2678,8 @@
   "category": "lighting",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1725
  },
  {
   "itemID": 245535,
@@ -2725,7 +2767,8 @@
   "category": "wall-art",
   "expansion": "Legion",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1746
  },
  {
   "itemID": 245559,
@@ -2733,7 +2776,8 @@
   "category": "structural",
   "expansion": "The War Within",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1748
  },
  {
   "itemID": 245560,
@@ -2813,7 +2857,8 @@
   "category": "tool",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 1791
  },
  {
   "itemID": 245601,
@@ -2821,7 +2866,8 @@
   "category": "lighting",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 1792
  },
  {
   "itemID": 245602,
@@ -2829,7 +2875,8 @@
   "category": "weapon-armor",
   "expansion": "Cataclysm",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 1793
  },
  {
   "itemID": 245603,
@@ -2877,7 +2924,8 @@
   "category": "outdoor",
   "expansion": "Cataclysm",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 1827
  },
  {
   "itemID": 245620,
@@ -2893,7 +2941,8 @@
   "category": "table",
   "expansion": "Cataclysm",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1830
  },
  {
   "itemID": 245622,
@@ -2901,7 +2950,8 @@
   "category": "storage",
   "expansion": "Cataclysm",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1831
  },
  {
   "itemID": 245623,
@@ -2909,7 +2959,8 @@
   "category": "seating",
   "expansion": "Cataclysm",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1832
  },
  {
   "itemID": 245624,
@@ -3157,7 +3208,8 @@
   "category": "lighting",
   "expansion": "The War Within",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 1984
  },
  {
   "itemID": 246089,
@@ -3269,7 +3321,8 @@
   "category": "lighting",
   "expansion": "Classic",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 2001
  },
  {
   "itemID": 246216,
@@ -3549,7 +3602,8 @@
   "category": "tool",
   "expansion": "Classic",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2227
  },
  {
   "itemID": 246411,
@@ -3573,7 +3627,8 @@
   "category": "lighting",
   "expansion": "Classic",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 2230
  },
  {
   "itemID": 246414,
@@ -3605,7 +3660,8 @@
   "category": "storage",
   "expansion": "Classic",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 2237
  },
  {
   "itemID": 246421,
@@ -3629,7 +3685,8 @@
   "category": "table",
   "expansion": "Classic",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 2240
  },
  {
   "itemID": 246424,
@@ -3701,7 +3758,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2301
  },
  {
   "itemID": 246479,
@@ -3765,7 +3823,8 @@
   "category": "utility",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2329
  },
  {
   "itemID": 246488,
@@ -3773,7 +3832,8 @@
   "category": "lighting",
   "expansion": "Classic",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 2331
  },
  {
   "itemID": 246489,
@@ -3781,7 +3841,8 @@
   "category": "wall-art",
   "expansion": "Classic",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 2332
  },
  {
   "itemID": 246490,
@@ -3829,7 +3890,8 @@
   "category": "lighting",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2340
  },
  {
   "itemID": 246501,
@@ -3949,7 +4011,8 @@
   "category": "utility",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2436
  },
  {
   "itemID": 246605,
@@ -4053,7 +4116,8 @@
   "category": "wall-art",
   "expansion": "Classic",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 2452
  },
  {
   "itemID": 246686,
@@ -4093,7 +4157,8 @@
   "category": "food-drink",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 2460
  },
  {
   "itemID": 246700,
@@ -4101,7 +4166,8 @@
   "category": "bed",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 2465
  },
  {
   "itemID": 246701,
@@ -4125,7 +4191,8 @@
   "category": "food-drink",
   "expansion": "Shadowlands",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2468
  },
  {
   "itemID": 246706,
@@ -4149,7 +4216,8 @@
   "category": "food-drink",
   "expansion": "The War Within",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2471
  },
  {
   "itemID": 246709,
@@ -4157,7 +4225,8 @@
   "category": "food-drink",
   "expansion": "The War Within",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2472
  },
  {
   "itemID": 246711,
@@ -4557,7 +4626,8 @@
   "category": "food-drink",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2591
  },
  {
   "itemID": 247221,
@@ -4573,7 +4643,8 @@
   "category": "food-drink",
   "expansion": "Dragonflight",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2593
  },
  {
   "itemID": 247223,
@@ -4589,7 +4660,8 @@
   "category": "food-drink",
   "expansion": "Dragonflight",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2595
  },
  {
   "itemID": 247225,
@@ -4597,7 +4669,8 @@
   "category": "food-drink",
   "expansion": "Dragonflight",
   "source": "Crafted (Cooking)",
-  "icon": null
+  "icon": null,
+  "recordID": 2596
  },
  {
   "itemID": 247234,
@@ -4629,7 +4702,8 @@
   "category": "lighting",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 3831
  },
  {
   "itemID": 247662,
@@ -4693,7 +4767,8 @@
   "category": "storage",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 3839
  },
  {
   "itemID": 247670,
@@ -4717,7 +4792,8 @@
   "category": "structural",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 3868
  },
  {
   "itemID": 247729,
@@ -4741,7 +4817,8 @@
   "category": "lighting",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 3871
  },
  {
   "itemID": 247732,
@@ -4757,7 +4834,8 @@
   "category": "food-drink",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 3873
  },
  {
   "itemID": 247734,
@@ -4773,7 +4851,8 @@
   "category": "seating",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 3875
  },
  {
   "itemID": 247736,
@@ -4781,7 +4860,8 @@
   "category": "statue",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 3876
  },
  {
   "itemID": 247737,
@@ -4797,7 +4877,8 @@
   "category": "rug",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 3878
  },
  {
   "itemID": 247740,
@@ -4885,7 +4966,8 @@
   "category": "utility",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 3892
  },
  {
   "itemID": 247756,
@@ -4981,7 +5063,8 @@
   "category": "bed",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 3904
  },
  {
   "itemID": 247768,
@@ -5157,7 +5240,8 @@
   "category": "outdoor",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 3994
  },
  {
   "itemID": 247858,
@@ -5181,7 +5265,8 @@
   "category": "outdoor",
   "expansion": "Legion",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 4023
  },
  {
   "itemID": 247910,
@@ -5221,7 +5306,8 @@
   "category": "table",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4030
  },
  {
   "itemID": 247918,
@@ -5229,7 +5315,8 @@
   "category": "table",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4032
  },
  {
   "itemID": 247919,
@@ -5245,7 +5332,8 @@
   "category": "rug",
   "expansion": "Legion",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 4034
  },
  {
   "itemID": 247921,
@@ -5261,7 +5349,8 @@
   "category": "outdoor",
   "expansion": "Legion",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 4036
  },
  {
   "itemID": 247923,
@@ -5269,7 +5358,8 @@
   "category": "utility",
   "expansion": "Legion",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 4037
  },
  {
   "itemID": 247924,
@@ -5285,7 +5375,8 @@
   "category": "storage",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4039
  },
  {
   "itemID": 248010,
@@ -5293,7 +5384,8 @@
   "category": "outdoor",
   "expansion": "Legion",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 4041
  },
  {
   "itemID": 248011,
@@ -5357,7 +5449,8 @@
   "category": "container",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4162
  },
  {
   "itemID": 248107,
@@ -5365,7 +5458,8 @@
   "category": "storage",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4163
  },
  {
   "itemID": 248108,
@@ -5373,7 +5467,8 @@
   "category": "storage",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4164
  },
  {
   "itemID": 248109,
@@ -5381,7 +5476,8 @@
   "category": "outdoor",
   "expansion": "Dragonflight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 4165
  },
  {
   "itemID": 248110,
@@ -5389,7 +5485,8 @@
   "category": "outdoor",
   "expansion": "Dragonflight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 4166
  },
  {
   "itemID": 248111,
@@ -5397,7 +5494,8 @@
   "category": "plant",
   "expansion": "Dragonflight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 4167
  },
  {
   "itemID": 248112,
@@ -5413,7 +5511,8 @@
   "category": "tool",
   "expansion": "Dragonflight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 4169
  },
  {
   "itemID": 248114,
@@ -5421,7 +5520,8 @@
   "category": "bed",
   "expansion": "Dragonflight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 4170
  },
  {
   "itemID": 248117,
@@ -5437,7 +5537,8 @@
   "category": "book-scroll",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4174
  },
  {
   "itemID": 248119,
@@ -5445,7 +5546,8 @@
   "category": "book-scroll",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4175
  },
  {
   "itemID": 248120,
@@ -5453,7 +5555,8 @@
   "category": "book-scroll",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 4176
  },
  {
   "itemID": 248121,
@@ -5461,7 +5564,8 @@
   "category": "rug",
   "expansion": "Dragonflight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 4177
  },
  {
   "itemID": 248122,
@@ -5917,7 +6021,8 @@
   "category": "seating",
   "expansion": "Dragonflight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 4480
  },
  {
   "itemID": 248655,
@@ -5941,7 +6046,8 @@
   "category": "outdoor",
   "expansion": "Dragonflight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 4483
  },
  {
   "itemID": 248658,
@@ -6261,7 +6367,8 @@
   "category": "statue",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 5133
  },
  {
   "itemID": 248985,
@@ -6285,7 +6392,8 @@
   "category": "lighting",
   "expansion": "Cataclysm",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 5342
  },
  {
   "itemID": 249457,
@@ -7397,7 +7505,8 @@
   "category": "tool",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 8191
  },
  {
   "itemID": 251483,
@@ -7437,7 +7546,8 @@
   "category": "utility",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 8196
  },
  {
   "itemID": 251544,
@@ -7461,7 +7571,8 @@
   "category": "rug",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 8237
  },
  {
   "itemID": 251547,
@@ -7493,7 +7604,8 @@
   "category": "lighting",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 8241
  },
  {
   "itemID": 251551,
@@ -7565,7 +7677,8 @@
   "category": "lighting",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 8787
  },
  {
   "itemID": 251778,
@@ -7749,7 +7862,8 @@
   "category": "container",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 8983
  },
  {
   "itemID": 252036,
@@ -7837,7 +7951,8 @@
   "category": "container",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9038
  },
  {
   "itemID": 252390,
@@ -7901,7 +8016,8 @@
   "category": "tool",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 9046
  },
  {
   "itemID": 252398,
@@ -7917,7 +8033,8 @@
   "category": "utility",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 9048
  },
  {
   "itemID": 252400,
@@ -7933,7 +8050,8 @@
   "category": "storage",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9050
  },
  {
   "itemID": 252402,
@@ -8157,7 +8275,8 @@
   "category": "rug",
   "expansion": "The War Within",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 9167
  },
  {
   "itemID": 252757,
@@ -8173,7 +8292,8 @@
   "category": "outdoor",
   "expansion": "The War Within",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 9170
  },
  {
   "itemID": 253018,
@@ -8197,7 +8317,8 @@
   "category": "storage",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9180
  },
  {
   "itemID": 253023,
@@ -8213,7 +8334,8 @@
   "category": "table",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9184
  },
  {
   "itemID": 253037,
@@ -8237,7 +8359,8 @@
   "category": "lighting",
   "expansion": "The War Within",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 9187
  },
  {
   "itemID": 253162,
@@ -8261,7 +8384,8 @@
   "category": "outdoor",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9238
  },
  {
   "itemID": 253165,
@@ -8269,7 +8393,8 @@
   "category": "outdoor",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9239
  },
  {
   "itemID": 253167,
@@ -8277,7 +8402,8 @@
   "category": "container",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9241
  },
  {
   "itemID": 253168,
@@ -8293,7 +8419,8 @@
   "category": "storage",
   "expansion": "The War Within",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 9243
  },
  {
   "itemID": 253170,
@@ -8309,7 +8436,8 @@
   "category": "utility",
   "expansion": "The War Within",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 9245
  },
  {
   "itemID": 253172,
@@ -8421,7 +8549,8 @@
   "category": "lighting",
   "expansion": "Classic",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 9266
  },
  {
   "itemID": 253251,
@@ -8437,7 +8566,8 @@
   "category": "utility",
   "expansion": "The War Within",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 9268
  },
  {
   "itemID": 253253,
@@ -8445,7 +8575,8 @@
   "category": "lighting",
   "expansion": "The War Within",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 9269
  },
  {
   "itemID": 253254,
@@ -8589,7 +8720,8 @@
   "category": "storage",
   "expansion": "Midnight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 1142
  },
  {
   "itemID": 253467,
@@ -8677,7 +8809,8 @@
   "category": "container",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 1247
  },
  {
   "itemID": 253508,
@@ -8685,7 +8818,8 @@
   "category": "structural",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 1328
  },
  {
   "itemID": 253522,
@@ -9581,7 +9715,8 @@
   "category": "utility",
   "expansion": "Dragonflight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 10964
  },
  {
   "itemID": 256171,
@@ -9589,7 +9724,8 @@
   "category": "book-scroll",
   "expansion": "Dragonflight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 10965
  },
  {
   "itemID": 256172,
@@ -9669,7 +9805,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11138
  },
  {
   "itemID": 256357,
@@ -9693,7 +9830,8 @@
   "category": "lighting",
   "expansion": "Dragonflight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11162
  },
  {
   "itemID": 256428,
@@ -9717,7 +9855,8 @@
   "category": "utility",
   "expansion": "Dragonflight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11165
  },
  {
   "itemID": 256673,
@@ -9781,7 +9920,8 @@
   "category": "utility",
   "expansion": "Legion",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11281
  },
  {
   "itemID": 256681,
@@ -9789,7 +9929,8 @@
   "category": "utility",
   "expansion": "Legion",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11282
  },
  {
   "itemID": 256682,
@@ -9941,7 +10082,8 @@
   "category": "wall-art",
   "expansion": "Burning Crusade",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11370
  },
  {
   "itemID": 257036,
@@ -9949,7 +10091,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11371
  },
  {
   "itemID": 257037,
@@ -9957,7 +10100,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11372
  },
  {
   "itemID": 257038,
@@ -9965,7 +10109,8 @@
   "category": "outdoor",
   "expansion": "Burning Crusade",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11373
  },
  {
   "itemID": 257039,
@@ -9973,7 +10118,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11374
  },
  {
   "itemID": 257040,
@@ -9981,7 +10127,8 @@
   "category": "tool",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11375
  },
  {
   "itemID": 257041,
@@ -9989,7 +10136,8 @@
   "category": "container",
   "expansion": "Classic",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11376
  },
  {
   "itemID": 257042,
@@ -9997,7 +10145,8 @@
   "category": "tool",
   "expansion": "Cataclysm",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11377
  },
  {
   "itemID": 257043,
@@ -10005,7 +10154,8 @@
   "category": "tool",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11378
  },
  {
   "itemID": 257044,
@@ -10013,7 +10163,8 @@
   "category": "utility",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11379
  },
  {
   "itemID": 257045,
@@ -10021,7 +10172,8 @@
   "category": "utility",
   "expansion": "Legion",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11380
  },
  {
   "itemID": 257046,
@@ -10029,7 +10181,8 @@
   "category": "lighting",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11381
  },
  {
   "itemID": 257047,
@@ -10037,7 +10190,8 @@
   "category": "container",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11382
  },
  {
   "itemID": 257048,
@@ -10045,7 +10199,8 @@
   "category": "utility",
   "expansion": "Shadowlands",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11383
  },
  {
   "itemID": 257049,
@@ -10053,7 +10208,8 @@
   "category": "food-drink",
   "expansion": "Shadowlands",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11384
  },
  {
   "itemID": 257050,
@@ -10061,7 +10217,8 @@
   "category": "plant",
   "expansion": "Shadowlands",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11385
  },
  {
   "itemID": 257051,
@@ -10069,7 +10226,8 @@
   "category": "lighting",
   "expansion": "Shadowlands",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11386
  },
  {
   "itemID": 257052,
@@ -10077,7 +10235,8 @@
   "category": "food-drink",
   "expansion": "Dragonflight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11387
  },
  {
   "itemID": 257053,
@@ -10085,7 +10244,8 @@
   "category": "wall-art",
   "expansion": "Dragonflight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11388
  },
  {
   "itemID": 257093,
@@ -10093,7 +10253,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11431
  },
  {
   "itemID": 257094,
@@ -10101,7 +10262,8 @@
   "category": "wall-art",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11432
  },
  {
   "itemID": 257095,
@@ -10109,7 +10271,8 @@
   "category": "utility",
   "expansion": "Classic",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11433
  },
  {
   "itemID": 257096,
@@ -10117,7 +10280,8 @@
   "category": "lighting",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11434
  },
  {
   "itemID": 257097,
@@ -10125,7 +10289,8 @@
   "category": "lighting",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11435
  },
  {
   "itemID": 257098,
@@ -10133,7 +10298,8 @@
   "category": "container",
   "expansion": "Shadowlands",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11436
  },
  {
   "itemID": 257099,
@@ -10149,7 +10315,8 @@
   "category": "table",
   "expansion": "Classic",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11438
  },
  {
   "itemID": 257101,
@@ -10157,7 +10324,8 @@
   "category": "utility",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11439
  },
  {
   "itemID": 257102,
@@ -10165,7 +10333,8 @@
   "category": "tool",
   "expansion": "The War Within",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11440
  },
  {
   "itemID": 257349,
@@ -10309,7 +10478,8 @@
   "category": "tool",
   "expansion": "Legion",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11490
  },
  {
   "itemID": 257402,
@@ -10317,7 +10487,8 @@
   "category": "wall-art",
   "expansion": "Cataclysm",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11492
  },
  {
   "itemID": 257403,
@@ -10333,7 +10504,8 @@
   "category": "container",
   "expansion": "Cataclysm",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11494
  },
  {
   "itemID": 257405,
@@ -10349,7 +10521,8 @@
   "category": "lighting",
   "expansion": "Cataclysm",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11496
  },
  {
   "itemID": 257409,
@@ -10357,7 +10530,8 @@
   "category": "lighting",
   "expansion": "Cataclysm",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 11497
  },
  {
   "itemID": 257412,
@@ -10389,7 +10563,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11501
  },
  {
   "itemID": 257421,
@@ -10429,7 +10604,8 @@
   "category": "outdoor",
   "expansion": "Cataclysm",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11718
  },
  {
   "itemID": 257690,
@@ -10461,7 +10637,8 @@
   "category": "statue",
   "expansion": "Classic",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11722
  },
  {
   "itemID": 257694,
@@ -10469,7 +10646,8 @@
   "category": "food-drink",
   "expansion": "Cataclysm",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11723
  },
  {
   "itemID": 257695,
@@ -10477,7 +10655,8 @@
   "category": "utility",
   "expansion": "Cataclysm",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11724
  },
  {
   "itemID": 257696,
@@ -10485,7 +10664,8 @@
   "category": "wall-art",
   "expansion": "Cataclysm",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11725
  },
  {
   "itemID": 257721,
@@ -10509,7 +10689,8 @@
   "category": "rug",
   "expansion": "Classic",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11755
  },
  {
   "itemID": 257806,
@@ -10517,7 +10698,8 @@
   "category": "rug",
   "expansion": "Cataclysm",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11779
  },
  {
   "itemID": 257928,
@@ -10581,7 +10763,8 @@
   "category": "wall-art",
   "expansion": "Burning Crusade",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11878
  },
  {
   "itemID": 258191,
@@ -10589,7 +10772,8 @@
   "category": "statue",
   "expansion": "Burning Crusade",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11879
  },
  {
   "itemID": 258192,
@@ -10597,7 +10781,8 @@
   "category": "statue",
   "expansion": "Burning Crusade",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11880
  },
  {
   "itemID": 258193,
@@ -10605,7 +10790,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11881
  },
  {
   "itemID": 258194,
@@ -10613,7 +10799,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11882
  },
  {
   "itemID": 258195,
@@ -10621,7 +10808,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11883
  },
  {
   "itemID": 258196,
@@ -10629,7 +10817,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11884
  },
  {
   "itemID": 258197,
@@ -10637,7 +10826,8 @@
   "category": "utility",
   "expansion": "Burning Crusade",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11885
  },
  {
   "itemID": 258198,
@@ -10645,7 +10835,8 @@
   "category": "table",
   "expansion": "Burning Crusade",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11886
  },
  {
   "itemID": 258199,
@@ -10653,7 +10844,8 @@
   "category": "storage",
   "expansion": "Burning Crusade",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11887
  },
  {
   "itemID": 258200,
@@ -10661,7 +10853,8 @@
   "category": "lighting",
   "expansion": "Burning Crusade",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11888
  },
  {
   "itemID": 258201,
@@ -10669,7 +10862,8 @@
   "category": "lighting",
   "expansion": "Burning Crusade",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11889
  },
  {
   "itemID": 258202,
@@ -10677,7 +10871,8 @@
   "category": "wall-art",
   "expansion": "Burning Crusade",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11890
  },
  {
   "itemID": 258203,
@@ -10685,7 +10880,8 @@
   "category": "seating",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11891
  },
  {
   "itemID": 258204,
@@ -10693,7 +10889,8 @@
   "category": "structural",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11892
  },
  {
   "itemID": 258205,
@@ -10701,7 +10898,8 @@
   "category": "utility",
   "expansion": "Classic",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11893
  },
  {
   "itemID": 258206,
@@ -10709,7 +10907,8 @@
   "category": "wall-art",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11894
  },
  {
   "itemID": 258207,
@@ -10717,7 +10916,8 @@
   "category": "storage",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11895
  },
  {
   "itemID": 258208,
@@ -10725,7 +10925,8 @@
   "category": "wall-art",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11896
  },
  {
   "itemID": 258209,
@@ -10733,7 +10934,8 @@
   "category": "container",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11897
  },
  {
   "itemID": 258210,
@@ -10741,7 +10943,8 @@
   "category": "utility",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11898
  },
  {
   "itemID": 258211,
@@ -10749,7 +10952,8 @@
   "category": "table",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11899
  },
  {
   "itemID": 258212,
@@ -10757,7 +10961,8 @@
   "category": "utility",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11900
  },
  {
   "itemID": 258213,
@@ -10765,7 +10970,8 @@
   "category": "container",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11901
  },
  {
   "itemID": 258214,
@@ -10773,7 +10979,8 @@
   "category": "utility",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 11902
  },
  {
   "itemID": 258215,
@@ -10781,7 +10988,8 @@
   "category": "seating",
   "expansion": "Burning Crusade",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11903
  },
  {
   "itemID": 258216,
@@ -10789,7 +10997,8 @@
   "category": "tool",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11904
  },
  {
   "itemID": 258219,
@@ -10837,7 +11046,8 @@
   "category": "storage",
   "expansion": "Legion",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11910
  },
  {
   "itemID": 258225,
@@ -10845,7 +11055,8 @@
   "category": "statue",
   "expansion": "Legion",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11911
  },
  {
   "itemID": 258226,
@@ -10853,7 +11064,8 @@
   "category": "tool",
   "expansion": "Legion",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11912
  },
  {
   "itemID": 258227,
@@ -10861,7 +11073,8 @@
   "category": "misc",
   "expansion": "Legion",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11913
  },
  {
   "itemID": 258230,
@@ -10893,7 +11106,8 @@
   "category": "seating",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11917
  },
  {
   "itemID": 258237,
@@ -10901,7 +11115,8 @@
   "category": "lighting",
   "expansion": "Shadowlands",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 11918
  },
  {
   "itemID": 258238,
@@ -10909,7 +11124,8 @@
   "category": "container",
   "expansion": "Shadowlands",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11919
  },
  {
   "itemID": 258239,
@@ -10917,7 +11133,8 @@
   "category": "book-scroll",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11920
  },
  {
   "itemID": 258240,
@@ -10925,7 +11142,8 @@
   "category": "container",
   "expansion": "Shadowlands",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11921
  },
  {
   "itemID": 258242,
@@ -10933,7 +11151,8 @@
   "category": "statue",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11922
  },
  {
   "itemID": 258244,
@@ -10941,7 +11160,8 @@
   "category": "table",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11923
  },
  {
   "itemID": 258245,
@@ -10949,7 +11169,8 @@
   "category": "plant",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11924
  },
  {
   "itemID": 258247,
@@ -10957,7 +11178,8 @@
   "category": "storage",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11925
  },
  {
   "itemID": 258248,
@@ -10965,7 +11187,8 @@
   "category": "rug",
   "expansion": "Shadowlands",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 11926
  },
  {
   "itemID": 258250,
@@ -10973,7 +11196,8 @@
   "category": "storage",
   "expansion": "Shadowlands",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11927
  },
  {
   "itemID": 258252,
@@ -10981,7 +11205,8 @@
   "category": "container",
   "expansion": "Shadowlands",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11928
  },
  {
   "itemID": 258253,
@@ -10989,7 +11214,8 @@
   "category": "structural",
   "expansion": "Dragonflight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 11929
  },
  {
   "itemID": 258262,
@@ -11037,7 +11263,8 @@
   "category": "statue",
   "expansion": "Classic",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 11935
  },
  {
   "itemID": 258290,
@@ -11061,7 +11288,8 @@
   "category": "wall-art",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11941
  },
  {
   "itemID": 258299,
@@ -11093,7 +11321,8 @@
   "category": "tool",
   "expansion": "Mists of Pandaria",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11945
  },
  {
   "itemID": 258303,
@@ -11101,7 +11330,8 @@
   "category": "misc",
   "expansion": "Warlords of Draenor",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 11946
  },
  {
   "itemID": 258304,
@@ -11205,7 +11435,8 @@
   "category": "misc",
   "expansion": "Legion",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 12161
  },
  {
   "itemID": 258558,
@@ -11213,7 +11444,8 @@
   "category": "wall-art",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 12162
  },
  {
   "itemID": 258559,
@@ -11221,7 +11453,8 @@
   "category": "statue",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 12163
  },
  {
   "itemID": 258560,
@@ -11229,7 +11462,8 @@
   "category": "tool",
   "expansion": "Battle for Azeroth",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 12164
  },
  {
   "itemID": 258561,
@@ -11237,7 +11471,8 @@
   "category": "textile",
   "expansion": "Shadowlands",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 12165
  },
  {
   "itemID": 258565,
@@ -11853,7 +12088,8 @@
   "category": "structural",
   "expansion": "Shadowlands",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14380
  },
  {
   "itemID": 260701,
@@ -11909,7 +12145,8 @@
   "category": "lighting",
   "expansion": "Burning Crusade",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14553
  },
  {
   "itemID": 262351,
@@ -11925,7 +12162,8 @@
   "category": "rug",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14555
  },
  {
   "itemID": 262354,
@@ -11933,7 +12171,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 14557
  },
  {
   "itemID": 262355,
@@ -11941,7 +12180,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 14558
  },
  {
   "itemID": 262356,
@@ -11949,7 +12189,8 @@
   "category": "container",
   "expansion": "Midnight",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 14559
  },
  {
   "itemID": 262449,
@@ -11957,7 +12198,8 @@
   "category": "rug",
   "expansion": "Midnight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 14579
  },
  {
   "itemID": 262450,
@@ -11965,7 +12207,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14580
  },
  {
   "itemID": 262451,
@@ -11973,7 +12216,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 14581
  },
  {
   "itemID": 262452,
@@ -11981,7 +12225,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 14582
  },
  {
   "itemID": 262453,
@@ -11997,7 +12242,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14584
  },
  {
   "itemID": 262455,
@@ -12005,7 +12251,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14585
  },
  {
   "itemID": 262456,
@@ -12013,7 +12260,8 @@
   "category": "wall-art",
   "expansion": "Midnight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 14586
  },
  {
   "itemID": 262457,
@@ -12021,7 +12269,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 14587
  },
  {
   "itemID": 262458,
@@ -12029,7 +12278,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14588
  },
  {
   "itemID": 262459,
@@ -12037,7 +12287,8 @@
   "category": "weapon-armor",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14589
  },
  {
   "itemID": 262460,
@@ -12045,7 +12296,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 14590
  },
  {
   "itemID": 262461,
@@ -12053,7 +12305,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14591
  },
  {
   "itemID": 262462,
@@ -12077,7 +12330,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14594
  },
  {
   "itemID": 262465,
@@ -12085,7 +12339,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14595
  },
  {
   "itemID": 262466,
@@ -12109,7 +12364,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14598
  },
  {
   "itemID": 262469,
@@ -12117,7 +12373,8 @@
   "category": "musical",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14599
  },
  {
   "itemID": 262470,
@@ -12125,7 +12382,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14600
  },
  {
   "itemID": 262471,
@@ -12133,7 +12391,8 @@
   "category": "musical",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14601
  },
  {
   "itemID": 262473,
@@ -12149,7 +12408,8 @@
   "category": "table",
   "expansion": "The War Within",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 14615
  },
  {
   "itemID": 262590,
@@ -12157,7 +12417,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14616
  },
  {
   "itemID": 262591,
@@ -12165,7 +12426,8 @@
   "category": "textile",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14617
  },
  {
   "itemID": 262592,
@@ -12173,7 +12435,8 @@
   "category": "bed",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14618
  },
  {
   "itemID": 262593,
@@ -12181,7 +12444,8 @@
   "category": "textile",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14619
  },
  {
   "itemID": 262594,
@@ -12189,7 +12453,8 @@
   "category": "storage",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14620
  },
  {
   "itemID": 262595,
@@ -12197,7 +12462,8 @@
   "category": "storage",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14621
  },
  {
   "itemID": 262597,
@@ -12205,7 +12471,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14622
  },
  {
   "itemID": 262598,
@@ -12213,7 +12480,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14623
  },
  {
   "itemID": 262599,
@@ -12221,7 +12489,8 @@
   "category": "textile",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14624
  },
  {
   "itemID": 262600,
@@ -12229,7 +12498,8 @@
   "category": "rug",
   "expansion": "Midnight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 14625
  },
  {
   "itemID": 262601,
@@ -12237,7 +12507,8 @@
   "category": "wall-art",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14626
  },
  {
   "itemID": 262602,
@@ -12245,7 +12516,8 @@
   "category": "utility",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14627
  },
  {
   "itemID": 262607,
@@ -12285,7 +12557,8 @@
   "category": "container",
   "expansion": "Midnight",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 14636
  },
  {
   "itemID": 262612,
@@ -12293,7 +12566,8 @@
   "category": "container",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14637
  },
  {
   "itemID": 262613,
@@ -12301,7 +12575,8 @@
   "category": "wall-art",
   "expansion": "Midnight",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14638
  },
  {
   "itemID": 262614,
@@ -12317,7 +12592,8 @@
   "category": "tool",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14640
  },
  {
   "itemID": 262616,
@@ -12325,7 +12601,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14641
  },
  {
   "itemID": 262617,
@@ -12333,7 +12610,8 @@
   "category": "structural",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14642
  },
  {
   "itemID": 262618,
@@ -12341,7 +12619,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14643
  },
  {
   "itemID": 262619,
@@ -12357,7 +12636,8 @@
   "category": "lighting",
   "expansion": "Shadowlands",
   "source": "Crafted (Jewelcrafting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14676
  },
  {
   "itemID": 262664,
@@ -12397,7 +12677,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14730
  },
  {
   "itemID": 262790,
@@ -12405,7 +12686,8 @@
   "category": "seating",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14731
  },
  {
   "itemID": 262884,
@@ -12517,7 +12799,8 @@
   "category": "lighting",
   "expansion": "Classic",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 14816
  },
  {
   "itemID": 263031,
@@ -12541,7 +12824,8 @@
   "category": "storage",
   "expansion": "Midnight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 14820
  },
  {
   "itemID": 263036,
@@ -12645,7 +12929,8 @@
   "category": "lighting",
   "expansion": "Midnight",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 14835
  },
  {
   "itemID": 263052,
@@ -13261,7 +13546,8 @@
   "category": "textile",
   "expansion": "Midnight",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 15479
  },
  {
   "itemID": 264245,
@@ -13781,7 +14067,8 @@
   "category": "structural",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 16012
  },
  {
   "itemID": 264677,
@@ -13789,7 +14076,8 @@
   "category": "rug",
   "expansion": "Cataclysm",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 16013
  },
  {
   "itemID": 264678,
@@ -13797,7 +14085,8 @@
   "category": "wall-art",
   "expansion": "Shadowlands",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 16014
  },
  {
   "itemID": 264679,
@@ -13805,7 +14094,8 @@
   "category": "storage",
   "expansion": "Dragonflight",
   "source": "Crafted (Inscription)",
-  "icon": null
+  "icon": null,
+  "recordID": 16015
  },
  {
   "itemID": 264680,
@@ -13917,7 +14207,8 @@
   "category": "container",
   "expansion": "Burning Crusade",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 16082
  },
  {
   "itemID": 264706,
@@ -13925,7 +14216,8 @@
   "category": "lighting",
   "expansion": "Burning Crusade",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 16083
  },
  {
   "itemID": 264707,
@@ -13933,7 +14225,8 @@
   "category": "tool",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 16084
  },
  {
   "itemID": 264708,
@@ -13941,7 +14234,8 @@
   "category": "tool",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 16085
  },
  {
   "itemID": 264709,
@@ -13949,7 +14243,8 @@
   "category": "container",
   "expansion": "Burning Crusade",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 16086
  },
  {
   "itemID": 264710,
@@ -13957,7 +14252,8 @@
   "category": "lighting",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Blacksmithing)",
-  "icon": null
+  "icon": null,
+  "recordID": 16087
  },
  {
   "itemID": 264711,
@@ -13965,7 +14261,8 @@
   "category": "wall-art",
   "expansion": "Wrath of the Lich King",
   "source": "Crafted (Engineering)",
-  "icon": null
+  "icon": null,
+  "recordID": 16088
  },
  {
   "itemID": 264712,
@@ -13973,7 +14270,8 @@
   "category": "misc",
   "expansion": "Cataclysm",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 16089
  },
  {
   "itemID": 264713,
@@ -13981,7 +14279,8 @@
   "category": "wall-art",
   "expansion": "Shadowlands",
   "source": "Crafted (Tailoring)",
-  "icon": null
+  "icon": null,
+  "recordID": 16090
  },
  {
   "itemID": 264715,
@@ -14013,7 +14312,8 @@
   "category": "container",
   "expansion": "Cataclysm",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 16219
  },
  {
   "itemID": 264900,
@@ -14021,7 +14321,8 @@
   "category": "container",
   "expansion": "Cataclysm",
   "source": "Crafted (Alchemy)",
-  "icon": null
+  "icon": null,
+  "recordID": 16220
  },
  {
   "itemID": 264915,
@@ -14557,7 +14858,8 @@
   "category": "bed",
   "expansion": "The War Within",
   "source": "Crafted (Leatherworking)",
-  "icon": null
+  "icon": null,
+  "recordID": 17515
  },
  {
   "itemID": 265792,
@@ -15061,7 +15363,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 19229
  },
  {
   "itemID": 268039,
@@ -15069,7 +15372,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 19231
  },
  {
   "itemID": 268041,
@@ -15077,7 +15381,8 @@
   "category": "book-scroll",
   "expansion": "Midnight",
   "source": "Crafted (Enchanting)",
-  "icon": null
+  "icon": null,
+  "recordID": 19234
  },
  {
   "itemID": 268049,
