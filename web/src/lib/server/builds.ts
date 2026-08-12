@@ -1,6 +1,6 @@
 import { db } from './db';
 import { builds, decorItems, screenshots, users } from './db/schema';
-import { eq, inArray, like, and } from 'drizzle-orm';
+import { eq, inArray, like, and, isNull } from 'drizzle-orm';
 import type { BuildManifest, PlacementData } from '$lib/types/manifest';
 
 export interface BuildRecord {
@@ -25,6 +25,38 @@ function ensureUser(name: string): string | null {
 	const id = crypto.randomUUID();
 	db.insert(users).values({ id, name }).run();
 	return id;
+}
+
+/**
+ * Self-learning recordID→itemID map. The static catalog only knows recordIDs
+ * for crafted items; manifests resolved by the addon carry BOTH recordID and
+ * itemID. Learn from each submission so recordID-only builds (like the probe
+ * builds) can resolve icons/names on later lookups.
+ */
+export function ingestRecordPairs(manifest: BuildManifest): void {
+	for (const group of manifest.contentGroups ?? []) {
+		const ct = group.contentType ?? group.groupType;
+		if (ct !== 3) continue; // decor only
+		for (const entry of group.entries ?? []) {
+			const recordID = typeof entry.recordID === 'number' ? entry.recordID : null;
+			const itemID = typeof entry.itemID === 'number' ? entry.itemID : null;
+			if (recordID === null || itemID === null) continue;
+			// Backfill record_id on an existing catalog row (if not yet known)
+			db.update(decorItems)
+				.set({ recordID })
+				.where(and(eq(decorItems.itemID, itemID), isNull(decorItems.recordID)))
+				.run();
+			// Insert a stub row for items the catalog hasn't seen (name + recordID)
+			db.insert(decorItems)
+				.values({
+					itemID,
+					recordID,
+					name: typeof entry.name === 'string' ? entry.name : `Item ${itemID}`
+				})
+				.onConflictDoNothing()
+				.run();
+		}
+	}
 }
 
 export function createBuild(input: {
@@ -54,6 +86,8 @@ export function createBuild(input: {
 			placementData: input.placementData ?? null
 		})
 		.run();
+	// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
+	ingestRecordPairs(input.manifest);
 	// Insert screenshots if provided
 	for (let i = 0; i < (input.screenshotUrls?.length ?? 0); i++) {
 		db.insert(screenshots)

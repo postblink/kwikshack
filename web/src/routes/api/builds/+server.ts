@@ -2,15 +2,15 @@ import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { isSubmitPayload } from '$lib/types/manifest';
 import { createBuild, listBuilds } from '$lib/server/builds';
+import { isSubmitKeyAllowed } from '$lib/server/submit-key';
 import type { RequestHandler } from './$types';
 
 // POST /api/builds — submit a build (manifest + optional placement data)
 // Body: SubmitBuildPayload — see $lib/types/manifest.ts
 // Auth: if KWIKSHACK_SUBMIT_KEY is set (production), require
 // `x-kwikshack-key` header to match. Unset = open (local dev).
-export function isSubmitKeyAllowed(submitKey: string | undefined, providedKey: string | null): boolean {
-	return !submitKey || providedKey === submitKey;
-}
+// NOTE: keep this module's exports to valid route handlers only — SvelteKit
+// rejects any other named export at runtime.
 
 export const POST: RequestHandler = async ({ request }) => {
 	const submitKey = env.KWIKSHACK_SUBMIT_KEY;

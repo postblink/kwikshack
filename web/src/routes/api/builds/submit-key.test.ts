@@ -1,9 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-
-vi.mock('$env/dynamic/private', () => ({ env: {} }));
-vi.mock('$lib/server/builds', () => ({ createBuild: vi.fn(), listBuilds: vi.fn() }));
-
-import { isSubmitKeyAllowed } from './+server';
+import { describe, expect, it } from 'vitest';
+import { isSubmitKeyAllowed } from '$lib/server/submit-key';
 
 describe('isSubmitKeyAllowed', () => {
 	it('allows submissions when the key is unset', () => {
@@ -16,5 +12,9 @@ describe('isSubmitKeyAllowed', () => {
 
 	it('allows a matching key', () => {
 		expect(isSubmitKeyAllowed('expected', 'expected')).toBe(true);
+	});
+
+	it('denies when key set but no key provided', () => {
+		expect(isSubmitKeyAllowed('expected', null)).toBe(false);
 	});
 });
