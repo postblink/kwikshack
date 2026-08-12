@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { isSubmitPayload } from '$lib/types/manifest';
-import { createBuild, listBuilds } from '$lib/server/builds';
+import { createBuild, listBuilds, type BuildSort } from '$lib/server/builds';
 import { isSubmitKeyAllowed } from '$lib/server/submit-key';
 import type { RequestHandler } from './$types';
 
@@ -43,27 +43,40 @@ export const POST: RequestHandler = async ({ request }) => {
 	return json({ id: record.id, shareCode: record.shareCode });
 };
 
-// GET /api/builds?limit=&offset=&type=&faction=&q=
+// GET /api/builds?limit=&offset=&type=&faction=&q=&items=&sort=
 export const GET: RequestHandler = async ({ url }) => {
-	const limit = Math.min(Number(url.searchParams.get('limit') ?? '24'), 100);
-	const offset = Number(url.searchParams.get('offset') ?? '0');
+	const requestedLimit = Number(url.searchParams.get('limit') ?? '24');
+	const requestedOffset = Number(url.searchParams.get('offset') ?? '0');
+	const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(Math.trunc(requestedLimit), 0), 100) : 24;
+	const offset = Number.isFinite(requestedOffset) ? Math.max(Math.trunc(requestedOffset), 0) : 0;
 	const type = url.searchParams.get('type') ?? undefined;
 	const faction = url.searchParams.get('faction') ?? undefined;
 	const q = url.searchParams.get('q') ?? undefined;
+	const itemIDs = [
+		...new Set(
+			(url.searchParams.get('items') ?? '')
+				.split(',')
+				.map(Number)
+				.filter((itemID) => Number.isSafeInteger(itemID) && itemID > 0)
+		)
+	];
+	const requestedSort = url.searchParams.get('sort');
+	const sort: BuildSort = requestedSort === 'most_items' ? 'most_items' : 'newest';
 
-	const records = listBuilds({ limit, offset, type, faction, q });
-		return json({
-			builds: records.map((b) => ({
-				id: b.id,
-				shareCode: b.shareCode,
-				codeStatus: b.codeStatus,
-				blueprintType: b.blueprintType,
-				faction: b.faction,
-				title: b.title,
-				authorName: b.authorName,
-				createdAt: b.createdAt
-			})),
-			limit,
-			offset
+	const records = listBuilds({ limit, offset, type, faction, q, itemIDs, sort });
+	return json({
+		builds: records.map((b) => ({
+			id: b.id,
+			shareCode: b.shareCode,
+			codeStatus: b.codeStatus,
+			blueprintType: b.blueprintType,
+			faction: b.faction,
+			title: b.title,
+			authorName: b.authorName,
+			createdAt: b.createdAt
+		})),
+		limit,
+		offset,
+		sort
 	});
 };

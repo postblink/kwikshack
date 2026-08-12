@@ -1,6 +1,6 @@
 import { db } from './db';
 import { builds, decorItems, screenshots, users } from './db/schema';
-import { eq, inArray, like, and, isNull } from 'drizzle-orm';
+import { asc, eq, inArray, like, and, isNull } from 'drizzle-orm';
 import type { BuildManifest, PlacementData } from '$lib/types/manifest';
 
 export interface BuildRecord {
@@ -16,6 +16,12 @@ export interface BuildRecord {
 	placementData: PlacementData | null;
 	createdAt: Date;
 }
+
+export interface FeaturedBuildRecord extends BuildRecord {
+	primaryScreenshot: string | null;
+}
+
+export type BuildSort = 'newest' | 'most_items';
 
 /** Create-or-get a user by display name (v0: no auth, name is a label). */
 function ensureUser(name: string): string | null {
@@ -104,8 +110,18 @@ export function createBuild(input: {
 	return getBuild(id)!;
 }
 
-export function listBuilds(opts: { limit?: number; offset?: number; type?: string; faction?: string; q?: string } = {}): BuildRecord[] {
-	const { limit = 24, offset = 0, type, faction, q } = opts;
+export function listBuilds(
+	opts: {
+		limit?: number;
+		offset?: number;
+		type?: string;
+		faction?: string;
+		q?: string;
+		itemIDs?: number[];
+		sort?: BuildSort;
+	} = {}
+): BuildRecord[] {
+	const { limit = 24, offset = 0, type, faction, q, itemIDs, sort = 'newest' } = opts;
 	const where = [];
 	if (type) where.push(eq(builds.blueprintType, type));
 	if (faction) where.push(eq(builds.faction, faction));
@@ -119,12 +135,46 @@ export function listBuilds(opts: { limit?: number; offset?: number; type?: strin
 		.from(builds)
 		.leftJoin(users, eq(builds.authorId, users.id))
 		.where(where.length ? and(...where) : undefined)
-		.orderBy(builds.createdAt)
-		.limit(limit)
-		.offset(offset)
 		.all();
 
-	return rows.map((r) => toBuildRecord(r.build, r.author));
+	let records = rows.map((r) => toBuildRecord(r.build, r.author));
+	if (itemIDs?.length) {
+		const wanted = new Set(itemIDs);
+		records = records.filter((record) => manifestItemIDs(record.manifest).some((itemID) => wanted.has(itemID)));
+	}
+
+	records.sort((a, b) => {
+		if (sort === 'most_items') {
+			const countDifference = distinctDecorItemCount(b.manifest) - distinctDecorItemCount(a.manifest);
+			if (countDifference !== 0) return countDifference;
+		}
+		return b.createdAt.getTime() - a.createdAt.getTime();
+	});
+
+	const start = Math.max(0, offset);
+	return records.slice(start, start + Math.max(0, limit));
+}
+
+export function getFeaturedBuild(): FeaturedBuildRecord | null {
+	const rows = db
+		.select({ build: builds, author: users.name })
+		.from(builds)
+		.leftJoin(users, eq(builds.authorId, users.id))
+		.all();
+	if (rows.length === 0) return null;
+
+	const chosen = rows[Math.floor(Math.random() * rows.length)];
+	const primaryScreenshot = db
+		.select({ url: screenshots.url })
+		.from(screenshots)
+		.where(and(eq(screenshots.buildId, chosen.build.id), eq(screenshots.isPrimary, true)))
+		.orderBy(asc(screenshots.sortOrder))
+		.get();
+
+	return {
+		...toBuildRecord(chosen.build, chosen.author),
+		primaryScreenshot: primaryScreenshot?.url ?? null
+	};
 }
 
 export function getBuild(id: string): BuildRecord | null {
@@ -185,6 +235,23 @@ export function manifestItemIDs(manifest: BuildManifest): number[] {
 		}
 	}
 	return [...seen];
+}
+
+/** Count distinct decor entries, preferring stable catalog identifiers. */
+export function distinctDecorItemCount(manifest: BuildManifest): number {
+	const seen = new Set<string>();
+	let anonymousIndex = 0;
+	for (const group of manifest.contentGroups ?? []) {
+		const contentType = group.contentType ?? group.groupType;
+		if (contentType !== 3) continue;
+		for (const entry of group.entries ?? []) {
+			if (typeof entry.itemID === 'number') seen.add(`item:${entry.itemID}`);
+			else if (typeof entry.recordID === 'number') seen.add(`record:${entry.recordID}`);
+			else if (typeof entry.name === 'string' && entry.name) seen.add(`name:${entry.name}`);
+			else seen.add(`anonymous:${anonymousIndex++}`);
+		}
+	}
+	return seen.size;
 }
 
 export interface EnrichedItem {

@@ -10,7 +10,8 @@ const testDatabase = vi.hoisted(() => ({
 vi.mock('$app/environment', () => ({ building: true }));
 vi.mock('$env/dynamic/private', () => ({ env: { DATABASE_URL: testDatabase.path } }));
 
-import { buildSummary, createBuild, enrichItems, listBuilds } from './builds';
+import { buildSummary, createBuild, distinctDecorItemCount, enrichItems, listBuilds } from './builds';
+import { searchDecorItems } from './decor';
 
 const compactManifest: BuildManifest = {
 	shareCode: 'compact-code',
@@ -68,6 +69,7 @@ beforeAll(() => {
 	);
 	insert.run(100, 200, 'Catalog Chair', '123456', 1);
 	insert.run(101, null, 'Compact Table', '654321', 1);
+	sqlite.prepare("UPDATE decor_items SET category = 'Seating' WHERE item_id = 100").run();
 	sqlite.close();
 });
 
@@ -116,6 +118,29 @@ describe('buildSummary', () => {
 
 		expect(buildSummary(manifest)).toEqual({ decorCount: 3, roomCount: 2 });
 	});
+
+	it('counts distinct decor identities and ignores structural entries', () => {
+		const manifest: BuildManifest = {
+			...compactManifest,
+			contentGroups: [
+				{ contentType: 3, entries: [{ itemID: 1 }, { itemID: 1 }, { recordID: 2 }] },
+				{ contentType: 2, entries: [{ itemID: 3 }] }
+			]
+		};
+
+		expect(distinctDecorItemCount(manifest)).toBe(2);
+	});
+});
+
+describe('searchDecorItems', () => {
+	it('searches names and categories', () => {
+		expect(searchDecorItems('table')).toEqual([
+			{ itemID: 101, recordID: null, name: 'Compact Table', icon: '654321', category: '' }
+		]);
+		expect(searchDecorItems('seating')).toEqual([
+			{ itemID: 100, recordID: 200, name: 'Catalog Chair', icon: '123456', category: 'Seating' }
+		]);
+	});
 });
 
 describe('createBuild and listBuilds', () => {
@@ -142,5 +167,52 @@ describe('createBuild and listBuilds', () => {
 			authorName: 'Builder',
 			manifest: compactManifest
 		});
+	});
+
+	it('filters by manifest itemID before applying pagination', () => {
+		createBuild({
+			shareCode: 'item-match',
+			title: 'Item Filter Match',
+			blueprintType: 'House',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'item-match', contentGroups: [{ contentType: 3, entries: [{ itemID: 701 }] }] }
+		});
+		createBuild({
+			shareCode: 'item-miss',
+			title: 'Item Filter Miss',
+			blueprintType: 'House',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'item-miss', contentGroups: [{ contentType: 3, entries: [{ itemID: 702 }] }] }
+		});
+
+		const listed = listBuilds({ q: 'Item Filter', itemIDs: [701], limit: 1 });
+		expect(listed.map((build) => build.title)).toEqual(['Item Filter Match']);
+	});
+
+	it('sorts by distinct decor item count', () => {
+		createBuild({
+			shareCode: 'sort-sparse',
+			title: 'Sort Spec Sparse',
+			blueprintType: 'House',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'sort-sparse', contentGroups: [{ contentType: 3, entries: [{ itemID: 801 }] }] }
+		});
+		createBuild({
+			shareCode: 'sort-rich',
+			title: 'Sort Spec Rich',
+			blueprintType: 'House',
+			faction: null,
+			manifest: {
+				...compactManifest,
+				shareCode: 'sort-rich',
+				contentGroups: [
+					{ contentType: 3, entries: [{ itemID: 802 }, { itemID: 803 }, { itemID: 802 }] },
+					{ contentType: 2, entries: [{ itemID: 804 }] }
+				]
+			}
+		});
+
+		const listed = listBuilds({ q: 'Sort Spec', sort: 'most_items' });
+		expect(listed.map((build) => build.title)).toEqual(['Sort Spec Rich', 'Sort Spec Sparse']);
 	});
 });
