@@ -8,7 +8,7 @@ const testDatabase = vi.hoisted(() => ({
 }));
 
 vi.mock('$app/environment', () => ({ building: true }));
-vi.mock('$env/static/private', () => ({ DATABASE_URL: testDatabase.path }));
+vi.mock('$env/dynamic/private', () => ({ env: { DATABASE_URL: testDatabase.path } }));
 
 import { buildSummary, createBuild, enrichItems, listBuilds } from './builds';
 
