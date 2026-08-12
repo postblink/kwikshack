@@ -1,0 +1,15 @@
+# Docker build context — keep it lean
+.git
+addon
+probes
+scripts
+docs
+Dockerfile
+deploy
+web/node_modules
+web/build
+web/.svelte-kit
+web/data
+web/static/uploads
+*.db
+*.log
