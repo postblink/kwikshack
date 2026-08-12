@@ -1,0 +1,7 @@
+## Interface: 120100
+## Title: BlueprintEventShower
+## Notes: Dumps all housing events during a blueprint import (spatial probe v2)
+## Version: 0.1
+## SavedVariables: BlueprintEventShowerDB
+
+BlueprintEventShower.lua
