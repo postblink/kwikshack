@@ -10,6 +10,46 @@
 	let errorMsg = $state('');
 	let screenshots = $state<string[]>([]);
 	let uploadCount = $state(0);
+	const MAX_IMAGE_EDGE = 1920;
+	const JPEG_QUALITY = 0.85;
+
+	async function resizeImageForUpload(file: File): Promise<File> {
+		if (!file.type.startsWith('image/')) return file;
+
+		const objectUrl = URL.createObjectURL(file);
+		try {
+			const image = new Image();
+			image.decoding = 'async';
+			image.src = objectUrl;
+			await image.decode();
+
+			const longestEdge = Math.max(image.naturalWidth, image.naturalHeight);
+			if (longestEdge <= MAX_IMAGE_EDGE) return file;
+
+			const scale = MAX_IMAGE_EDGE / longestEdge;
+			const canvas = document.createElement('canvas');
+			canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+			canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+			const context = canvas.getContext('2d');
+			if (!context) throw new Error('Could not prepare image for upload');
+
+			context.fillStyle = '#14110d';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+			const blob = await new Promise<Blob>((resolve, reject) => {
+				canvas.toBlob(
+					(result) => result ? resolve(result) : reject(new Error('Could not resize image')),
+					'image/jpeg',
+					JPEG_QUALITY
+				);
+			});
+			const baseName = file.name.replace(/\.[^/.]+$/, '') || 'screenshot';
+			return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: file.lastModified });
+		} finally {
+			URL.revokeObjectURL(objectUrl);
+		}
+	}
 
 	async function uploadImage(file: File) {
 		const form = new FormData();
@@ -27,7 +67,8 @@
 		errorMsg = '';
 		for (const file of files) {
 			try {
-				const url = await uploadImage(file);
+				const uploadFile = await resizeImageForUpload(file);
+				const url = await uploadImage(uploadFile);
 				screenshots = [...screenshots, url];
 				uploadCount++;
 			} catch (err) {
