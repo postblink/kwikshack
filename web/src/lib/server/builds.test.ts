@@ -195,6 +195,21 @@ describe('buildTags and listTags', () => {
 		expect(counts.get('small')).toBe(1);
 		expect(counts.get('rustic')).toBeUndefined();
 	});
+	it('populates tags on listBuilds records (not just listTags)', () => {
+		createBuild({
+			shareCode: 'tags-on-record',
+			title: 'Tags On Record',
+			blueprintType: 'House',
+			faction: null,
+			manifest: {
+				...compactManifest,
+				shareCode: 'tags-on-record',
+				contentGroups: [{ contentType: 3, entries: [{ itemID: 100 }] }]
+			}
+		});
+		const record = listBuilds({ tag: 'cozy' }).find((b) => b.shareCode === 'tags-on-record');
+		expect(record?.tags).toContain('cozy');
+	});
 });
 
 describe('createBuild and listBuilds', () => {

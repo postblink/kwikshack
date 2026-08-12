@@ -248,7 +248,8 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 	lastVerifiedAt: b.lastVerifiedAt,
 	createdAt: b.createdAt,
 	likeCount: 0,
-	liked: false
+	liked: false,
+	tags: buildTags(b.manifest as unknown as BuildManifest)
 };
 }
 

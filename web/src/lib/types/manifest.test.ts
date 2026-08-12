@@ -19,6 +19,8 @@ describe('isBuildManifest', () => {
 		'garbage',
 		{},
 		{ shareCode: '', contentGroups: [] },
+		{ shareCode: 'code', contentGroups: [] },
+		{ shareCode: 'code', contentGroups: [{ entries: [] }] },
 		{ shareCode: 'code', contentGroups: 'garbage' },
 		{ shareCode: 'code', contentGroups: [null] },
 		{ shareCode: 'code', contentGroups: [{ entries: ['garbage'] }] }
@@ -38,6 +40,7 @@ describe('isSubmitPayload', () => {
 		{},
 		{ shareCode: '', manifest },
 		{ shareCode: 'valid-code', manifest: null },
+		{ shareCode: 'valid-code', manifest: { shareCode: 'code', contentGroups: [] } },
 		{ shareCode: 'valid-code', manifest: { shareCode: 'code', contentGroups: [null] } }
 	])('rejects garbage: %j', (value) => {
 		expect(isSubmitPayload(value)).toBe(false);

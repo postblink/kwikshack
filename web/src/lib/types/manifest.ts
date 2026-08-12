@@ -91,11 +91,14 @@ export function isBuildManifest(v: unknown): v is BuildManifest {
 	if (typeof v !== 'object' || v === null) return false;
 	const m = v as Record<string, unknown>;
 	if (typeof m.shareCode !== 'string' || m.shareCode.length === 0) return false;
-	if (!Array.isArray(m.contentGroups)) return false;
+	if (!Array.isArray(m.contentGroups) || m.contentGroups.length === 0) return false;
 	return m.contentGroups.every((group) => {
 		if (typeof group !== 'object' || group === null) return false;
 		const entries = (group as Record<string, unknown>).entries;
 		return Array.isArray(entries) && entries.every((entry) => typeof entry === 'object' && entry !== null);
+	}) && m.contentGroups.some((group) => {
+		const entries = (group as Record<string, unknown>).entries;
+		return Array.isArray(entries) && entries.length > 0;
 	});
 }
 
