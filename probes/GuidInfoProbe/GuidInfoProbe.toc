@@ -1,0 +1,7 @@
+## Interface: 120100
+## Title: GuidInfoProbe
+## Notes: Dumps full C_HousingDecor.GetDecorInstanceInfoForGUID return (spatial probe v3)
+## Version: 0.1
+## SavedVariables: GuidInfoProbeDB
+
+GuidInfoProbe.lua

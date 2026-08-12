@@ -123,6 +123,35 @@ The live payload contains **no positions, rotations, or transforms**. Entries
 are recordID + name + total + contentType + numMissing + invalid. Blueprint
 codes cannot provide spatial previews. Manifest-first scope is locked.
 
+### Import-time event stream (BlueprintEventShower, 2026-08-11)
+
+A full import fired 12 events. Sequence observed:
+
+```
+HOUSING_BLUEPRINT_EXPORT_SUCCESS      arg1 = share code string (export returns the code!)
+PLAYER_HOUSE_LIST_UPDATED             arg1 = TABLE(empty)
+HOUSING_BLUEPRINT_COLLECTION_RECEIVED arg1 = TABLE(empty)  (x2)
+HOUSE_LEVEL_FAVOR_UPDATED             arg1 = {houseLevel, houseFavor, houseGUID="Opaque-1"}
+HOUSING_BLUEPRINT_CONTENTS_RECEIVED   arg1 = {shareCode, targetHouseGUID, flags}  (x3)
+HOUSING_DECOR_CUSTOMIZATION_CHANGED   arg1 = "Housing-1-<plot>-<decorID>-<hash>"  (x2, same GUID)
+```
+
+- Per-decor events carry ONLY the decor GUID string — no coordinates.
+- Import produced only 2 customization events (bulk apply, not per-item spam).
+- `HOUSING_BLUEPRINT_EXPORT_SUCCESS` delivers the share code directly — the
+  addon's export flow captures it from this event.
+- All event payloads are flat state tables or GUID strings. Event stream is a
+  dead end for spatial data.
+
+### Last untested surface — GetDecorInstanceInfoForGUID
+
+`C_HousingDecor.GetDecorInstanceInfoForGUID(guid)` is called on every decor
+GUID the client hands out. Housing Decor Guide only reads `decorID` + `name`
+from its return. The GuidInfoProbe (probes/GuidInfoProbe) dumps the COMPLETE
+return to find whether position/rotation/roomGUID/floor hide there. It also
+re-confirms the `GetAllPlacedDecor` policy gate. Test: place/move/remove a
+piece in the house editor, or do another import.
+
 ## Existing Tools (Competition)
 
 | Tool | Type | Code Import? | Automatic Data? | Notes |
