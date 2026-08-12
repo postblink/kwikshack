@@ -23,7 +23,7 @@ from pathlib import Path
 DEFAULT_CONFIG = {
     "api_url": "https://kwikshack.com/api/builds",
     "author_name": "Postblink-Agamaggan",
-    "submit_key": "c7d90bb651cb66c99b3dca3ecbd5f414fe8eee9825e97000",
+    "submit_key": "",   # set in your local watchdog_config.json (never committed)
     "poll_interval": 5,
     "manifest_file": str(Path.home() /
         "Faugus/battlenet/drive_c/Program Files (x86)/World of Warcraft/_retail_/WTF/Account/F4LSE/SavedVariables/KwikShack.lua"),
