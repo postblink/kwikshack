@@ -1,6 +1,6 @@
 import { db } from './db';
-import { builds, decorItems, screenshots, users } from './db/schema';
-import { asc, eq, inArray, like, and, isNull } from 'drizzle-orm';
+import { builds, decorItems, likes, screenshots, users } from './db/schema';
+import { asc, eq, inArray, like, and, isNull, count } from 'drizzle-orm';
 import type { BuildManifest, PlacementData } from '$lib/types/manifest';
 
 export interface BuildRecord {
@@ -16,13 +16,16 @@ export interface BuildRecord {
 	placementData: PlacementData | null;
 	lastVerifiedAt: Date | null;
 	createdAt: Date;
+	likeCount: number;
+	liked: boolean;
+	tags?: string[];
 }
 
 export interface FeaturedBuildRecord extends BuildRecord {
 	primaryScreenshot: string | null;
 }
 
-export type BuildSort = 'newest' | 'most_items';
+export type BuildSort = 'newest' | 'most_items' | 'most_liked';
 
 /** Create-or-get a user by display name (v0: no auth, name is a label). */
 function ensureUser(name: string): string | null {
@@ -139,15 +142,19 @@ export function listBuilds(
 		type?: string;
 		faction?: string;
 		q?: string;
+		author?: string;
+		tag?: string;
 		itemIDs?: number[];
 		sort?: BuildSort;
+		clientId?: string;
 	} = {}
 ): BuildRecord[] {
-	const { limit = 24, offset = 0, type, faction, q, itemIDs, sort = 'newest' } = opts;
+	const { limit = 24, offset = 0, type, faction, q, author, tag, itemIDs, sort = 'newest', clientId } = opts;
 	const where = [];
 	if (type) where.push(eq(builds.blueprintType, type));
 	if (faction) where.push(eq(builds.faction, faction));
 	if (q) where.push(like(builds.title, `%${q}%`));
+	if (author) where.push(eq(users.name, author));
 
 	const rows = db
 		.select({
@@ -159,13 +166,20 @@ export function listBuilds(
 		.where(where.length ? and(...where) : undefined)
 		.all();
 
-	let records = rows.map((r) => toBuildRecord(r.build, r.author));
+	let records = withLikeState(rows.map((r) => toBuildRecord(r.build, r.author)), clientId);
 	if (itemIDs?.length) {
 		const wanted = new Set(itemIDs);
 		records = records.filter((record) => manifestItemIDs(record.manifest).some((itemID) => wanted.has(itemID)));
 	}
+	if (tag && records.some((record) => Array.isArray(record.tags))) {
+		records = records.filter((record) => record.tags?.includes(tag));
+	}
 
 	records.sort((a, b) => {
+		if (sort === 'most_liked') {
+			const likeDifference = b.likeCount - a.likeCount;
+			if (likeDifference !== 0) return likeDifference;
+		}
 		if (sort === 'most_items') {
 			const countDifference = distinctDecorItemCount(b.manifest) - distinctDecorItemCount(a.manifest);
 			if (countDifference !== 0) return countDifference;
@@ -194,19 +208,19 @@ export function getFeaturedBuild(): FeaturedBuildRecord | null {
 		.get();
 
 	return {
-		...toBuildRecord(chosen.build, chosen.author),
+		...withLikeState([toBuildRecord(chosen.build, chosen.author)])[0],
 		primaryScreenshot: primaryScreenshot?.url ?? null
 	};
 }
 
-export function getBuild(id: string): BuildRecord | null {
+export function getBuild(id: string, clientId?: string): BuildRecord | null {
 	const row = db
 		.select({ build: builds, author: users.name })
 		.from(builds)
 		.leftJoin(users, eq(builds.authorId, users.id))
 		.where(eq(builds.id, id))
 		.get();
-	return row ? toBuildRecord(row.build, row.author) : null;
+	return row ? withLikeState([toBuildRecord(row.build, row.author)], clientId)[0] : null;
 }
 
 export function getBuildByCode(shareCode: string): BuildRecord | null {
@@ -216,7 +230,7 @@ export function getBuildByCode(shareCode: string): BuildRecord | null {
 		.leftJoin(users, eq(builds.authorId, users.id))
 		.where(eq(builds.shareCode, shareCode))
 		.get();
-	return row ? toBuildRecord(row.build, row.author) : null;
+	return row ? withLikeState([toBuildRecord(row.build, row.author)])[0] : null;
 }
 
 function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null): BuildRecord {
@@ -231,9 +245,72 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 		authorName,
 		manifest: b.manifest as unknown as BuildManifest,
 		placementData: b.placementData as unknown as PlacementData | null,
-		lastVerifiedAt: b.lastVerifiedAt,
-		createdAt: b.createdAt
-	};
+	lastVerifiedAt: b.lastVerifiedAt,
+	createdAt: b.createdAt,
+	likeCount: 0,
+	liked: false
+};
+}
+
+function withLikeState(records: BuildRecord[], clientId?: string): BuildRecord[] {
+	if (records.length === 0) return records;
+	const buildIds = records.map((record) => record.id);
+	const counts = new Map(
+		db
+			.select({ buildId: likes.buildId, value: count() })
+			.from(likes)
+			.where(inArray(likes.buildId, buildIds))
+			.groupBy(likes.buildId)
+			.all()
+			.map((row) => [row.buildId, row.value])
+	);
+	const likedBuildIds = clientId
+		? new Set(
+				db
+					.select({ buildId: likes.buildId })
+					.from(likes)
+					.where(and(inArray(likes.buildId, buildIds), eq(likes.clientId, clientId)))
+					.all()
+					.map((row) => row.buildId)
+			)
+		: new Set<string>();
+
+	return records.map((record) => ({
+		...record,
+		likeCount: counts.get(record.id) ?? 0,
+		liked: likedBuildIds.has(record.id)
+	}));
+}
+
+export function getBuildLikeState(buildId: string, clientId?: string): { likeCount: number; liked: boolean } {
+	const likeCount = db.select({ value: count() }).from(likes).where(eq(likes.buildId, buildId)).get()?.value ?? 0;
+	const liked = clientId
+		? Boolean(
+				db
+					.select({ buildId: likes.buildId })
+					.from(likes)
+					.where(and(eq(likes.buildId, buildId), eq(likes.clientId, clientId)))
+					.get()
+			)
+		: false;
+	return { likeCount, liked };
+}
+
+export function toggleBuildLike(buildId: string, clientId: string): { likeCount: number; liked: boolean } {
+	return db.transaction((tx) => {
+		const existing = tx
+			.select({ buildId: likes.buildId })
+			.from(likes)
+			.where(and(eq(likes.buildId, buildId), eq(likes.clientId, clientId)))
+			.get();
+		if (existing) {
+			tx.delete(likes).where(and(eq(likes.buildId, buildId), eq(likes.clientId, clientId))).run();
+		} else {
+			tx.insert(likes).values({ buildId, clientId }).run();
+		}
+		const likeCount = tx.select({ value: count() }).from(likes).where(eq(likes.buildId, buildId)).get()?.value ?? 0;
+		return { likeCount, liked: !existing };
+	});
 }
 
 /** Count decor items and structural entries (rooms/house/fixtures) in a manifest. */

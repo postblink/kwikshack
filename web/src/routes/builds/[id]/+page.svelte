@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import LikeButton from '$lib/components/LikeButton.svelte';
+	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
 
 	let { data } = $props<{ data: PageData }>();
@@ -15,6 +17,10 @@
 	}
 
 	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
+	const tags = $derived.by(() => {
+		const value = (b as { tags?: unknown }).tags;
+		return Array.isArray(value) ? value.filter((tag): tag is string => typeof tag === 'string') : [];
+	});
 
 	// Structural groups (house type / rooms / exterior fixtures) rendered
 	// separately from the decor grid.
@@ -40,10 +46,16 @@
 	<a class="back" href="/">← All builds</a>
 
 	<header>
-		<h1>{b.title}</h1>
-		<p class="meta">
-			{typeLabel} · {b.faction ?? 'Neutral'} · by {b.authorName ?? 'unknown'} · {b.codeStatus}
-		</p>
+		<div class="title-row">
+			<div>
+				<h1>{b.title}</h1>
+				<p class="meta">
+					{typeLabel} · {b.faction ?? 'Neutral'} · by {#if b.authorName}<a href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if} · {b.codeStatus}
+				</p>
+			</div>
+			<LikeButton buildId={b.id} initialCount={b.likeCount} initialLiked={b.liked} roomy />
+		</div>
+		{#if data.tagsAvailable}<TagChips {tags} />{/if}
 	</header>
 
 	<section class="code-box">
@@ -168,10 +180,25 @@
 		letter-spacing: -0.025em;
 		text-wrap: balance;
 	}
+	.title-row {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.title-row > div {
+		min-width: 0;
+	}
 	.meta {
 		margin: 0;
 		color: var(--text-muted);
 		font-size: 0.9rem;
+	}
+	.meta a {
+		color: var(--text-muted);
+	}
+	header :global(.tag-chips) {
+		margin-top: 0.9rem;
 	}
 	.code-box {
 		display: flex;
@@ -359,6 +386,10 @@
 		font-variant-numeric: tabular-nums;
 	}
 	@media (max-width: 560px) {
+		.title-row {
+			align-items: flex-start;
+			flex-direction: column;
+		}
 		.code-box :global(.gold-button) {
 			width: 100%;
 		}

@@ -6,8 +6,8 @@ import { eq } from 'drizzle-orm';
 import type { RequestHandler } from './$types';
 
 // GET /api/builds/:id — full build with enriched decor items + screenshots
-export const GET: RequestHandler = async ({ params }) => {
-	const record = getBuild(params.id);
+export const GET: RequestHandler = async ({ params, url }) => {
+	const record = getBuild(params.id, url.searchParams.get('clientId')?.trim() || undefined);
 	if (!record) error(404, 'Build not found');
 
 	return json({

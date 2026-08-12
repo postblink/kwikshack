@@ -69,7 +69,7 @@ export const POST: RequestHandler = async (event) => {
 	return json({ id: record.id, shareCode: record.shareCode });
 };
 
-// GET /api/builds?limit=&offset=&type=&faction=&q=&items=&sort=
+// GET /api/builds?limit=&offset=&type=&faction=&q=&author=&tag=&items=&sort=&clientId=
 export const GET: RequestHandler = async ({ url }) => {
 	const requestedLimit = Number(url.searchParams.get('limit') ?? '24');
 	const requestedOffset = Number(url.searchParams.get('offset') ?? '0');
@@ -78,6 +78,9 @@ export const GET: RequestHandler = async ({ url }) => {
 	const type = url.searchParams.get('type') ?? undefined;
 	const faction = url.searchParams.get('faction') ?? undefined;
 	const q = url.searchParams.get('q') ?? undefined;
+	const author = url.searchParams.get('author') ?? undefined;
+	const tag = url.searchParams.get('tag') ?? undefined;
+	const clientId = url.searchParams.get('clientId')?.trim() || undefined;
 	const itemIDs = [
 		...new Set(
 			(url.searchParams.get('items') ?? '')
@@ -87,9 +90,9 @@ export const GET: RequestHandler = async ({ url }) => {
 		)
 	];
 	const requestedSort = url.searchParams.get('sort');
-	const sort: BuildSort = requestedSort === 'most_items' ? 'most_items' : 'newest';
+	const sort: BuildSort = requestedSort === 'most_items' || requestedSort === 'most_liked' ? requestedSort : 'newest';
 
-	const records = listBuilds({ limit, offset, type, faction, q, itemIDs, sort });
+	const records = listBuilds({ limit, offset, type, faction, q, author, tag, itemIDs, sort, clientId });
 	return json({
 		builds: records.map((b) => ({
 			id: b.id,
@@ -99,9 +102,12 @@ export const GET: RequestHandler = async ({ url }) => {
 			faction: b.faction,
 			title: b.title,
 			authorName: b.authorName,
-			lastVerifiedAt: b.lastVerifiedAt,
-			createdAt: b.createdAt
-		})),
+		lastVerifiedAt: b.lastVerifiedAt,
+		createdAt: b.createdAt,
+		likeCount: b.likeCount,
+		liked: b.liked,
+		tags: b.tags ?? []
+	})),
 		limit,
 		offset,
 		sort
