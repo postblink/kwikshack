@@ -146,13 +146,15 @@ function BM:NormaliseManifest(raw)
             }
             if group.entries then
                 for _, entry in ipairs(group.entries) do
+                    local itemID, icon = self:ResolveItemID(entry.recordID)
                     table.insert(g.entries, {
                         recordID = entry.recordID,
                         name = entry.name,
                         total = entry.total,
                         invalid = entry.invalid,
                         numMissing = entry.numMissing,
-                        itemID = self:ResolveItemID(entry.recordID),  -- nil unless catalog lookup available
+                        itemID = itemID,       -- nil unless catalog lookup available
+                        icon = icon,           -- FileDataID or atlas name
                     })
                 end
             end
@@ -180,14 +182,23 @@ function BM:NormaliseManifest(raw)
     return m
 end
 
---- Resolve a decor catalog recordID to an itemID.
---- TODO: find the correct C_HousingCatalog lookup (decorID -> itemID) and
---- populate this. Until verified, returns nil and the site falls back to the
---- display name + recordID.
+--- Resolve a decor catalog recordID to an itemID (+ icon when available).
+--- Verified signature (from Housing Decor Guide source): catalog 1 is
+--- Blizzard's housing catalog; GetCatalogEntryInfoByRecordID returns the
+--- entry info incl. itemID and iconTexture. Defensive: returns nil on any
+--- failure — the site falls back to display name + recordID.
 ---@param recordID number
----@return number|nil
+---@return number|nil, string|nil  -- itemID, iconTexture (FileDataID or atlas)
 function BM:ResolveItemID(recordID)
-    return nil
+    if type(recordID) ~= "number" then return nil, nil end
+    local cat = _G.C_HousingCatalog
+    if not (cat and cat.GetCatalogEntryInfoByRecordID) then return nil, nil end
+    local ok, info = pcall(cat.GetCatalogEntryInfoByRecordID, 1, recordID)
+    if not ok or type(info) ~= "table" then return nil, nil end
+    local itemID = type(info.itemID) == "number" and info.itemID or nil
+    local icon = type(info.iconTexture) == "string" and info.iconTexture
+              or type(info.iconAtlas) == "string" and info.iconAtlas or nil
+    return itemID, icon
 end
 
 --- Fires when the server returns blueprint contents.
