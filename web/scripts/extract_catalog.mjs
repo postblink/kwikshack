@@ -12,14 +12,15 @@
  *   HDGR_CatalogOverrides.lua — itemID → source classification (optional)
  *
  * Output: scripts/seed/catalog.json
- *   [{ itemID, recordID (when known), name, category, expansion, source, icon (null) }]
+ *   [{ itemID, recordID (when known), name, category, expansion, source,
+ *      icon (null), tags (string[] style facets) }]
  */
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA = '/tmp/hdg/data';
+const DATA = '/tmp/ks-catalog/hdg/data';
 
 // ---------------------------------------------------------------------------
 // Lua helpers — enough for these generated data files.
@@ -101,6 +102,21 @@ function parseVocab(body) {
 	return out;
 }
 
+/**
+ * Resolve a facet field to readable vocab strings. Facet fields are either a
+ * single numeric id (`sz=2`) or a comma-separated id list from a small inline
+ * table (`mod={7,1}` → "7,1"). Returns the mapped vocab strings in id order,
+ * dropping unknown ids.
+ */
+function facetStrings(field, vocabMap) {
+	if (field === undefined || field === null || field === '') return [];
+	const ids = String(field)
+		.split(',')
+		.map((s) => parseInt(s.trim(), 10))
+		.filter((n) => Number.isFinite(n));
+	return ids.map((id) => vocabMap?.[id]).filter((s) => typeof s === 'string' && s.length > 0);
+}
+
 // ---------------------------------------------------------------------------
 // Vocab (FacetDB header)
 // ---------------------------------------------------------------------------
@@ -126,16 +142,32 @@ const ERA_NAMES = {
 // FacetDB — broad catalog, keyed by itemID
 // ---------------------------------------------------------------------------
 const catalog = new Map();
+// Per-facet coverage counters (items carrying at least one tag of each facet).
+const facetCoverage = { mood: 0, culture: 0, size: 0, inout: 0, palette: 0 };
 
 for (const { id, body, name } of iterEntries(facetSrc)) {
 	const f = parseFields(body);
+	// Style facets → readable tags: mood (mod), culture (cul), size (sz),
+	// indoor/outdoor (io), palette (pal).
+	const mood = facetStrings(f.mod, vocab.mood);
+	const culture = facetStrings(f.cul, vocab.culture);
+	const size = facetStrings(f.sz, vocab.size);
+	const inout = facetStrings(f.io, vocab.inout);
+	const palette = facetStrings(f.pal, vocab.palette);
+	if (mood.length) facetCoverage.mood++;
+	if (culture.length) facetCoverage.culture++;
+	if (size.length) facetCoverage.size++;
+	if (inout.length) facetCoverage.inout++;
+	if (palette.length) facetCoverage.palette++;
+	const tags = [...mood, ...culture, ...size, ...inout, ...palette];
 	catalog.set(id, {
 		itemID: id,
 		name,
 		category: vocab.category?.[f.cat] ?? null,
 		expansion: ERA_NAMES[f.era] ?? null,
 		source: null,
-		icon: null
+		icon: null,
+		tags
 	});
 }
 
@@ -150,7 +182,7 @@ for (const { id, body, name } of iterEntries(decorSrc)) {
 	if (!itemID) continue;
 	if (f.decorID) recordIDs.set(itemID, f.decorID);
 	const existing = catalog.get(itemID) ?? {
-		itemID, name, category: null, expansion: null, source: null, icon: null
+		itemID, name, category: null, expansion: null, source: null, icon: null, tags: []
 	};
 	if (f.decorID) existing.recordID = f.decorID;
 	if (!existing.name && name) existing.name = name;
@@ -196,6 +228,9 @@ const withName = rows.filter((r) => r.name).length;
 const withCat = rows.filter((r) => r.category).length;
 const withExp = rows.filter((r) => r.expansion).length;
 const crafted = rows.filter((r) => r.source).length;
+const withTags = rows.filter((r) => Array.isArray(r.tags) && r.tags.length > 0).length;
 console.log(`names: ${withName} | categories: ${withCat} | expansion: ${withExp} | crafted: ${crafted} | recordIDs: ${recordIDs.size}`);
+console.log(`tags: ${withTags} items have >=1 style facet tag`);
+console.log(`facet coverage → mood: ${facetCoverage.mood} | culture: ${facetCoverage.culture} | size: ${facetCoverage.size} | inout: ${facetCoverage.inout} | palette: ${facetCoverage.palette}`);
 console.log('Samples:');
-for (const r of rows.slice(0, 4)) console.log(' ', r.itemID, '|', r.name, '|', r.category, '|', r.expansion, '|', r.source);
+for (const r of rows.slice(0, 4)) console.log(' ', r.itemID, '|', r.name, '|', r.category, '|', r.expansion, '|', r.source, '|', JSON.stringify(r.tags));

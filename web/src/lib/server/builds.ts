@@ -254,6 +254,65 @@ export function distinctDecorItemCount(manifest: BuildManifest): number {
 	return seen.size;
 }
 
+export interface TagCount {
+	tag: string;
+	count: number;
+}
+
+/**
+ * Derive style/facet tags for a build: the union of catalog `tags` across the
+ * build's decor items, deduped and ordered by frequency (ties broken
+ * alphabetically). Capped at `maxTags` so an item-heavy build doesn't carry a
+ * wall of noise — the top-N tags by frequency win.
+ */
+export function buildTags(manifest: BuildManifest, maxTags = 30): string[] {
+	const itemIDs = new Set<number>();
+	const recordIDs = new Set<number>();
+	for (const group of manifest.contentGroups ?? []) {
+		const contentType = group.contentType ?? group.groupType;
+		if (contentType !== 3) continue;
+		for (const entry of group.entries ?? []) {
+			if (typeof entry.itemID === 'number') itemIDs.add(entry.itemID);
+			else if (typeof entry.recordID === 'number') recordIDs.add(entry.recordID);
+		}
+	}
+
+	const rows = [
+		...(itemIDs.size
+			? db.select().from(decorItems).where(inArray(decorItems.itemID, [...itemIDs])).all()
+			: []),
+		...(recordIDs.size
+			? db.select().from(decorItems).where(inArray(decorItems.recordID, [...recordIDs])).all()
+			: [])
+	];
+
+	const freq = new Map<string, number>();
+	for (const row of rows) {
+		for (const tag of row.tags ?? []) freq.set(tag, (freq.get(tag) ?? 0) + 1);
+	}
+	return [...freq.entries()]
+		.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+		.slice(0, maxTags)
+		.map(([tag]) => tag);
+}
+
+/**
+ * Distinct tags with usage counts across all stored builds (for GET /api/tags).
+ * A tag's count is the number of builds whose decor items carry it.
+ */
+export function listTags(): TagCount[] {
+	const manifestRows = db.select({ manifest: builds.manifest }).from(builds).all();
+	const counts = new Map<string, number>();
+	for (const row of manifestRows) {
+		for (const tag of buildTags(row.manifest as unknown as BuildManifest)) {
+			counts.set(tag, (counts.get(tag) ?? 0) + 1);
+		}
+	}
+	return [...counts.entries()]
+		.map(([tag, count]) => ({ tag, count }))
+		.sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
 export interface EnrichedItem {
 	// recordID (decor catalog ID) or itemID — whichever the payload carried
 	key: number;

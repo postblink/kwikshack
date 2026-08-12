@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
 // =============================================================================
 // KwikShack data model — v0
@@ -97,6 +98,9 @@ export const decorItems = sqliteTable(
 		category: text('category').default(''),
 		source: text('source').default(''),
 		expansion: text('expansion').default(''),
+		// Style/facet tags derived from HDGR_FacetDB (mood, culture, size,
+		// inout, palette) — JSON array of lowercase facet strings.
+		tags: text('tags', { mode: 'json' }).$type<string[]>().notNull().default(sql`'[]'`),
 		updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
 	},
 	(t) => [index('decor_items_record_id_idx').on(t.recordID)]

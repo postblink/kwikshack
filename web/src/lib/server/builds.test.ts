@@ -10,7 +10,7 @@ const testDatabase = vi.hoisted(() => ({
 vi.mock('$app/environment', () => ({ building: true }));
 vi.mock('$env/dynamic/private', () => ({ env: { DATABASE_URL: testDatabase.path } }));
 
-import { buildSummary, createBuild, distinctDecorItemCount, enrichItems, listBuilds } from './builds';
+import { buildSummary, buildTags, createBuild, distinctDecorItemCount, enrichItems, listBuilds, listTags } from './builds';
 import { searchDecorItems } from './decor';
 
 const compactManifest: BuildManifest = {
@@ -60,6 +60,7 @@ beforeAll(() => {
 			category TEXT DEFAULT '',
 			source TEXT DEFAULT '',
 			expansion TEXT DEFAULT '',
+			tags TEXT NOT NULL DEFAULT '[]',
 			updated_at INTEGER NOT NULL
 		);
 		CREATE INDEX decor_items_record_id_idx ON decor_items (record_id);
@@ -70,6 +71,8 @@ beforeAll(() => {
 	insert.run(100, 200, 'Catalog Chair', '123456', 1);
 	insert.run(101, null, 'Compact Table', '654321', 1);
 	sqlite.prepare("UPDATE decor_items SET category = 'Seating' WHERE item_id = 100").run();
+	sqlite.prepare('UPDATE decor_items SET tags = ? WHERE item_id = 100').run(JSON.stringify(['cozy', 'human', 'small']));
+	sqlite.prepare('UPDATE decor_items SET tags = ? WHERE item_id = 101').run(JSON.stringify(['rustic', 'cozy']));
 	sqlite.close();
 });
 
@@ -140,6 +143,38 @@ describe('searchDecorItems', () => {
 		expect(searchDecorItems('seating')).toEqual([
 			{ itemID: 100, recordID: 200, name: 'Catalog Chair', icon: '123456', category: 'Seating' }
 		]);
+	});
+});
+
+describe('buildTags and listTags', () => {
+	it('unions deduped catalog tags across a build decor items, most frequent first', () => {
+		const manifest: BuildManifest = {
+			...compactManifest,
+			contentGroups: [
+				{ contentType: 3, entries: [{ itemID: 100 }, { itemID: 101 }] },
+				{ contentType: 2, entries: [{ itemID: 999 }] } // structural, ignored
+			]
+		};
+		expect(buildTags(manifest)).toEqual(['cozy', 'human', 'rustic', 'small']);
+	});
+
+	it('lists distinct tags with usage counts across builds', () => {
+		createBuild({
+			shareCode: 'tagged-code',
+			title: 'Tagged Build',
+			blueprintType: 'House',
+			faction: null,
+			manifest: {
+				...compactManifest,
+				shareCode: 'tagged-code',
+				contentGroups: [{ contentType: 3, entries: [{ itemID: 100 }] }]
+			}
+		});
+		const counts = new Map(listTags().map((t) => [t.tag, t.count]));
+		expect(counts.get('cozy')).toBe(1);
+		expect(counts.get('human')).toBe(1);
+		expect(counts.get('small')).toBe(1);
+		expect(counts.get('rustic')).toBeUndefined();
 	});
 });
 
