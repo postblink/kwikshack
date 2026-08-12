@@ -1,11 +1,20 @@
 import { json, error } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import { isSubmitPayload } from '$lib/types/manifest';
 import { createBuild, listBuilds } from '$lib/server/builds';
 import type { RequestHandler } from './$types';
 
 // POST /api/builds — submit a build (manifest + optional placement data)
 // Body: SubmitBuildPayload — see $lib/types/manifest.ts
+// Auth: if KWIKSHACK_SUBMIT_KEY is set (production), require
+// `x-kwikshack-key` header to match. Unset = open (local dev).
 export const POST: RequestHandler = async ({ request }) => {
+	const submitKey = env.KWIKSHACK_SUBMIT_KEY;
+	if (submitKey) {
+		const got = request.headers.get('x-kwikshack-key');
+		if (got !== submitKey) error(401, 'Invalid submit key');
+	}
+
 	let body: unknown;
 	try {
 		body = await request.json();

@@ -63,6 +63,9 @@
 					<p class="meta">
 						{b.faction ?? 'Neutral'} · by {b.authorName ?? 'unknown'}
 					</p>
+					<p class="meta">
+						{b.summary.decorCount} decor · {b.summary.roomCount} rooms
+					</p>
 				</a>
 			{/each}
 		</div>

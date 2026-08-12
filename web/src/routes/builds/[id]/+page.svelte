@@ -15,6 +15,21 @@
 	}
 
 	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
+
+	// Structural groups (house type / rooms / exterior fixtures) rendered
+	// separately from the decor grid.
+	const structure = $derived.by(() => {
+		const out: { name: string; total: number }[] = [];
+		for (const group of b.manifest.contentGroups ?? []) {
+			const ct = group.contentType ?? group.groupType;
+			if (ct === 1 || ct === 2 || ct === 5) {
+				for (const e of group.entries ?? []) {
+					out.push({ name: String(e.name ?? `Type ${ct}`), total: Number(e.total ?? 1) });
+				}
+			}
+		}
+		return out;
+	});
 </script>
 
 <svelte:head>
@@ -79,6 +94,17 @@
 				{#if !b.manifest.blockingRequirements.missingRooms && !b.manifest.blockingRequirements.missingBudgets && !b.manifest.blockingRequirements.factionMismatch}
 					<li class="good">Importable</li>
 				{/if}
+			</ul>
+		</section>
+	{/if}
+
+	{#if structure.length > 0}
+		<section>
+			<h2>Structure</h2>
+			<ul class="structure">
+				{#each structure as s (s.name + s.total)}
+					<li>{s.name} ×{s.total}</li>
+				{/each}
 			</ul>
 		</section>
 	{/if}
@@ -231,6 +257,22 @@
 	.reqs .good {
 		background: #1a3a22;
 		color: #7ad48f;
+	}
+	.structure {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.structure li {
+		background: #1f232b;
+		border: 1px solid #2f3540;
+		border-radius: 6px;
+		padding: 0.35rem 0.7rem;
+		font-size: 0.85rem;
+		color: #cfd3dc;
 	}
 	.items {
 		display: grid;

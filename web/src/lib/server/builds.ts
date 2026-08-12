@@ -129,6 +129,19 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 	};
 }
 
+/** Count decor items and structural entries (rooms/house/fixtures) in a manifest. */
+export function buildSummary(manifest: BuildManifest): { decorCount: number; roomCount: number } {
+	let decorCount = 0;
+	let roomCount = 0;
+	for (const group of manifest.contentGroups ?? []) {
+		const ct = group.contentType ?? group.groupType;
+		const n = group.entries?.length ?? 0;
+		if (ct === 3) decorCount += n;
+		else if (ct === 2) roomCount += n;
+	}
+	return { decorCount, roomCount };
+}
+
 /** Collect every distinct decor itemID used in a manifest's content groups. */
 export function manifestItemIDs(manifest: BuildManifest): number[] {
 	const seen = new Set<number>();

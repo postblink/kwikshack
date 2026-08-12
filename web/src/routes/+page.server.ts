@@ -1,4 +1,4 @@
-import { listBuilds } from '$lib/server/builds';
+import { listBuilds, buildSummary } from '$lib/server/builds';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {
@@ -7,6 +7,6 @@ export const load: PageServerLoad = async ({ url }) => {
 		type: url.searchParams.get('type') ?? undefined,
 		faction: url.searchParams.get('faction') ?? undefined,
 		q: url.searchParams.get('q') ?? undefined
-	});
+	}).map((b) => ({ ...b, summary: buildSummary(b.manifest) }));
 	return { builds };
 };

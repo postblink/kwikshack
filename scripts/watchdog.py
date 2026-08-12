@@ -13,6 +13,7 @@ from pathlib import Path
 DEFAULT_CONFIG = {
     "api_url": "http://localhost:5173/api/builds",
     "author_name": "Postblink-Agamaggan",
+    "submit_key": "",   # set to match KWIKSHACK_SUBMIT_KEY once deployed publicly
     "poll_interval": 5,
     "manifest_file": str(Path.home() /
         "Faugus/battlenet/drive_c/Program Files (x86)/World of Warcraft/_retail_/WTF/Account/F4LSE/SavedVariables/KwikShack.lua"),
@@ -119,8 +120,10 @@ def main():
                     continue
                 payload = build_payload(shareCode, items, cfg["author_name"])
                 data = json.dumps(payload).encode()
-                req = urllib.request.Request(cfg["api_url"], data=data,
-                    headers={"Content-Type": "application/json"}, method="POST")
+                headers = {"Content-Type": "application/json"}
+                if cfg.get("submit_key"):
+                    headers["x-kwikshack-key"] = cfg["submit_key"]
+                req = urllib.request.Request(cfg["api_url"], data=data, headers=headers, method="POST")
                 with urllib.request.urlopen(req, timeout=10) as resp:
                     resp_data = json.loads(resp.read())
                 print(f"[kwikshack-watchdog] submitted {shareCode} -> {resp_data.get('id', '?')} ({len(items)} items)")
