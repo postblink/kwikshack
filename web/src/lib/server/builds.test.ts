@@ -10,7 +10,15 @@ const testDatabase = vi.hoisted(() => ({
 vi.mock('$app/environment', () => ({ building: true }));
 vi.mock('$env/dynamic/private', () => ({ env: { DATABASE_URL: testDatabase.path } }));
 
-import { buildSummary, createBuild, distinctDecorItemCount, enrichItems, listBuilds } from './builds';
+import {
+	buildSummary,
+	createBuild,
+	distinctDecorItemCount,
+	enrichItems,
+	getBuildLikeState,
+	listBuilds,
+	toggleBuildLike
+} from './builds';
 import { searchDecorItems } from './decor';
 
 const compactManifest: BuildManifest = {
@@ -52,6 +60,13 @@ beforeAll(() => {
 			is_primary INTEGER DEFAULT 0 NOT NULL,
 			sort_order INTEGER DEFAULT 0 NOT NULL
 		);
+		CREATE TABLE likes (
+			build_id TEXT NOT NULL REFERENCES builds(id) ON DELETE CASCADE,
+			client_id TEXT NOT NULL,
+			created_at INTEGER NOT NULL,
+			PRIMARY KEY (build_id, client_id)
+		);
+		CREATE INDEX likes_build_idx ON likes (build_id);
 		CREATE TABLE decor_items (
 			item_id INTEGER PRIMARY KEY NOT NULL,
 			record_id INTEGER,
@@ -214,5 +229,24 @@ describe('createBuild and listBuilds', () => {
 
 		const listed = listBuilds({ q: 'Sort Spec', sort: 'most_items' });
 		expect(listed.map((build) => build.title)).toEqual(['Sort Spec Rich', 'Sort Spec Sparse']);
+	});
+
+	it('filters by exact author name', () => {
+		const listed = listBuilds({ author: 'Builder' });
+		expect(listed.map((build) => build.title)).toContain('Compact Build');
+		expect(listed.every((build) => build.authorName === 'Builder')).toBe(true);
+		expect(listBuilds({ author: 'builder' })).toEqual([]);
+	});
+
+	it('toggles one like per client and sorts by like count', () => {
+		const [target] = listBuilds({ q: 'Sort Spec Sparse' });
+		expect(getBuildLikeState(target.id, 'client-one')).toEqual({ likeCount: 0, liked: false });
+		expect(toggleBuildLike(target.id, 'client-one')).toEqual({ likeCount: 1, liked: true });
+		expect(getBuildLikeState(target.id, 'client-one')).toEqual({ likeCount: 1, liked: true });
+		expect(toggleBuildLike(target.id, 'client-two')).toEqual({ likeCount: 2, liked: true });
+
+		const sorted = listBuilds({ q: 'Sort Spec', sort: 'most_liked', clientId: 'client-one' });
+		expect(sorted[0]).toMatchObject({ id: target.id, likeCount: 2, liked: true });
+		expect(toggleBuildLike(target.id, 'client-one')).toEqual({ likeCount: 1, liked: false });
 	});
 });

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, index, primaryKey } from 'drizzle-orm/sqlite-core';
 
 // =============================================================================
 // KwikShack data model — v0
@@ -45,6 +45,18 @@ export const builds = sqliteTable(
 		index('builds_type_idx').on(t.blueprintType),
 		index('builds_faction_idx').on(t.faction)
 	]
+);
+
+export const likes = sqliteTable(
+	'likes',
+	{
+		buildId: text('build_id')
+			.notNull()
+			.references(() => builds.id, { onDelete: 'cascade' }),
+		clientId: text('client_id').notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date())
+	},
+	(t) => [primaryKey({ columns: [t.buildId, t.clientId] }), index('likes_build_idx').on(t.buildId)]
 );
 
 export const tags = sqliteTable(

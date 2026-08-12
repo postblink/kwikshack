@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import LikeButton from '$lib/components/LikeButton.svelte';
+	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
 	import { untrack } from 'svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 	type DecorOption = PageData['selectedItems'][number];
-	type Sort = 'newest' | 'most_items';
+	type Sort = 'newest' | 'most_items' | 'most_liked';
 
 	const typeLabels: Record<string, string> = { '1': 'Room', '2': 'Interior', '3': 'House', '4': 'Exterior' };
 	let q = $state(untrack(() => data.filters.q));
 	let type = $state(untrack(() => data.filters.type));
 	let faction = $state(untrack(() => data.filters.faction));
+	let author = $state(untrack(() => data.filters.author));
+	let tag = $state(untrack(() => data.filters.tag));
 	let sort = $state<Sort>(untrack(() => data.filters.sort));
 	let selectedItems = $state<DecorOption[]>(untrack(() => data.selectedItems));
 	let itemQuery = $state('');
@@ -26,6 +30,8 @@
 		q = data.filters.q;
 		type = data.filters.type;
 		faction = data.filters.faction;
+		author = data.filters.author;
+		tag = data.filters.tag;
 		sort = data.filters.sort;
 		selectedItems = data.selectedItems;
 	});
@@ -60,19 +66,37 @@
 		return () => clearTimeout(timeout);
 	});
 
-	function filterHref() {
+	function filterHref(authorFilter = author, tagFilter = tag) {
 		const p = new URLSearchParams();
 		if (q.trim()) p.set('q', q.trim());
 		if (type) p.set('type', type);
 		if (faction) p.set('faction', faction);
+		if (authorFilter) p.set('author', authorFilter);
+		if (tagFilter) p.set('tag', tagFilter);
 		if (selectedItems.length) p.set('items', selectedItems.map((item) => item.itemID).join(','));
 		if (sort !== 'newest') p.set('sort', sort);
 		const s = p.toString();
 		return s ? `/?${s}` : '/';
 	}
 
+	function tagsFor(build: unknown): string[] {
+		if (!build || typeof build !== 'object') return [];
+		const tags = (build as { tags?: unknown }).tags;
+		return Array.isArray(tags) ? tags.filter((value): value is string => typeof value === 'string') : [];
+	}
+
 	function applyFilters() {
 		void goto(filterHref(), { keepFocus: true, noScroll: true });
+	}
+
+	function clearAuthor() {
+		author = '';
+		applyFilters();
+	}
+
+	function clearTag() {
+		tag = '';
+		applyFilters();
 	}
 
 	function selectItem(item: DecorOption) {
@@ -156,6 +180,8 @@
 	</div>
 
 	<form action="/" method="get" class="filters" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
+		<input type="hidden" name="author" value={author} />
+		<input type="hidden" name="tag" value={tag} />
 		<div class="filter-controls">
 			<input type="search" name="q" placeholder="Search builds…" aria-label="Search builds" bind:value={q} />
 			<select name="type" aria-label="Filter by build type" bind:value={type}>
@@ -181,6 +207,7 @@
 			>
 				<option value="newest">Newest</option>
 				<option value="most_items">Most items</option>
+				<option value="most_liked">Most liked</option>
 			</select>
 			<button type="submit">Filter</button>
 			<a class="submit-link" href="/submit">+ Submit a build</a>
@@ -254,6 +281,28 @@
 				</div>
 			{/if}
 		</div>
+
+		{#if author || (tag && data.availableTags.length)}
+			<div class="active-filters" aria-label="Active filters">
+				{#if author}
+					<span>by <strong>{author}</strong><button type="button" aria-label={`Clear author filter ${author}`} onclick={clearAuthor}>×</button></span>
+				{/if}
+				{#if tag && data.availableTags.length}
+					<span>tagged <strong>#{tag}</strong><button type="button" aria-label={`Clear tag filter ${tag}`} onclick={clearTag}>×</button></span>
+				{/if}
+			</div>
+		{/if}
+
+		{#if data.availableTags.length}
+			<nav class="tag-browser" aria-label="Browse build tags">
+				<span>Browse by style</span>
+				{#each data.availableTags.slice(0, 16) as availableTag (availableTag.name)}
+					<a class:active={tag === availableTag.name} href={filterHref(author, availableTag.name)}>
+						#{availableTag.name}{#if availableTag.count > 0}<small>{availableTag.count}</small>{/if}
+					</a>
+				{/each}
+			</nav>
+		{/if}
 	</form>
 
 	{#if data.featuredBuild}
@@ -262,21 +311,25 @@
 				<h2 id="featured-title">Featured Build</h2>
 				<span>From the community</span>
 			</div>
-			<a class="featured-card" href={`/builds/${data.featuredBuild.id}`}>
+			<article class="featured-card">
 				{#if data.featuredBuild.primaryScreenshot}
 					<img class="featured-image" src={data.featuredBuild.primaryScreenshot} alt="" />
 				{/if}
 				<div class="featured-content">
 					<span class="featured-type">{typeLabels[data.featuredBuild.blueprintType] ?? data.featuredBuild.blueprintType}</span>
-					<h3>{data.featuredBuild.title}</h3>
+					<h3><a href={`/builds/${data.featuredBuild.id}`}>{data.featuredBuild.title}</a></h3>
 					<p class="featured-code">{data.featuredBuild.shareCode}</p>
-					<p class="featured-author">by {data.featuredBuild.authorName ?? 'unknown'}</p>
+					<p class="featured-author">by {#if data.featuredBuild.authorName}<a href={`/?author=${encodeURIComponent(data.featuredBuild.authorName)}`}>{data.featuredBuild.authorName}</a>{:else}unknown{/if}</p>
+					{#if data.availableTags.length}
+						<TagChips tags={tagsFor(data.featuredBuild)} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
+					{/if}
 					<div class="featured-counts">
 						<span><strong>{data.featuredBuild.summary.decorCount}</strong> decor</span>
 						<span><strong>{data.featuredBuild.summary.roomCount}</strong> rooms</span>
+						<LikeButton buildId={data.featuredBuild.id} initialCount={data.featuredBuild.likeCount} initialLiked={data.featuredBuild.liked} />
 					</div>
 				</div>
-			</a>
+			</article>
 		</section>
 	{/if}
 
@@ -288,20 +341,27 @@
 	{:else}
 		<div class="grid">
 			{#each data.builds as b (b.id)}
-				<a class="card" href={`/builds/${b.id}`}>
+				<article class="card">
 					<div class="card-head">
 						<span class="type">{typeLabels[b.blueprintType] ?? b.blueprintType}</span>
 						<span class="status {b.codeStatus}">{b.codeStatus}</span>
 					</div>
-					<h2>{b.title}</h2>
+					<h2><a href={`/builds/${b.id}`}>{b.title}</a></h2>
 					<p class="code">{b.shareCode}</p>
 					<p class="meta">
-						{b.faction ?? 'Neutral'} · by {b.authorName ?? 'unknown'}
+						{b.faction ?? 'Neutral'} · by {#if b.authorName}<a class="author-link" href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
 					</p>
 					<p class="meta">
 						{b.summary.decorCount} decor · {b.summary.roomCount} rooms
 					</p>
-				</a>
+					{#if data.availableTags.length}
+						<TagChips tags={tagsFor(b)} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
+					{/if}
+					<div class="card-actions">
+						<a href={`/builds/${b.id}`}>View build <span aria-hidden="true">→</span></a>
+						<LikeButton buildId={b.id} initialCount={b.likeCount} initialLiked={b.liked} />
+					</div>
+				</article>
 			{/each}
 		</div>
 	{/if}
@@ -522,6 +582,87 @@
 		border-radius: 0.52rem;
 		background: rgb(29 25 20 / 0.62);
 	}
+	.active-filters {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-top: 0.75rem;
+	}
+	.active-filters > span {
+		display: inline-flex;
+		min-height: 2.75rem;
+		align-items: center;
+		gap: 0.3rem;
+		padding-left: 0.75rem;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 48%, var(--border));
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--gold-dim) 9%, var(--surface));
+		color: var(--text-muted);
+		font-size: 0.78rem;
+	}
+	.active-filters strong {
+		color: var(--gold-bright);
+	}
+	.active-filters button {
+		width: 2.75rem;
+		align-self: stretch;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		color: var(--text-muted);
+		font-size: 1rem;
+	}
+	.active-filters button:hover {
+		color: var(--text);
+	}
+	.tag-browser {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		flex-wrap: wrap;
+		margin-top: 0.75rem;
+		padding: 0.7rem 0.8rem;
+		border: 1px solid var(--border);
+		border-radius: 0.52rem;
+		background: rgb(29 25 20 / 0.45);
+	}
+	.tag-browser > span {
+		margin-right: 0.2rem;
+		color: var(--gold-dim);
+		font-family: var(--font-display);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.tag-browser a {
+		display: inline-flex;
+		min-height: 2.75rem;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.3rem 0.65rem;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 42%, var(--border));
+		border-radius: 0.32rem;
+		background: color-mix(in srgb, var(--gold-dim) 8%, var(--surface));
+		color: var(--gold-dim);
+		font-family: var(--font-display);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-decoration: none;
+		text-transform: lowercase;
+	}
+	.tag-browser a.active {
+		border-color: var(--gold);
+		background: color-mix(in srgb, var(--gold) 17%, var(--surface));
+		color: var(--gold-bright);
+	}
+	.tag-browser small {
+		color: var(--text-muted);
+		font-family: inherit;
+		font-size: 0.62rem;
+		font-variant-numeric: tabular-nums;
+	}
 	.item-autocomplete {
 		position: relative;
 		flex: 1 1 22rem;
@@ -738,6 +879,10 @@
 		line-height: 1.08;
 		text-wrap: balance;
 	}
+	.featured-content h3 a {
+		color: inherit;
+		text-decoration: none;
+	}
 	.featured-code {
 		margin: 0.65rem 0 0;
 		color: var(--gold-bright);
@@ -748,6 +893,12 @@
 		margin: 0.35rem 0 0;
 		color: var(--text-muted);
 		font-size: 0.88rem;
+	}
+	.featured-author a {
+		color: var(--text-muted);
+	}
+	.featured-content :global(.tag-chips) {
+		margin-top: 0.9rem;
 	}
 	.featured-counts {
 		display: flex;
@@ -800,7 +951,9 @@
 	}
 	.card {
 		position: relative;
-		overflow: hidden;
+		display: flex;
+		min-height: 18rem;
+		flex-direction: column;
 		border: 1px solid rgb(138 116 63 / 0.5);
 		border-radius: 0.58rem;
 		padding: 1.1rem;
@@ -833,6 +986,15 @@
 		letter-spacing: 0.005em;
 		line-height: 1.4;
 	}
+	.card h2 a {
+		color: inherit;
+		text-decoration: none;
+	}
+	.card h2 a::after {
+		position: absolute;
+		inset: 0;
+		content: '';
+	}
 	.code {
 		margin: 0.25rem 0;
 		color: var(--gold-bright);
@@ -843,6 +1005,32 @@
 		margin: 0.5rem 0 0;
 		color: var(--text-muted);
 		font-size: 0.85rem;
+	}
+	.author-link,
+	.card :global(.tag-chips),
+	.card-actions {
+		position: relative;
+		z-index: 1;
+	}
+	.author-link {
+		color: var(--text-muted);
+	}
+	.card :global(.tag-chips) {
+		margin-top: 0.8rem;
+	}
+	.card-actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		margin-top: auto;
+		padding-top: 1rem;
+	}
+	.card-actions > a {
+		color: var(--gold-bright);
+		font-size: 0.78rem;
+		font-weight: 700;
+		text-decoration: none;
 	}
 	.card-head {
 		display: flex;

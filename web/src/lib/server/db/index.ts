@@ -11,6 +11,7 @@ const DATABASE_URL = env.DATABASE_URL ?? './data/kwikshack.db';
 const globalForDb = globalThis as unknown as { __kwikshackDb?: Database.Database };
 
 const sqlite = globalForDb.__kwikshackDb ?? new Database(DATABASE_URL);
+sqlite.pragma('foreign_keys = ON');
 
 if (!building) {
 	globalForDb.__kwikshackDb = sqlite;

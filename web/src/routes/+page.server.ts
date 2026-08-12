@@ -2,12 +2,45 @@ import { buildSummary, getFeaturedBuild, listBuilds, type BuildSort } from '$lib
 import { getDecorItems } from '$lib/server/decor';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
+interface TagSummary {
+	name: string;
+	count: number;
+}
+
+async function getAvailableTags(fetch: typeof globalThis.fetch): Promise<TagSummary[]> {
+	try {
+		const response = await fetch('/api/tags');
+		if (!response.ok) return [];
+		const payload = (await response.json()) as unknown;
+		const candidate = Array.isArray(payload)
+			? payload
+			: payload && typeof payload === 'object' && Array.isArray((payload as { tags?: unknown }).tags)
+				? (payload as { tags: unknown[] }).tags
+				: [];
+		return candidate.flatMap((entry) => {
+			if (typeof entry === 'string' && entry.trim()) return [{ name: entry.trim(), count: 0 }];
+			if (!entry || typeof entry !== 'object') return [];
+			const name = (entry as { name?: unknown; tag?: unknown }).name ?? (entry as { tag?: unknown }).tag;
+			const count = (entry as { count?: unknown }).count;
+			return typeof name === 'string' && name.trim()
+				? [{ name: name.trim(), count: typeof count === 'number' ? count : 0 }]
+				: [];
+		});
+	} catch {
+		return [];
+	}
+}
+
+export const load: PageServerLoad = async ({ url, fetch }) => {
 	const q = url.searchParams.get('q') ?? '';
 	const type = url.searchParams.get('type') ?? '';
 	const faction = url.searchParams.get('faction') ?? '';
+	const author = url.searchParams.get('author') ?? '';
+	const tag = url.searchParams.get('tag') ?? '';
+	const availableTags = await getAvailableTags(fetch);
+	const activeTag = availableTags.some((entry) => entry.name === tag) ? tag : '';
 	const requestedSort = url.searchParams.get('sort');
-	const sort: BuildSort = requestedSort === 'most_items' ? 'most_items' : 'newest';
+	const sort: BuildSort = requestedSort === 'most_items' || requestedSort === 'most_liked' ? requestedSort : 'newest';
 	const itemIDs = [
 		...new Set(
 			(url.searchParams.get('items') ?? '')
@@ -21,6 +54,8 @@ export const load: PageServerLoad = async ({ url }) => {
 		type: type || undefined,
 		faction: faction || undefined,
 		q: q || undefined,
+		author: author || undefined,
+		tag: activeTag || undefined,
 		itemIDs,
 		sort
 	}).map((b) => ({ ...b, summary: buildSummary(b.manifest) }));
@@ -31,11 +66,11 @@ export const load: PageServerLoad = async ({ url }) => {
 	});
 	const featured = getFeaturedBuild();
 	const featuredBuild = featured ? { ...featured, summary: buildSummary(featured.manifest) } : null;
-
 	return {
 		builds,
 		featuredBuild,
 		selectedItems,
-		filters: { q, type, faction, sort }
+		availableTags,
+		filters: { q, type, faction, author, tag: activeTag, sort }
 	};
 };
