@@ -8,11 +8,7 @@ local ADDON_NAME, KwikShack = ...
 -- =============================================================================
 
 function KwikShack:Log(msg)
-    if type(msg) == "table" then
-        print("|cFF00FF00[KwikShack]|r", ...)
-    else
-        print("|cFF00FF00[KwikShack]|r " .. tostring(msg))
-    end
+    print("|cFF00FF00[KwikShack]|r " .. tostring(msg))
 end
 
 -- =============================================================================

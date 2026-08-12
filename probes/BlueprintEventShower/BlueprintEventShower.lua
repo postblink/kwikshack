@@ -72,7 +72,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
     local n = select("#", ...)
     local parts = {}
     for i = 1, n do parts[i] = argString(select(i, ...), i) end
-    local line = string.format("%d | %s | %d args", GetTime(), event, n)
+    local line = string.format("%d | %s | %d args", math.floor(GetTime()), event, n)
     if #parts > 0 then line = line .. " :: " .. table.concat(parts, " ; ") end
 
     -- Chat (truncated to 250 chars to avoid spam)
