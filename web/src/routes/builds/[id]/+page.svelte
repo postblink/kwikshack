@@ -15,6 +15,14 @@
 	}
 
 	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
+	const pageUrl = $derived(`https://kwikshack.com/builds/${encodeURIComponent(b.id)}`);
+	const ogImageUrl = $derived(`https://kwikshack.com/api/og/${encodeURIComponent(b.id)}.svg`);
+	const socialDescription = $derived(
+		(
+			b.description?.trim() ||
+			`${typeLabel} blueprint by ${b.authorName ?? 'an unknown builder'} with ${data.items.length} unique decor items.`
+		).slice(0, 200)
+	);
 
 	// Structural groups (house type / rooms / exterior fixtures) rendered
 	// separately from the decor grid.
@@ -34,6 +42,21 @@
 
 <svelte:head>
 	<title>{b.title} — KwikShack</title>
+	<meta name="description" content={socialDescription} />
+	<meta property="og:title" content={`${b.title} — KwikShack`} />
+	<meta property="og:description" content={socialDescription} />
+	<meta property="og:image" content={ogImageUrl} />
+	<meta property="og:image:type" content="image/svg+xml" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={`Share preview for ${b.title}`} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={pageUrl} />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={`${b.title} — KwikShack`} />
+	<meta name="twitter:description" content={socialDescription} />
+	<meta name="twitter:image" content={ogImageUrl} />
+	<meta name="twitter:image:alt" content={`Share preview for ${b.title}`} />
 </svelte:head>
 
 <div class="wrap">
