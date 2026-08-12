@@ -165,6 +165,11 @@ export function enrichItems(manifest: BuildManifest): EnrichedItem[] {
 	const acc = new Map<number, Acc>();
 
 	for (const group of manifest.contentGroups ?? []) {
+		// Only decor groups (contentType/groupType 3) belong in the item grid.
+		// House type (1), rooms (2), exterior fixtures (5) are structural and
+		// shown separately (or omitted in v0).
+		const isDecor = group.groupType === 3 || group.contentType === 3;
+		if (!isDecor) continue;
 		for (const entry of group.entries ?? []) {
 			const id = typeof entry.itemID === 'number' ? entry.itemID : typeof entry.recordID === 'number' ? entry.recordID : null;
 			if (id === null) continue;

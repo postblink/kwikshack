@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { iconUrl } from '$lib/icon';
 
 	let { data } = $props<{ data: PageData }>();
 	const b = $derived(data.build);
 	const budgetLabels: Record<number, string> = { 0: 'Rooms', 1: 'Decor', 2: 'Pet decor' };
+	const typeLabels: Record<string, string> = { '1': 'Room', '2': 'Interior', '3': 'House', '4': 'Exterior' };
 
 	let copied = $state(false);
 	async function copyCode() {
@@ -12,10 +14,7 @@
 		setTimeout(() => (copied = false), 1500);
 	}
 
-	function iconUrl(icon: string | null): string | null {
-		if (!icon) return null;
-		return `https://wow.zamimg.com/images/wow/icons/large/${icon}.jpg`;
-	}
+	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
 </script>
 
 <svelte:head>
@@ -28,7 +27,7 @@
 	<header>
 		<h1>{b.title}</h1>
 		<p class="meta">
-			{b.blueprintType} · {b.faction ?? 'Neutral'} · by {b.authorName ?? 'unknown'} · {b.codeStatus}
+			{typeLabel} · {b.faction ?? 'Neutral'} · by {b.authorName ?? 'unknown'} · {b.codeStatus}
 		</p>
 	</header>
 
@@ -45,16 +44,24 @@
 				{#if (b.manifest.budgetInfo as Record<string, any>)[key]}
 					<h3>{ki === 0 ? 'Interior' : 'Exterior'}</h3>
 					{#each (b.manifest.budgetInfo as Record<string, any>)[key] as budget, i (ki + '-' + i)}
-						<div class="budget">
-							<span class="budget-name">{budgetLabels[i] ?? 'Budget ' + i}</span>
-							<div class="bar">
-								<div
-									class="fill"
-									style={`width: ${budget.max > 0 ? Math.min(100, (budget.cost / budget.max) * 100) : 0}%`}
-								></div>
+						{#if budget.cost < 0}
+							<div class="budget">
+								<span class="budget-name">{budgetLabels[budget.budgetType] ?? 'Budget ' + i}</span>
+								<div class="bar"></div>
+								<span class="budget-num">not used</span>
 							</div>
-							<span class="budget-num">{budget.cost} / {budget.max}</span>
-						</div>
+						{:else}
+							<div class="budget">
+								<span class="budget-name">{budgetLabels[budget.budgetType] ?? 'Budget ' + i}</span>
+								<div class="bar">
+									<div
+										class="fill"
+										style={`width: ${budget.max > 0 ? Math.min(100, (budget.cost / budget.max) * 100) : 0}%`}
+									></div>
+								</div>
+								<span class="budget-num">{budget.cost} / {budget.max}</span>
+							</div>
+						{/if}
 					{/each}
 				{/if}
 			{/each}
