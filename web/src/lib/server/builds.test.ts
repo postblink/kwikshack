@@ -41,9 +41,11 @@ beforeAll(() => {
 			author_id TEXT REFERENCES users(id),
 			manifest TEXT NOT NULL,
 			placement_data TEXT,
+			last_verified_at INTEGER,
 			created_at INTEGER NOT NULL,
 			updated_at INTEGER NOT NULL
 		);
+		CREATE UNIQUE INDEX builds_share_code_idx ON builds (share_code);
 		CREATE TABLE screenshots (
 			id TEXT PRIMARY KEY NOT NULL,
 			build_id TEXT NOT NULL REFERENCES builds(id) ON DELETE CASCADE,
@@ -202,6 +204,33 @@ describe('createBuild and listBuilds', () => {
 			authorName: 'Builder',
 			manifest: compactManifest
 		});
+	});
+
+	it('upserts on duplicate shareCode instead of inserting a second row', () => {
+		const first = createBuild({
+			shareCode: 'upsert-code',
+			title: 'Upsert First',
+			blueprintType: 'House',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'upsert-code' }
+		});
+
+		const second = createBuild({
+			shareCode: 'upsert-code',
+			title: 'Upsert Second',
+			blueprintType: 'Interior',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'upsert-code' }
+		});
+
+		expect(second.id).toBe(first.id);
+		expect(second.lastVerifiedAt).toBeInstanceOf(Date);
+
+		const listed = listBuilds({ q: 'Upsert' });
+		expect(listed).toHaveLength(1);
+		expect(listed[0].id).toBe(first.id);
+		expect(listed[0].title).toBe('Upsert Second');
+		expect(listed[0].blueprintType).toBe('Interior');
 	});
 
 	it('filters by manifest itemID before applying pagination', () => {
