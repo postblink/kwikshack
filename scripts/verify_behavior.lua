@@ -58,7 +58,10 @@ do
 	_G.KwikShackDB = { apiEndpoint = "", autoExport = false }
 	_G.GetTime = function() return 200 end
 	_G.date = function() return "2026-08-12" end
-	local kwik = { BlueprintManifest = {}, Log = function() end, ExportToAPI = function() end }
+	local kwik = { BlueprintManifest = {}, Log = function() end, ExportToAPI = function() end,
+		CompactCode = { EncodeLatest = function(self)
+			return "TESTCOMPACT" .. (KwikShackDB._lastResolved or "")
+		end } }
 	local chunk = assert(loadfile("addon/BlueprintManifest.lua"))
 	chunk("KwikShack", kwik)
 	local BM = kwik.BlueprintManifest
@@ -79,6 +82,7 @@ do
 	}
 	BM:OnContentsReceived(raw)
 	ok(_G.KwikShackDB._lastResolved == "TEST01", "Manifest: _lastResolved set")
+	ok(_G.KwikShackDB._lastCompact == "TESTCOMPACTTEST01", "Manifest: _lastCompact written")
 	ok(_G.KwikShackDB.resolvedManifests["TEST01"] ~= nil, "Manifest: stored in DB")
 	local latest = BM:GetLatestManifest()
 	ok(latest and latest.shareCode == "TEST01", "Manifest: GetLatestManifest returns it")

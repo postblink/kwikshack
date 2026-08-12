@@ -245,9 +245,11 @@ function BM:OnContentsReceived(raw)
     KwikShackDB.resolvedManifests[m.shareCode] = m
     KwikShackDB._lastResolved = m.shareCode
     -- Generate compact code for the companion app / easy sharing
-    local ok, ccode = pcall(KwikShack.CompactCode.EncodeLatest, KwikShack.CompactCode)
-    if ok and ccode then
-        KwikShackDB._lastCompact = ccode
+    if KwikShack.CompactCode and KwikShack.CompactCode.EncodeLatest then
+        local ok, ccode = pcall(KwikShack.CompactCode.EncodeLatest, KwikShack.CompactCode)
+        if ok and ccode then
+            KwikShackDB._lastCompact = ccode
+        end
     end
     print("|cFF00FF00[KwikShack]|r Manifest ready. /kshack copy to view JSON — paste at kwikshack.com/submit")
     -- Auto-export if enabled

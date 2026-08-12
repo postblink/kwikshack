@@ -150,8 +150,8 @@
 			Compact code (paste from /kshack ccode)
 			<input
 				placeholder="Paste the short code from in-game here — auto-fills everything below"
-				onpaste={async (e) => {
-					const text = (e.clipboardData ?? (await navigator.clipboard.readText()).then((t) => ({ getData: () => t })))?.getData?.('text') ?? '';
+				onpaste={(e) => {
+					const text = e.clipboardData?.getData?.('text') ?? '';
 					if (!text) return;
 					try {
 						const decoded = decodeCompact(text);
@@ -164,6 +164,8 @@
 				}}
 			/>
 		</label>
+		<label>
+			Manifest JSON
 			<textarea bind:value={manifestText} rows="14" placeholder={example}></textarea>
 		</label>
 
