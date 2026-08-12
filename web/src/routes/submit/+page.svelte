@@ -173,7 +173,7 @@
 			<p class="error">{errorMsg}</p>
 		{/if}
 
-		<button type="submit" disabled={status === 'sending' || status === 'uploading'}>
+		<button class="gold-button submit-button" type="submit" disabled={status === 'sending' || status === 'uploading'}>
 			{status === 'sending' ? 'Submitting…' : status === 'uploading' ? `Uploading ${uploadCount}…` : 'Submit build'}
 		</button>
 	</form>
@@ -183,42 +183,77 @@
 	.wrap {
 		max-width: 700px;
 		margin: 0 auto;
-		padding: 2rem 1rem;
+		padding: clamp(1.5rem, 4vw, 3rem) 1rem clamp(3rem, 7vw, 5rem);
 	}
 	.back {
-		color: #7ad48f;
+		color: var(--gold-bright);
 		text-decoration: none;
 		font-size: 0.9rem;
 	}
+	h1 {
+		margin: 0.65rem 0 0.35rem;
+		color: var(--text);
+		font-family: var(--font-display);
+		font-size: clamp(2rem, 6vw, 3.35rem);
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: -0.025em;
+		text-wrap: balance;
+	}
 	.tag {
-		color: #888;
+		max-width: 60ch;
+		margin: 0;
+		color: var(--text-muted);
+		line-height: 1.65;
+		text-wrap: pretty;
 	}
 	form {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		margin-top: 1.5rem;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--border);
 	}
 	label {
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
 		font-size: 0.85rem;
-		color: #bbb;
+		color: var(--text-muted);
+		font-weight: 650;
 	}
 	input,
 	select,
 	textarea {
-		padding: 0.5rem 0.6rem;
-		border: 1px solid #444;
-		border-radius: 6px;
-		background: #1b1b1f;
-		color: #eee;
+		min-height: 2.75rem;
+		padding: 0.55rem 0.7rem;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 55%, var(--border));
+		border-radius: 0.42rem;
+		background: var(--surface-2);
+		box-shadow: inset 0 1px 3px color-mix(in srgb, var(--bg) 70%, transparent);
+		color: var(--text);
 		font: inherit;
+		transition:
+			border-color 150ms ease,
+			box-shadow 150ms ease;
+	}
+	:is(input, select, textarea):focus {
+		border-color: var(--gold);
+		box-shadow:
+			inset 0 1px 3px color-mix(in srgb, var(--bg) 60%, transparent),
+			0 0 0 3px color-mix(in srgb, var(--gold) 12%, transparent);
+	}
+	:is(input, textarea)::placeholder {
+		color: var(--text-muted);
+		opacity: 0.72;
 	}
 	textarea {
-		font-family: monospace;
+		background: var(--surface);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: 0.8rem;
+		line-height: 1.55;
+		resize: vertical;
 	}
 	.row {
 		display: grid;
@@ -226,7 +261,8 @@
 		gap: 0.75rem;
 	}
 	.error {
-		color: #e07a5f;
+		margin: 0;
+		color: var(--bad);
 	}
 	.thumbs {
 		display: flex;
@@ -237,9 +273,10 @@
 		position: relative;
 		width: 80px;
 		height: 80px;
-		border-radius: 6px;
+		border-radius: 0.42rem;
 		overflow: hidden;
-		border: 1px solid #333;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 50%, var(--border));
+		background: var(--surface);
 	}
 	.thumb img {
 		width: 100%;
@@ -250,25 +287,32 @@
 		position: absolute;
 		top: 2px;
 		right: 2px;
-		background: #3a1f1f;
-		color: #e07a5f;
-		border: none;
-		border-radius: 4px;
+		min-width: 1.6rem;
+		min-height: 1.6rem;
+		background: color-mix(in srgb, var(--bad) 18%, var(--surface));
+		color: var(--bad);
+		border: 1px solid color-mix(in srgb, var(--bad) 48%, var(--border));
+		border-radius: 0.28rem;
 		font-size: 0.8rem;
 		cursor: pointer;
-		padding: 0 4px;
+		padding: 0 0.3rem;
 		line-height: 1.2;
 	}
-	button[type='submit'] {
-		background: #2f6f3f;
-		border: none;
-		border-radius: 8px;
-		color: #fff;
-		padding: 0.6rem 1rem;
-		font-size: 1rem;
-		cursor: pointer;
+	.submit-button {
+		align-self: flex-start;
+		min-width: 9rem;
 	}
-	button[type='submit']:disabled {
+	.submit-button:disabled {
+		cursor: not-allowed;
+		filter: saturate(0.55);
 		opacity: 0.6;
+	}
+	@media (max-width: 600px) {
+		.row {
+			grid-template-columns: 1fr;
+		}
+		.submit-button {
+			width: 100%;
+		}
 	}
 </style>

@@ -193,6 +193,20 @@ Build
 - Precedent: Wowhead model viewer, Wago dressing room operate in this space
 - Not v1
 
+## Companion App (optional)
+
+`scripts/watchdog.py` auto-submits builds from the addon to the website API.
+By design it is:
+
+- **Optional** — the addon works without it. Manual path: `/kshack copy`
+  in-game, then paste the JSON at `kwikshack.com/submit`. Auto-submission is a
+  convenience, never a requirement.
+- **Lean** — Python stdlib only, zero dependencies, ~150 lines. It watches one
+  SavedVariables file and POSTs one manifest per new build.
+- **Open source** — MIT-licensed in this repo, no telemetry, no binaries.
+- **Privacy** — reads only the local KwikShack SavedVariables and posts the
+  decoded manifest to the configured API endpoint.
+
 ## Competition / Existing Landscape
 
 | Site | Type | Code Import? | Auto Data? |

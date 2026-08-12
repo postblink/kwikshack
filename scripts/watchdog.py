@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 """
-KwikShack companion — watches WoW SavedVariables for new resolved manifests
-and auto-submits them to the kwikshack.com API. Zero deps (stdlib only).
+KwikShack companion (OPTIONAL) — auto-submits resolved builds to the website.
 
-The addon writes a compact code to KwikShackDB._lastCompact on each resolution.
-This watcher reads that string, decodes the binary format, builds a payload,
-and POSTs it. No fragile Lua-table parsing needed.
+CONTRACT (by design, please keep it this way):
+  - OPTIONAL: the addon works fully without this script. Manual path:
+    in-game `/kshack copy`, then paste the JSON at kwikshack.com/submit.
+  - LEAN: zero dependencies, Python stdlib only, ~150 lines, tiny footprint.
+    It reads one local file and makes one HTTP POST per new build.
+  - OPEN SOURCE: MIT-licensed, shipped in the KwikShack repo, no telemetry,
+    no bundled binaries, no background services.
+  - PRIVACY: only ever reads your local WoW SavedVariables file (below) and
+    posts the decoded manifest to the configured api_url. Nothing else.
+
+How it works: the addon writes a compact code to KwikShackDB._lastCompact on
+each blueprint resolution. This watcher reads that string, decodes the binary
+format, builds a payload, and POSTs it. No fragile Lua-table parsing needed.
+Run with: python3 scripts/watchdog.py [--config path/to/watchdog_config.json]
 """
 import json, os, re, sys, time, urllib.request
 from pathlib import Path

@@ -48,7 +48,7 @@
 
 	<section class="code-box">
 		<code>{b.shareCode}</code>
-		<button onclick={copyCode}>{copied ? 'Copied!' : 'Copy code'}</button>
+		<button class="gold-button" onclick={copyCode}>{copied ? 'Copied!' : 'Copy code'}</button>
 		<p class="hint">Paste in-game in the Blueprint Import window to use this build.</p>
 	</section>
 
@@ -151,61 +151,78 @@
 	.wrap {
 		max-width: 860px;
 		margin: 0 auto;
-		padding: 2rem 1rem;
+		padding: clamp(1.5rem, 4vw, 3rem) 1rem clamp(3rem, 7vw, 5rem);
 	}
 	.back {
-		color: #7ad48f;
+		color: var(--gold-bright);
 		text-decoration: none;
 		font-size: 0.9rem;
 	}
 	header h1 {
-		margin: 0.5rem 0 0.25rem;
+		margin: 0.65rem 0 0.25rem;
+		color: var(--text);
+		font-family: var(--font-display);
+		font-size: clamp(2rem, 6vw, 3.35rem);
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: -0.025em;
+		text-wrap: balance;
 	}
 	.meta {
-		color: #888;
+		margin: 0;
+		color: var(--text-muted);
 		font-size: 0.9rem;
 	}
 	.code-box {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		background: #17171b;
-		border: 1px solid #333;
-		border-radius: 8px;
+		background: var(--surface-2);
+		border: 1px solid var(--gold-dim);
+		border-radius: 0.58rem;
 		padding: 0.75rem 1rem;
-		margin: 1.25rem 0;
+		margin: 1.5rem 0 2rem;
 		flex-wrap: wrap;
+		box-shadow:
+			inset 0 1px color-mix(in srgb, var(--gold-bright) 9%, transparent),
+			var(--shadow-low);
 	}
 	.code-box code {
 		font-size: 1.05rem;
-		color: #7ad48f;
+		color: var(--gold-bright);
+		background: transparent;
+		border: 0;
+		padding: 0;
 		flex: 1;
-	}
-	.code-box button {
-		background: #2f6f3f;
-		border: none;
-		border-radius: 6px;
-		color: #fff;
-		padding: 0.4rem 0.8rem;
-		cursor: pointer;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		overflow-wrap: anywhere;
 	}
 	.hint {
 		width: 100%;
 		margin: 0;
-		color: #777;
+		color: var(--text-muted);
 		font-size: 0.8rem;
 	}
 	section {
-		margin: 1.5rem 0;
+		margin: 2rem 0;
 	}
 	section h2 {
-		font-size: 1.15rem;
-		margin-bottom: 0.6rem;
+		margin: 0 0 0.85rem;
+		padding-bottom: 0.6rem;
+		border-bottom: 1px solid var(--border);
+		color: var(--gold-dim);
+		font-family: var(--font-display);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
 	}
 	section h3 {
-		font-size: 0.9rem;
-		color: #999;
-		margin: 0.8rem 0 0.35rem;
+		font-size: 0.78rem;
+		color: var(--text-muted);
+		margin: 1rem 0 0.45rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 	.budget {
 		display: flex;
@@ -216,47 +233,56 @@
 	.budget-name {
 		width: 90px;
 		font-size: 0.85rem;
-		color: #bbb;
+		color: var(--text-muted);
 	}
 	.bar {
 		flex: 1;
 		height: 10px;
-		background: #26262c;
+		background: var(--surface-2);
+		border: 1px solid var(--border);
 		border-radius: 5px;
 		overflow: hidden;
 	}
 	.fill {
 		height: 100%;
-		background: #2f6f3f;
+		background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+		box-shadow: inset 0 1px color-mix(in srgb, var(--text) 30%, transparent);
 	}
 	.budget-num {
 		font-size: 0.8rem;
-		color: #aaa;
+		color: var(--text-muted);
 		width: 90px;
 		text-align: right;
+		font-variant-numeric: tabular-nums;
 	}
 	.reqs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 		list-style: none;
 		padding: 0;
 		margin: 0;
 	}
 	.reqs li {
 		padding: 0.35rem 0.7rem;
-		border-radius: 6px;
-		margin: 0.25rem 0;
+		border: 1px solid;
+		border-radius: 999px;
 		font-size: 0.9rem;
 	}
 	.reqs .bad {
-		background: #3a1f1f;
-		color: #e07a5f;
+		background: color-mix(in srgb, var(--bad) 14%, var(--surface));
+		border-color: color-mix(in srgb, var(--bad) 48%, var(--border));
+		color: var(--bad);
 	}
 	.reqs .warn {
-		background: #3a2f1a;
-		color: #d9a441;
+		background: color-mix(in srgb, var(--warn) 14%, var(--surface));
+		border-color: color-mix(in srgb, var(--warn) 48%, var(--border));
+		color: var(--warn);
 	}
 	.reqs .good {
-		background: #1a3a22;
-		color: #7ad48f;
+		background: color-mix(in srgb, var(--ok) 14%, var(--surface));
+		border-color: color-mix(in srgb, var(--ok) 48%, var(--border));
+		color: var(--ok);
 	}
 	.structure {
 		list-style: none;
@@ -267,12 +293,14 @@
 		gap: 0.5rem;
 	}
 	.structure li {
-		background: #1f232b;
-		border: 1px solid #2f3540;
-		border-radius: 6px;
-		padding: 0.35rem 0.7rem;
+		background: color-mix(in srgb, var(--gold-dim) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 52%, transparent);
+		border-radius: 999px;
+		padding: 0.3rem 0.7rem;
 		font-size: 0.85rem;
-		color: #cfd3dc;
+		color: var(--gold-bright);
+		font-weight: 700;
+		letter-spacing: 0.035em;
 	}
 	.items {
 		display: grid;
@@ -283,13 +311,15 @@
 		display: flex;
 		align-items: center;
 		gap: 0.6rem;
-		background: #17171b;
-		border: 1px solid #2a2a30;
-		border-radius: 8px;
+		background: linear-gradient(150deg, var(--surface-2), var(--surface));
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 50%, var(--border));
+		border-radius: 0.5rem;
 		padding: 0.5rem;
+		box-shadow: inset 0 1px color-mix(in srgb, var(--gold-bright) 5%, transparent);
 	}
 	.item img {
-		border-radius: 4px;
+		border: 1px solid var(--border);
+		border-radius: 0.3rem;
 	}
 	.screenshots {
 		display: grid;
@@ -298,8 +328,8 @@
 	}
 	.screenshots img {
 		width: 100%;
-		border-radius: 10px;
-		border: 1px solid #333;
+		border-radius: 0.58rem;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 45%, var(--border));
 	}
 	.no-icon {
 		width: 36px;
@@ -307,9 +337,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #26262c;
-		border-radius: 4px;
-		color: #666;
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		border-radius: 0.3rem;
+		color: var(--text-muted);
 	}
 	.item-info {
 		display: flex;
@@ -324,6 +355,27 @@
 	}
 	.item-count {
 		font-size: 0.75rem;
-		color: #888;
+		color: var(--text-muted);
+		font-variant-numeric: tabular-nums;
+	}
+	@media (max-width: 560px) {
+		.code-box :global(.gold-button) {
+			width: 100%;
+		}
+		.budget {
+			align-items: start;
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: 0.35rem 0.75rem;
+			margin-block: 0.7rem;
+		}
+		.budget-name,
+		.budget-num {
+			width: auto;
+		}
+		.bar {
+			grid-column: 1 / -1;
+			grid-row: 2;
+		}
 	}
 </style>
