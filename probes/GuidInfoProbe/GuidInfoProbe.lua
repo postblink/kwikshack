@@ -73,11 +73,11 @@ frame:SetScript("OnEvent", function(_, event, ...)
         line = line .. " | info=NO_API"
     end
 
-    -- Confirm the direct enumeration policy gate status while we're here
-    if _G.C_HousingDecor and _G.C_HousingDecor.GetAllPlacedDecor then
-        local ok2, res2 = pcall(_G.C_HousingDecor.GetAllPlacedDecor)
-        line = line .. " | GetAllPlacedDecor=" .. (ok2 and "OK(" .. tostring(res2) .. ")" or "BLOCKED(" .. tostring(res2) .. ")")
-    end
+    -- CONFIRMED 2026-08-12: calling C_HousingDecor.GetAllPlacedDecor from an
+    -- addon pops Blizzard's "blocked from an action only available to the
+    -- Blizzard UI" dialog (ADDON_ACTION_FORBIDDEN policy gate, per HDG docs).
+    -- Do NOT call it from addon code — the popup names the addon and the call
+    -- fails. Direct enumeration stays off-limits until Blizzard reopens it.
 
     print("|cFF00FF00[GuidInfo]|r " .. (string.len(line) > 400 and string.sub(line, 1, 400) .. "…" or line))
     local db = GuidInfoProbeDB
