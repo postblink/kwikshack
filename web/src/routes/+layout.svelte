@@ -52,8 +52,10 @@
 
 	.header-inner,
 	.footer-inner {
-		width: min(100% - 2rem, var(--content-width));
+		width: 100%;
+		max-width: var(--content-width);
 		margin: 0 auto;
+		padding-inline: 1rem;
 	}
 
 	.header-inner {
