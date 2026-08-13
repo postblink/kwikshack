@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { and, asc, eq } from 'drizzle-orm';
+import { pluralize } from '$lib/pluralize';
 import { buildSummary, getBuild } from '$lib/server/builds';
 import { db } from '$lib/server/db';
 import { screenshots } from '$lib/server/db/schema';
@@ -80,7 +81,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" role="img" aria-labelledby="title description">
 	<title id="title">${escapeXml(build.title)} — KwikShack</title>
-	<desc id="description">${blueprintType} with ${decorCount} decor, ${roomCount} rooms, and ${likeCount} likes.</desc>
+	<desc id="description">${blueprintType} with ${decorCount} decor, ${roomCount} ${pluralize(roomCount, 'room')}, and ${likeCount} ${pluralize(likeCount, 'like')}.</desc>
 	<defs>
 		<linearGradient id="backdrop" x1="0" y1="0" x2="1" y2="1">
 			<stop offset="0" stop-color="#26211a" />
@@ -125,10 +126,10 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		<text x="70" y="37" fill="#efe6d2">DECOR</text>
 		<rect x="268" width="250" height="58" rx="8" fill="#1d1914" fill-opacity="0.92" stroke="#3b3327" />
 		<text x="292" y="37" fill="#e8c873">${roomCount}</text>
-		<text x="338" y="37" fill="#efe6d2">ROOMS</text>
+		<text x="338" y="37" fill="#efe6d2">${pluralize(roomCount, 'ROOM', 'ROOMS')}</text>
 		<rect x="536" width="250" height="58" rx="8" fill="#1d1914" fill-opacity="0.92" stroke="#3b3327" />
 		<text x="560" y="37" fill="#e8c873">${likeCount}</text>
-		<text x="606" y="37" fill="#efe6d2">LIKES</text>
+		<text x="606" y="37" fill="#efe6d2">${pluralize(likeCount, 'LIKE', 'LIKES')}</text>
 	</g>
 </svg>`;
 

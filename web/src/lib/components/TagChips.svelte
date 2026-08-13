@@ -12,12 +12,18 @@
 			limit
 		)
 	);
+
+	function tagLabel(tag: string): string {
+		return tag
+			.replaceAll('-', ' ')
+			.replace(/\b\w/g, (letter) => letter.toUpperCase());
+	}
 </script>
 
 {#if visibleTags.length}
-	<nav class="tag-chips" aria-label="Build tags">
+	<nav class="tag-chips" aria-label="Inferred build styles">
 		{#each visibleTags as tag (tag)}
-			<a class:active={tag === activeTag} href={hrefForTag(tag)}>#{tag}</a>
+			<a class:active={tag === activeTag} href={hrefForTag(tag)}>{tagLabel(tag)}</a>
 		{/each}
 	</nav>
 {/if}
@@ -30,7 +36,7 @@
 	}
 	a {
 		display: inline-flex;
-		min-height: 2.75rem;
+		min-height: 2.5rem;
 		align-items: center;
 		padding: 0.2rem 0.55rem;
 		border: 1px solid color-mix(in srgb, var(--gold-dim) 44%, var(--border));
@@ -42,7 +48,6 @@
 		font-weight: 700;
 		letter-spacing: 0.035em;
 		text-decoration: none;
-		text-transform: lowercase;
 		transition:
 			border-color 120ms ease,
 			background-color 120ms ease,

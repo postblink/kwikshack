@@ -1,6 +1,6 @@
 import { db } from './db';
 import { builds, decorItems, likes, screenshots, users } from './db/schema';
-import { asc, eq, inArray, like, and, isNull, count } from 'drizzle-orm';
+import { asc, desc, eq, inArray, like, and, or, isNull, count } from 'drizzle-orm';
 import type { BuildManifest, PlacementData } from '$lib/types/manifest';
 
 export interface BuildRecord {
@@ -19,11 +19,10 @@ export interface BuildRecord {
 	likeCount: number;
 	liked: boolean;
 	tags?: string[];
-}
-
-export interface FeaturedBuildRecord extends BuildRecord {
 	primaryScreenshot: string | null;
 }
+
+export type FeaturedBuildRecord = BuildRecord;
 
 export type BuildSort = 'newest' | 'most_items' | 'most_liked';
 
@@ -79,10 +78,15 @@ export function createBuild(input: {
 	manifest: BuildManifest;
 	placementData?: PlacementData | null;
 	screenshotUrls?: string[];
+	overwriteExisting?: boolean;
 }): BuildRecord {
+	if (!input.overwriteExisting) {
+		const existing = getBuildByCode(input.shareCode);
+		if (existing) return existing;
+	}
 	const id = crypto.randomUUID();
 	const authorId = input.authorName ? ensureUser(input.authorName) : null;
-	db.insert(builds)
+	const insert = db.insert(builds)
 		.values({
 			id,
 			shareCode: input.shareCode,
@@ -95,8 +99,9 @@ export function createBuild(input: {
 			manifest: input.manifest,
 			placementData: input.placementData ?? null,
 			lastVerifiedAt: new Date()
-		})
-		.onConflictDoUpdate({
+		});
+	if (input.overwriteExisting) {
+		insert.onConflictDoUpdate({
 			target: builds.shareCode,
 			set: {
 				codeStatus: 'unverified',
@@ -110,12 +115,17 @@ export function createBuild(input: {
 				lastVerifiedAt: new Date(),
 				updatedAt: new Date()
 			}
-		})
-		.run();
-	// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
-	ingestRecordPairs(input.manifest);
+		}).run();
+	} else {
+		insert.onConflictDoNothing().run();
+	}
 	// Resolve the persisted row — new id on insert, existing id on conflict.
 	const record = getBuildByCode(input.shareCode)!;
+	// A concurrent create may have won the unique-key race. Never let this
+	// public create path mutate that winner's catalog associations or images.
+	if (!input.overwriteExisting && record.id !== id) return record;
+	// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
+	ingestRecordPairs(input.manifest);
 	// Replace screenshots when the submission carries any (idempotent on re-submit).
 	if (input.screenshotUrls?.length) {
 		db.delete(screenshots).where(eq(screenshots.buildId, record.id)).run();
@@ -153,7 +163,7 @@ export function listBuilds(
 	const where = [];
 	if (type) where.push(eq(builds.blueprintType, type));
 	if (faction) where.push(eq(builds.faction, faction));
-	if (q) where.push(like(builds.title, `%${q}%`));
+	if (q) where.push(or(like(builds.title, `%${q}%`), like(builds.description, `%${q}%`), like(users.name, `%${q}%`))!);
 	if (author) where.push(eq(users.name, author));
 
 	const rows = db
@@ -168,8 +178,22 @@ export function listBuilds(
 
 	let records = withLikeState(rows.map((r) => toBuildRecord(r.build, r.author)), clientId);
 	if (itemIDs?.length) {
-		const wanted = new Set(itemIDs);
-		records = records.filter((record) => manifestItemIDs(record.manifest).some((itemID) => wanted.has(itemID)));
+		const wantedItemIDs = new Set(itemIDs);
+		const wantedRecordIDs = new Set(
+			db
+				.select({ recordID: decorItems.recordID })
+				.from(decorItems)
+				.where(inArray(decorItems.itemID, itemIDs))
+				.all()
+				.flatMap((row) => (row.recordID === null ? [] : [row.recordID]))
+		);
+		records = records.filter((record) =>
+			manifestDecorIdentifiers(record.manifest).some(
+				(identifier) =>
+					(identifier.itemID !== null && wantedItemIDs.has(identifier.itemID)) ||
+					(identifier.recordID !== null && wantedRecordIDs.has(identifier.recordID))
+			)
+		);
 	}
 	if (tag && records.some((record) => Array.isArray(record.tags))) {
 		records = records.filter((record) => record.tags?.includes(tag));
@@ -188,7 +212,7 @@ export function listBuilds(
 	});
 
 	const start = Math.max(0, offset);
-	return records.slice(start, start + Math.max(0, limit));
+	return withPrimaryScreenshots(records.slice(start, start + Math.max(0, limit)));
 }
 
 export function getFeaturedBuild(): FeaturedBuildRecord | null {
@@ -199,18 +223,10 @@ export function getFeaturedBuild(): FeaturedBuildRecord | null {
 		.all();
 	if (rows.length === 0) return null;
 
-	const chosen = rows[Math.floor(Math.random() * rows.length)];
-	const primaryScreenshot = db
-		.select({ url: screenshots.url })
-		.from(screenshots)
-		.where(and(eq(screenshots.buildId, chosen.build.id), eq(screenshots.isPrimary, true)))
-		.orderBy(asc(screenshots.sortOrder))
-		.get();
-
-	return {
-		...withLikeState([toBuildRecord(chosen.build, chosen.author)])[0],
-		primaryScreenshot: primaryScreenshot?.url ?? null
-	};
+	const records = withPrimaryScreenshots(withLikeState(rows.map((row) => toBuildRecord(row.build, row.author))));
+	const buildsWithImages = records.filter((record) => record.primaryScreenshot);
+	const pool = buildsWithImages.length ? buildsWithImages : records;
+	return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export function getBuild(id: string, clientId?: string): BuildRecord | null {
@@ -220,7 +236,7 @@ export function getBuild(id: string, clientId?: string): BuildRecord | null {
 		.leftJoin(users, eq(builds.authorId, users.id))
 		.where(eq(builds.id, id))
 		.get();
-	return row ? withLikeState([toBuildRecord(row.build, row.author)], clientId)[0] : null;
+	return row ? withPrimaryScreenshots(withLikeState([toBuildRecord(row.build, row.author)], clientId))[0] : null;
 }
 
 export function getBuildByCode(shareCode: string): BuildRecord | null {
@@ -230,7 +246,7 @@ export function getBuildByCode(shareCode: string): BuildRecord | null {
 		.leftJoin(users, eq(builds.authorId, users.id))
 		.where(eq(builds.shareCode, shareCode))
 		.get();
-	return row ? withLikeState([toBuildRecord(row.build, row.author)])[0] : null;
+	return row ? withPrimaryScreenshots(withLikeState([toBuildRecord(row.build, row.author)]))[0] : null;
 }
 
 function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null): BuildRecord {
@@ -245,12 +261,29 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 		authorName,
 		manifest: b.manifest as unknown as BuildManifest,
 		placementData: b.placementData as unknown as PlacementData | null,
-	lastVerifiedAt: b.lastVerifiedAt,
-	createdAt: b.createdAt,
-	likeCount: 0,
-	liked: false,
-	tags: buildTags(b.manifest as unknown as BuildManifest)
-};
+		lastVerifiedAt: b.lastVerifiedAt,
+		createdAt: b.createdAt,
+		likeCount: 0,
+		liked: false,
+		tags: buildTags(b.manifest as unknown as BuildManifest),
+		primaryScreenshot: null
+	};
+}
+
+function withPrimaryScreenshots(records: BuildRecord[]): BuildRecord[] {
+	if (records.length === 0) return records;
+	const buildIds = records.map((record) => record.id);
+	const rows = db
+		.select({ buildId: screenshots.buildId, url: screenshots.url })
+		.from(screenshots)
+		.where(inArray(screenshots.buildId, buildIds))
+		.orderBy(desc(screenshots.isPrimary), asc(screenshots.sortOrder))
+		.all();
+	const firstByBuild = new Map<string, string>();
+	for (const row of rows) {
+		if (!firstByBuild.has(row.buildId)) firstByBuild.set(row.buildId, row.url);
+	}
+	return records.map((record) => ({ ...record, primaryScreenshot: firstByBuild.get(record.id) ?? null }));
 }
 
 function withLikeState(records: BuildRecord[], clientId?: string): BuildRecord[] {
@@ -314,15 +347,19 @@ export function toggleBuildLike(buildId: string, clientId: string): { likeCount:
 	});
 }
 
-/** Count decor items and structural entries (rooms/house/fixtures) in a manifest. */
+/** Count placed decor quantity and room entries in a manifest. */
 export function buildSummary(manifest: BuildManifest): { decorCount: number; roomCount: number } {
 	let decorCount = 0;
 	let roomCount = 0;
 	for (const group of manifest.contentGroups ?? []) {
 		const ct = group.contentType ?? group.groupType;
-		const n = group.entries?.length ?? 0;
-		if (ct === 3) decorCount += n;
-		else if (ct === 2) roomCount += n;
+		if (ct === 3) {
+			for (const entry of group.entries ?? []) {
+				decorCount += typeof entry.total === 'number' ? entry.total : typeof entry.count === 'number' ? entry.count : 1;
+			}
+		} else if (ct === 2) {
+			roomCount += group.entries?.length ?? 0;
+		}
 	}
 	return { decorCount, roomCount };
 }
@@ -336,6 +373,21 @@ export function manifestItemIDs(manifest: BuildManifest): number[] {
 		}
 	}
 	return [...seen];
+}
+
+function manifestDecorIdentifiers(manifest: BuildManifest): { itemID: number | null; recordID: number | null }[] {
+	const identifiers: { itemID: number | null; recordID: number | null }[] = [];
+	for (const group of manifest.contentGroups ?? []) {
+		const contentType = group.contentType ?? group.groupType;
+		if (contentType !== 3) continue;
+		for (const entry of group.entries ?? []) {
+			identifiers.push({
+				itemID: typeof entry.itemID === 'number' ? entry.itemID : null,
+				recordID: typeof entry.recordID === 'number' ? entry.recordID : null
+			});
+		}
+	}
+	return identifiers;
 }
 
 /** Count distinct decor entries, preferring stable catalog identifiers. */

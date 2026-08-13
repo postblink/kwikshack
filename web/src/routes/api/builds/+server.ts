@@ -1,72 +1,71 @@
 import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { isSubmitPayload } from '$lib/types/manifest';
-import { createBuild, listBuilds, type BuildSort } from '$lib/server/builds';
-import { isSubmitKeyAllowed } from '$lib/server/submit-key';
+import { dev } from '$app/environment';
+import { validateSubmitPayload, type SubmitBuildPayload } from '$lib/types/manifest';
+import { createBuild, getBuildByCode, listBuilds, type BuildSort } from '$lib/server/builds';
+import { getSubmitAccess } from '$lib/server/submit-key';
+import { FixedWindowRateLimiter } from '$lib/server/rate-limit';
 import type { RequestHandler } from './$types';
 
 // POST /api/builds — submit a build (manifest + optional placement data)
 // Body: SubmitBuildPayload — see $lib/types/manifest.ts
-// Auth: if KWIKSHACK_SUBMIT_KEY is set (production), require
-// `x-kwikshack-key` header to match. Unset = open (local dev).
+// Auth: production fails closed unless KWIKSHACK_SUBMIT_KEY is configured.
+// Local dev remains open. Founding builders use the same key from the web form
+// or companion's x-kwikshack-key header.
 // NOTE: keep this module's exports to valid route handlers only — SvelteKit
 // rejects any other named export at runtime.
 
-// In-memory per-IP rate limiter. Module-level state lives for the lifetime of
-// the server process (resets on restart); no external deps.
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 10;
-const rateLimitBuckets = new Map<string, { count: number; windowStart: number }>();
-
-function allowRequest(ip: string): boolean {
-	const now = Date.now();
-	// Opportunistic sweep so the map can't grow unbounded across many IPs.
-	if (rateLimitBuckets.size > 10_000) {
-		for (const [key, bucket] of rateLimitBuckets) {
-			if (now - bucket.windowStart >= RATE_LIMIT_WINDOW_MS) rateLimitBuckets.delete(key);
-		}
-	}
-	const bucket = rateLimitBuckets.get(ip);
-	if (!bucket || now - bucket.windowStart >= RATE_LIMIT_WINDOW_MS) {
-		rateLimitBuckets.set(ip, { count: 1, windowStart: now });
-		return true;
-	}
-	bucket.count += 1;
-	return bucket.count <= RATE_LIMIT_MAX;
-}
+const MAX_BUILD_REQUEST_BYTES = 1024 * 1024;
+const submissionLimiter = new FixedWindowRateLimiter({ windowMs: 60_000, maxRequests: 10 });
 
 export const POST: RequestHandler = async (event) => {
+	const clientIp = event.getClientAddress();
+	if (!submissionLimiter.allow(clientIp)) error(429, 'Rate limit exceeded');
+
 	const submitKey = env.KWIKSHACK_SUBMIT_KEY;
 	const providedKey = event.request.headers.get('x-kwikshack-key');
-	if (!isSubmitKeyAllowed(submitKey, providedKey)) error(401, 'Invalid submit key');
+	const access = getSubmitAccess(submitKey, providedKey, dev);
+	if (access === 'unavailable') error(503, 'Build submissions are not configured');
+	if (access === 'invalid') error(401, 'Invalid submit key');
 
-	const clientIp = event.getClientAddress();
-	if (!allowRequest(clientIp)) error(429, 'Rate limit exceeded');
+	const contentLength = Number(event.request.headers.get('content-length') ?? '0');
+	if (Number.isFinite(contentLength) && contentLength > MAX_BUILD_REQUEST_BYTES) error(413, 'Build payload too large');
+
+	let text: string;
+	try {
+		text = await event.request.text();
+	} catch {
+		error(400, 'Could not read request body');
+	}
+	if (new TextEncoder().encode(text).byteLength > MAX_BUILD_REQUEST_BYTES) error(413, 'Build payload too large');
 
 	let body: unknown;
 	try {
-		body = await event.request.json();
+		body = JSON.parse(text);
 	} catch {
 		error(400, 'Body must be JSON');
 	}
 
-	if (!isSubmitPayload(body)) {
-		error(400, 'Invalid payload: need shareCode + manifest with contentGroups');
-	}
+	const validationError = validateSubmitPayload(body);
+	if (validationError) error(400, validationError);
+	const validBody = body as SubmitBuildPayload;
+
+	const existing = getBuildByCode(validBody.shareCode);
+	if (existing) return json({ id: existing.id, shareCode: existing.shareCode, existing: true });
 
 	const record = createBuild({
-		shareCode: body.shareCode,
-		title: body.title?.trim() || `Build ${body.shareCode}`,
-		description: body.description,
-		blueprintType: body.blueprintType ?? 'House',
-		faction: body.faction ?? null,
-		authorName: body.authorName,
-		manifest: body.manifest,
-		placementData: body.placementData ?? null,
-		screenshotUrls: Array.isArray(body.screenshotUrls) ? body.screenshotUrls : undefined
+		shareCode: validBody.shareCode,
+		title: validBody.title?.trim() || `Build ${validBody.shareCode}`,
+		description: validBody.description,
+		blueprintType: validBody.blueprintType ?? 'House',
+		faction: validBody.faction ?? null,
+		authorName: validBody.authorName,
+		manifest: validBody.manifest,
+		placementData: validBody.placementData ?? null,
+		screenshotUrls: validBody.screenshotUrls
 	});
 
-	return json({ id: record.id, shareCode: record.shareCode });
+	return json({ id: record.id, shareCode: record.shareCode, existing: false }, { status: 201 });
 };
 
 // GET /api/builds?limit=&offset=&type=&faction=&q=&author=&tag=&items=&sort=&clientId=
@@ -102,12 +101,13 @@ export const GET: RequestHandler = async ({ url }) => {
 			faction: b.faction,
 			title: b.title,
 			authorName: b.authorName,
-		lastVerifiedAt: b.lastVerifiedAt,
-		createdAt: b.createdAt,
-		likeCount: b.likeCount,
-		liked: b.liked,
-		tags: b.tags ?? []
-	})),
+			primaryScreenshot: b.primaryScreenshot,
+			lastVerifiedAt: b.lastVerifiedAt,
+			createdAt: b.createdAt,
+			likeCount: b.likeCount,
+			liked: b.liked,
+			tags: b.tags ?? []
+		})),
 		limit,
 		offset,
 		sort

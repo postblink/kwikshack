@@ -1,35 +1,31 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import BuildStatus from '$lib/components/BuildStatus.svelte';
+	import CopyBlueprintButton from '$lib/components/CopyBlueprintButton.svelte';
 	import LikeButton from '$lib/components/LikeButton.svelte';
 	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
+	import { pluralize } from '$lib/pluralize';
 
 	let { data } = $props<{ data: PageData }>();
 	const b = $derived(data.build);
 	const budgetLabels: Record<number, string> = { 0: 'Rooms', 1: 'Decor', 2: 'Pet decor' };
 	const typeLabels: Record<string, string> = { '1': 'Room', '2': 'Interior', '3': 'House', '4': 'Exterior' };
 
-	let copied = $state(false);
-	async function copyCode() {
-		await navigator.clipboard.writeText(b.shareCode);
-		copied = true;
-		setTimeout(() => (copied = false), 1500);
-	}
-
 	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
-const tags = $derived.by(() => {
-	const value = (b as { tags?: unknown }).tags;
-	return Array.isArray(value) ? value.filter((tag): tag is string => typeof tag === 'string') : [];
-});
+	const tags = $derived.by(() => {
+		const value = (b as { tags?: unknown }).tags;
+		return Array.isArray(value) ? value.filter((tag): tag is string => typeof tag === 'string') : [];
+	});
 
-const pageUrl = $derived(`https://kwikshack.com/builds/${encodeURIComponent(b.id)}`);
-const ogImageUrl = $derived(`https://kwikshack.com/api/og/${encodeURIComponent(b.id)}.svg`);
-const socialDescription = $derived(
-	(
-		b.description?.trim() ||
-		`${typeLabel} blueprint by ${b.authorName ?? 'an unknown builder'} with ${data.items.length} unique decor items.`
-	).slice(0, 200)
-);
+	const pageUrl = $derived(`https://kwikshack.com/builds/${encodeURIComponent(b.id)}`);
+	const ogImageUrl = $derived(`https://kwikshack.com/api/og/${encodeURIComponent(b.id)}.svg`);
+	const socialDescription = $derived(
+		(
+			b.description?.trim() ||
+				`${typeLabel} blueprint by ${b.authorName ?? 'an unknown builder'} with ${data.items.length} unique ${pluralize(data.items.length, 'decor item')}.`
+		).slice(0, 200)
+	);
 
 	// Structural groups (house type / rooms / exterior fixtures) rendered
 	// separately from the decor grid.
@@ -74,18 +70,35 @@ const socialDescription = $derived(
 			<div>
 				<h1>{b.title}</h1>
 				<p class="meta">
-					{typeLabel} · {b.faction ?? 'Neutral'} · by {#if b.authorName}<a href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if} · {b.codeStatus}
+					{typeLabel} · {b.faction ?? 'Neutral'} · by {#if b.authorName}<a href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
 				</p>
 			</div>
-			<LikeButton buildId={b.id} initialCount={b.likeCount} initialLiked={b.liked} roomy />
+			<div class="title-actions">
+				<BuildStatus codeStatus={b.codeStatus} />
+				<LikeButton buildId={b.id} initialCount={b.likeCount} initialLiked={b.liked} roomy />
+			</div>
 		</div>
-		{#if data.tagsAvailable}<TagChips {tags} />{/if}
+		{#if data.tagsAvailable}<TagChips {tags} limit={5} />{/if}
 	</header>
 
+	{#if data.screenshots && data.screenshots.length > 0}
+		<section class="build-gallery" aria-labelledby="screenshots-title">
+			<h2 id="screenshots-title">Build gallery</h2>
+			<div class="screenshots" class:single={data.screenshots.length === 1}>
+				{#each data.screenshots as s (s.id)}
+					<img src={s.url} alt={s.caption || `${b.title} build screenshot`} />
+				{/each}
+			</div>
+		</section>
+	{/if}
+
 	<section class="code-box">
-		<code>{b.shareCode}</code>
-		<button class="gold-button" onclick={copyCode}>{copied ? 'Copied!' : 'Copy code'}</button>
-		<p class="hint">Paste in-game in the Blueprint Import window to use this build.</p>
+		<div class="code-copy">
+			<span class="code-label">Ready to build this?</span>
+			<code>{b.shareCode}</code>
+		</div>
+		<CopyBlueprintButton shareCode={b.shareCode} buildTitle={b.title} />
+		<p class="hint">Copy the blueprint, then paste it into WoW's Blueprint Import window.</p>
 	</section>
 
 	{#if b.manifest.budgetInfo}
@@ -146,7 +159,7 @@ const socialDescription = $derived(
 	{/if}
 
 	<section>
-		<h2>Decor ({data.items.length} unique)</h2>
+		<h2>Decor ({data.items.length} unique {pluralize(data.items.length, 'item')})</h2>
 		<div class="items">
 			{#each data.items as item (item.key)}
 				<div class="item">
@@ -163,17 +176,6 @@ const socialDescription = $derived(
 			{/each}
 		</div>
 	</section>
-
-	{#if data.screenshots && data.screenshots.length > 0}
-		<section>
-			<h2>Screenshots</h2>
-			<div class="screenshots">
-				{#each data.screenshots as s (s.id)}
-					<img src={s.url} alt={s.caption || ''} />
-				{/each}
-			</div>
-		</section>
-	{/if}
 
 	{#if b.description}
 		<section>
@@ -213,6 +215,13 @@ const socialDescription = $derived(
 	.title-row > div {
 		min-width: 0;
 	}
+	.title-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.7rem;
+		flex-wrap: wrap;
+	}
 	.meta {
 		margin: 0;
 		color: var(--text-muted);
@@ -239,14 +248,27 @@ const socialDescription = $derived(
 			var(--shadow-low);
 	}
 	.code-box code {
+		display: block;
 		font-size: 1.05rem;
 		color: var(--gold-bright);
 		background: transparent;
 		border: 0;
 		padding: 0;
-		flex: 1;
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		overflow-wrap: anywhere;
+	}
+	.code-copy {
+		flex: 1 1 20rem;
+		min-width: 0;
+	}
+	.code-label {
+		display: block;
+		margin-bottom: 0.22rem;
+		color: var(--text);
+		font-family: var(--font-display);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.055em;
 	}
 	.hint {
 		width: 100%;
@@ -379,8 +401,18 @@ const socialDescription = $derived(
 	}
 	.screenshots img {
 		width: 100%;
+		height: 100%;
+		max-height: 32rem;
+		object-fit: cover;
 		border-radius: 0.58rem;
 		border: 1px solid color-mix(in srgb, var(--gold-dim) 45%, var(--border));
+	}
+	.screenshots:not(.single) img:first-child {
+		grid-column: 1 / -1;
+		aspect-ratio: 16 / 9;
+	}
+	.screenshots.single img {
+		aspect-ratio: 16 / 9;
 	}
 	.no-icon {
 		width: 36px;
@@ -414,7 +446,11 @@ const socialDescription = $derived(
 			align-items: flex-start;
 			flex-direction: column;
 		}
-		.code-box :global(.gold-button) {
+		.title-actions {
+			width: 100%;
+			justify-content: space-between;
+		}
+		.code-box :global(button) {
 			width: 100%;
 		}
 		.budget {

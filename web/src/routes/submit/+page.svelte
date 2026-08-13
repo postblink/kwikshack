@@ -5,6 +5,7 @@
 	let blueprintType = $state('House');
 	let faction = $state('');
 	let authorName = $state('');
+	let submitKey = $state('');
 	let manifestText = $state('');
 	let status = $state<'idle' | 'uploading' | 'sending' | 'done' | 'error'>('idle');
 	let errorMsg = $state('');
@@ -12,6 +13,7 @@
 	let uploadCount = $state(0);
 	const MAX_IMAGE_EDGE = 1920;
 	const JPEG_QUALITY = 0.85;
+	const MAX_SCREENSHOTS = 8;
 
 	async function resizeImageForUpload(file: File): Promise<File> {
 		if (!file.type.startsWith('image/')) return file;
@@ -24,9 +26,7 @@
 			await image.decode();
 
 			const longestEdge = Math.max(image.naturalWidth, image.naturalHeight);
-			if (longestEdge <= MAX_IMAGE_EDGE) return file;
-
-			const scale = MAX_IMAGE_EDGE / longestEdge;
+			const scale = Math.min(1, MAX_IMAGE_EDGE / longestEdge);
 			const canvas = document.createElement('canvas');
 			canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
 			canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
@@ -54,7 +54,9 @@
 	async function uploadImage(file: File) {
 		const form = new FormData();
 		form.append('file', file);
-		const res = await fetch('/api/uploads', { method: 'POST', body: form });
+		const headers = new Headers();
+		if (submitKey) headers.set('x-kwikshack-key', submitKey);
+		const res = await fetch('/api/uploads', { method: 'POST', headers, body: form });
 		if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
 		const data = await res.json();
 		return data.url as string;
@@ -65,7 +67,10 @@
 		if (!files) return;
 		status = 'uploading';
 		errorMsg = '';
-		for (const file of files) {
+		const remaining = Math.max(0, MAX_SCREENSHOTS - screenshots.length);
+		const selected = Array.from(files).slice(0, remaining);
+		if (files.length > remaining) errorMsg = `You can attach up to ${MAX_SCREENSHOTS} screenshots.`;
+		for (const file of selected) {
 			try {
 				const uploadFile = await resizeImageForUpload(file);
 				const url = await uploadImage(uploadFile);
@@ -93,9 +98,11 @@
 			errorMsg = 'Manifest is not valid JSON: ' + (e as Error).message;
 			return;
 		}
+		const headers = new Headers({ 'content-type': 'application/json' });
+		if (submitKey) headers.set('x-kwikshack-key', submitKey);
 		const res = await fetch('/api/builds', {
 			method: 'POST',
-			headers: { 'content-type': 'application/json' },
+			headers,
 			body: JSON.stringify({
 				shareCode,
 				title,
@@ -143,6 +150,11 @@
 
 	<form onsubmit={(e) => { e.preventDefault(); submit(); }}>
 		<label>
+			Submission access key
+			<input type="password" bind:value={submitKey} autocomplete="off" placeholder="Provided with your builder invitation" />
+			<small>Used only for this submission and its screenshots; it is not saved by KwikShack.</small>
+		</label>
+		<label>
 			Blueprint code
 			<input bind:value={shareCode} required placeholder="e.g. ABCDEFGHIJ" />
 		</label>
@@ -175,7 +187,8 @@
 		</div>
 		<label>
 			Screenshots
-			<input type="file" accept="image/*" multiple onchange={(e) => handleImages(e)} />
+			<input type="file" accept="image/jpeg,image/png" multiple onchange={(e) => handleImages(e)} />
+			<small>Up to {MAX_SCREENSHOTS} JPEG or PNG images. Images are resized and metadata is removed before upload.</small>
 		</label>
 		{#if screenshots.length > 0}
 			<div class="thumbs">
@@ -263,6 +276,12 @@
 		font-size: 0.85rem;
 		color: var(--text-muted);
 		font-weight: 650;
+	}
+	label small {
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		font-weight: 450;
+		line-height: 1.45;
 	}
 	input,
 	select,

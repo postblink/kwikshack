@@ -14,6 +14,13 @@ fi
 
 export DATABASE_URL="${DATABASE_URL:-$DATA_DIR/kwikshack.db}"
 export UPLOADS_DIR="${UPLOADS_DIR:-$DATA_DIR/uploads}"
+# Adapter-node defaults to 512K, which is smaller than a legitimate screenshot.
+# Endpoint-specific checks enforce tighter JSON and 5MB image limits.
+export BODY_SIZE_LIMIT="${BODY_SIZE_LIMIT:-6M}"
+
+if [ -z "${KWIKSHACK_SUBMIT_KEY:-}" ]; then
+  echo "[entrypoint] WARNING: KWIKSHACK_SUBMIT_KEY is unset; production submissions will return 503"
+fi
 
 # adapter-node behind a TLS proxy: build request URLs from the proxy headers
 # (Railway terminates TLS and forwards x-forwarded-*). Without this, adapter-node
@@ -23,4 +30,5 @@ export HOST_HEADER="${HOST_HEADER:-x-forwarded-host}"
 
 echo "[entrypoint] DATABASE_URL=$DATABASE_URL"
 echo "[entrypoint] UPLOADS_DIR=$UPLOADS_DIR"
+echo "[entrypoint] BODY_SIZE_LIMIT=$BODY_SIZE_LIMIT"
 exec node build/index.js

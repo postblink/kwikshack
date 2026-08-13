@@ -18,6 +18,7 @@
 
 		<nav aria-label="Primary navigation">
 			<a class="browse-link" href="/">Browse</a>
+			<a class="browse-link community-link" href="/finds">Community Finds</a>
 			<a class="gold-button" href="/submit">Submit a Build</a>
 		</nav>
 	</div>
@@ -162,29 +163,33 @@
 
 	@media (max-width: 620px) {
 		.header-inner {
-			min-height: auto;
-			align-items: stretch;
-			flex-direction: column;
-			gap: 0.65rem;
-			padding-block: 0.75rem;
+			min-height: 4.25rem;
+			gap: 0.75rem;
+			padding-block: 0.5rem;
 		}
 
 		.brand {
-			align-self: center;
+			font-size: 1.05rem;
 		}
 
 		nav {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-		}
-
-		.browse-link,
-		nav :global(.gold-button) {
-			width: 100%;
+			margin-left: auto;
 		}
 
 		.browse-link {
-			justify-content: center;
+			display: none;
+		}
+
+		.community-link {
+			display: inline-flex;
+			padding-inline: 0.55rem;
+			font-size: 0.72rem;
+		}
+
+		nav :global(.gold-button) {
+			min-height: 2.5rem;
+			padding-inline: 0.8rem;
+			font-size: 0.77rem;
 		}
 
 		.footer-inner,

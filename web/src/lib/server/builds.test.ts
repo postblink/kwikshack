@@ -16,6 +16,7 @@ import {
 	createBuild,
 	distinctDecorItemCount,
 	enrichItems,
+	getBuild,
 	getBuildLikeState,
 	listBuilds,
 	listTags,
@@ -141,6 +142,10 @@ describe('buildSummary', () => {
 		expect(buildSummary(manifest)).toEqual({ decorCount: 3, roomCount: 2 });
 	});
 
+	it('uses manifest quantities for the placed decor count', () => {
+		expect(buildSummary(compactManifest)).toEqual({ decorCount: 2, roomCount: 0 });
+	});
+
 	it('counts distinct decor identities and ignores structural entries', () => {
 		const manifest: BuildManifest = {
 			...compactManifest,
@@ -234,8 +239,14 @@ describe('createBuild and listBuilds', () => {
 			description: 'Round-trip test',
 			blueprintType: 'Interior',
 			authorName: 'Builder',
-			manifest: compactManifest
+			manifest: compactManifest,
+			primaryScreenshot: '/uploads/test.png'
 		});
+	});
+
+	it('searches build descriptions and creator names as well as titles', () => {
+		expect(listBuilds({ q: 'Round-trip' }).map((build) => build.title)).toContain('Compact Build');
+		expect(listBuilds({ q: 'Builder' }).map((build) => build.title)).toContain('Compact Build');
 	});
 
 	it('upserts on duplicate shareCode instead of inserting a second row', () => {
@@ -252,7 +263,8 @@ describe('createBuild and listBuilds', () => {
 			title: 'Upsert Second',
 			blueprintType: 'Interior',
 			faction: null,
-			manifest: { ...compactManifest, shareCode: 'upsert-code' }
+			manifest: { ...compactManifest, shareCode: 'upsert-code' },
+			overwriteExisting: true
 		});
 
 		expect(second.id).toBe(first.id);
@@ -263,6 +275,26 @@ describe('createBuild and listBuilds', () => {
 		expect(listed[0].id).toBe(first.id);
 		expect(listed[0].title).toBe('Upsert Second');
 		expect(listed[0].blueprintType).toBe('Interior');
+	});
+
+	it('does not let the default public create path overwrite an existing share code', () => {
+		const first = createBuild({
+			shareCode: 'create-once-code',
+			title: 'Original Build',
+			blueprintType: 'House',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'create-once-code' }
+		});
+		const duplicate = createBuild({
+			shareCode: 'create-once-code',
+			title: 'Replacement Build',
+			blueprintType: 'Interior',
+			faction: null,
+			manifest: { ...compactManifest, shareCode: 'create-once-code' }
+		});
+
+		expect(duplicate.id).toBe(first.id);
+		expect(getBuild(first.id)?.title).toBe('Original Build');
 	});
 
 	it('filters by manifest itemID before applying pagination', () => {
@@ -283,6 +315,22 @@ describe('createBuild and listBuilds', () => {
 
 		const listed = listBuilds({ q: 'Item Filter', itemIDs: [701], limit: 1 });
 		expect(listed.map((build) => build.title)).toEqual(['Item Filter Match']);
+	});
+
+	it('matches decor filters against live recordID-only manifests', () => {
+		createBuild({
+			shareCode: 'record-filter-match',
+			title: 'Record Filter Match',
+			blueprintType: 'House',
+			faction: null,
+			manifest: {
+				...compactManifest,
+				shareCode: 'record-filter-match',
+				contentGroups: [{ contentType: 3, entries: [{ recordID: 200, total: 1 }] }]
+			}
+		});
+
+		expect(listBuilds({ itemIDs: [100] }).map((build) => build.title)).toContain('Record Filter Match');
 	});
 
 	it('sorts by distinct decor item count', () => {

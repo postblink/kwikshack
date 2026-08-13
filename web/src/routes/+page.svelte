@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import LikeButton from '$lib/components/LikeButton.svelte';
+	import BuildStatus from '$lib/components/BuildStatus.svelte';
+	import CommunityFindCard from '$lib/components/CommunityFindCard.svelte';
+	import CopyBlueprintButton from '$lib/components/CopyBlueprintButton.svelte';
 	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
+	import { pluralize } from '$lib/pluralize';
 	import { untrack } from 'svelte';
 	import type { PageData } from './$types';
 
@@ -25,6 +28,7 @@
 	let itemSearchLoading = $state(false);
 	let activeSuggestion = $state(-1);
 	let searchRequest = 0;
+	const hasActiveFilters = $derived(Boolean(q.trim() || type || faction || author || tag || selectedItems.length || sort !== 'newest'));
 
 	$effect(() => {
 		q = data.filters.q;
@@ -142,61 +146,49 @@
 	<header class="hero">
 		<div class="hero-copy">
 			<p class="eyebrow">The Warcraft housing gallery</p>
-			<h1>Every great build deserves a home.</h1>
-			<p class="tag">Discover player-made spaces, resolved from real in-game blueprint codes.</p>
+			<h1>Find your next build.</h1>
+			<p class="tag">Discover player-made spaces built from real in-game blueprint codes.</p>
 		</div>
-
-		<section class="how-it-works" aria-labelledby="how-it-works-title">
-			<h2 id="how-it-works-title">How it works</h2>
-			<ol class="steps">
-				<li>
-					<span class="step-number" aria-hidden="true">1</span>
-					<div>
-						<strong>Resolve a build in-game</strong>
-						<p>Paste a blueprint code into the KwikShack addon's Import window.</p>
-					</div>
-				</li>
-				<li>
-					<span class="step-number" aria-hidden="true">2</span>
-					<div>
-						<strong>Share the code</strong>
-						<p>Submit it yourself, or let the companion app handle it.</p>
-					</div>
-				</li>
-				<li>
-					<span class="step-number" aria-hidden="true">3</span>
-					<div>
-						<strong>Browse and get inspired</strong>
-						<p>Explore resolved housing builds right here.</p>
-					</div>
-				</li>
-			</ol>
-		</section>
 	</header>
 
-	<div class="browse-heading">
-		<h2>Browse the gallery</h2>
-		<p>Fresh ideas for every room, house, and corner of Azeroth.</p>
-	</div>
+	<section class="discovery" aria-labelledby="browse-title">
+		<div class="browse-heading">
+			<div>
+				<p class="eyebrow">Build discovery</p>
+				<h2 id="browse-title">What do you want to build?</h2>
+			</div>
+			<p>Search ideas, narrow the space, or start with a decor piece you love.</p>
+		</div>
 
-	<form action="/" method="get" class="filters" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
+		<form action="/" method="get" class="filters" onsubmit={(event) => { event.preventDefault(); applyFilters(); }}>
 		<input type="hidden" name="author" value={author} />
 		<input type="hidden" name="tag" value={tag} />
-		<div class="filter-controls">
-			<input type="search" name="q" placeholder="Search builds…" aria-label="Search builds" bind:value={q} />
-			<select name="type" aria-label="Filter by build type" bind:value={type}>
+		<div class="search-row">
+			<input type="search" name="q" placeholder="Search builds, descriptions, or creators…" aria-label="Search builds, descriptions, or creators" bind:value={q} />
+			<button type="submit">Search builds</button>
+		</div>
+		<div class="filter-controls" aria-label="Build filters">
+			<label>
+				<span>Space</span>
+				<select name="type" aria-label="Filter by build type" bind:value={type} onchange={applyFilters}>
 				<option value="">Any type</option>
 				<option value="House">House</option>
 				<option value="Interior">Interior</option>
 				<option value="Exterior">Exterior</option>
 				<option value="Room">Room</option>
-			</select>
-			<select name="faction" aria-label="Filter by faction" bind:value={faction}>
+				</select>
+			</label>
+			<label>
+				<span>Faction</span>
+				<select name="faction" aria-label="Filter by faction" bind:value={faction} onchange={applyFilters}>
 				<option value="">Any faction</option>
 				<option value="Alliance">Alliance</option>
 				<option value="Horde">Horde</option>
-			</select>
-			<select
+				</select>
+			</label>
+			<label>
+				<span>Sort</span>
+				<select
 				name="sort"
 				aria-label="Sort builds"
 				value={sort}
@@ -208,19 +200,22 @@
 				<option value="newest">Newest</option>
 				<option value="most_items">Most items</option>
 				<option value="most_liked">Most liked</option>
-			</select>
-			<button type="submit">Filter</button>
-			<a class="submit-link" href="/submit">+ Submit a build</a>
+				</select>
+			</label>
+			{#if hasActiveFilters}<a class="clear-link" href="/">Clear filters</a>{/if}
 		</div>
 
 		<div class="item-filter-row">
+			<div class="decor-intro">
+				<strong>Find builds using a decor item</strong>
+				<span>Start with something you own, use often, or want to build around.</span>
+			</div>
 			<div class="item-autocomplete">
-				<label for="item-search">Contains decor item</label>
 				<div class="item-search-box">
 					<input
 						id="item-search"
 						type="search"
-						placeholder="Try “chair”, “table”, or a category…"
+						placeholder="Try “fireplace”, “rug”, or a category…"
 						aria-label="Search decor items"
 						role="combobox"
 						aria-autocomplete="list"
@@ -294,39 +289,51 @@
 		{/if}
 
 		{#if data.availableTags.length}
-			<nav class="tag-browser" aria-label="Browse build tags">
-				<span>Browse by style</span>
-				{#each data.availableTags.slice(0, 16) as availableTag (availableTag.name)}
-					<a class:active={tag === availableTag.name} href={filterHref(author, availableTag.name)}>
-						#{availableTag.name}{#if availableTag.count > 0}<small>{availableTag.count}</small>{/if}
-					</a>
-				{/each}
-			</nav>
+			<details class="style-browser" open={Boolean(tag)}>
+				<summary>Browse inferred styles <span>{data.availableTags.length} available</span></summary>
+				<nav class="tag-browser" aria-label="Browse inferred build styles">
+					{#each data.availableTags.slice(0, 16) as availableTag (availableTag.name)}
+						<a class:active={tag === availableTag.name} href={filterHref(author, availableTag.name)}>
+							{availableTag.name.replaceAll('-', ' ')}{#if availableTag.count > 0}<small>{availableTag.count}</small>{/if}
+						</a>
+					{/each}
+				</nav>
+			</details>
 		{/if}
-	</form>
+		</form>
+	</section>
 
 	{#if data.featuredBuild}
 		<section class="featured" aria-labelledby="featured-title">
 			<div class="section-kicker">
-				<h2 id="featured-title">Featured Build</h2>
-				<span>From the community</span>
+				<h2 id="featured-title">A build to start with</h2>
+				<span>From the community gallery</span>
 			</div>
 			<article class="featured-card">
-				{#if data.featuredBuild.primaryScreenshot}
-					<img class="featured-image" src={data.featuredBuild.primaryScreenshot} alt="" />
-				{/if}
+				<a class="featured-visual" href={`/builds/${data.featuredBuild.id}`} aria-label={`View ${data.featuredBuild.title}`}>
+					{#if data.featuredBuild.primaryScreenshot}
+						<img class="featured-image" src={data.featuredBuild.primaryScreenshot} alt="" />
+					{:else}
+						<span class="image-placeholder large" aria-hidden="true"><span>⌂</span><small>Build preview</small></span>
+					{/if}
+				</a>
 				<div class="featured-content">
-					<span class="featured-type">{typeLabels[data.featuredBuild.blueprintType] ?? data.featuredBuild.blueprintType}</span>
+					<div class="featured-topline">
+						<span class="featured-type">{typeLabels[data.featuredBuild.blueprintType] ?? data.featuredBuild.blueprintType}</span>
+						<BuildStatus codeStatus={data.featuredBuild.codeStatus} />
+					</div>
 					<h3><a href={`/builds/${data.featuredBuild.id}`}>{data.featuredBuild.title}</a></h3>
-					<p class="featured-code">{data.featuredBuild.shareCode}</p>
 					<p class="featured-author">by {#if data.featuredBuild.authorName}<a href={`/?author=${encodeURIComponent(data.featuredBuild.authorName)}`}>{data.featuredBuild.authorName}</a>{:else}unknown{/if}</p>
 					{#if data.availableTags.length}
-						<TagChips tags={tagsFor(data.featuredBuild)} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
+						<TagChips tags={tagsFor(data.featuredBuild)} limit={3} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
 					{/if}
 					<div class="featured-counts">
+						<span>{data.featuredBuild.faction ?? 'Neutral'}</span>
 						<span><strong>{data.featuredBuild.summary.decorCount}</strong> decor</span>
-						<span><strong>{data.featuredBuild.summary.roomCount}</strong> rooms</span>
-						<LikeButton buildId={data.featuredBuild.id} initialCount={data.featuredBuild.likeCount} initialLiked={data.featuredBuild.liked} />
+						{#if data.featuredBuild.summary.roomCount > 0}<span><strong>{data.featuredBuild.summary.roomCount}</strong> {pluralize(data.featuredBuild.summary.roomCount, 'room')}</span>{/if}
+					</div>
+					<div class="featured-action">
+						<CopyBlueprintButton shareCode={data.featuredBuild.shareCode} buildTitle={data.featuredBuild.title} />
 					</div>
 				</div>
 			</article>
@@ -339,32 +346,85 @@
 			<p><a href="/submit">Submit a build</a> (or <code>POST /api/builds</code>)</p>
 		</div>
 	{:else}
+		<section class="gallery" aria-labelledby="gallery-title">
+			<div class="gallery-heading">
+				<h2 id="gallery-title">Explore the gallery</h2>
+				<span>{data.builds.length} {data.builds.length === 1 ? 'build' : 'builds'} shown</span>
+			</div>
 		<div class="grid">
 			{#each data.builds as b (b.id)}
 				<article class="card">
+					<a class="card-image" href={`/builds/${b.id}`} aria-label={`View ${b.title}`}>
+						{#if b.primaryScreenshot}
+							<img src={b.primaryScreenshot} alt="" />
+						{:else}
+							<span class="image-placeholder" aria-hidden="true"><span>⌂</span><small>Build preview</small></span>
+						{/if}
+					</a>
+					<div class="card-body">
 					<div class="card-head">
 						<span class="type">{typeLabels[b.blueprintType] ?? b.blueprintType}</span>
-						<span class="status {b.codeStatus}">{b.codeStatus}</span>
+						<BuildStatus codeStatus={b.codeStatus} />
 					</div>
 					<h2><a href={`/builds/${b.id}`}>{b.title}</a></h2>
-					<p class="code">{b.shareCode}</p>
-					<p class="meta">
-						{b.faction ?? 'Neutral'} · by {#if b.authorName}<a class="author-link" href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
+					<p class="creator">
+						by {#if b.authorName}<a class="author-link" href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
 					</p>
-					<p class="meta">
-						{b.summary.decorCount} decor · {b.summary.roomCount} rooms
-					</p>
+					<div class="structured-meta" aria-label="Build details">
+						<span>{b.faction ?? 'Neutral'}</span><span aria-hidden="true">·</span><span>{b.summary.decorCount} decor</span>
+						{#if b.summary.roomCount > 0}<span aria-hidden="true">·</span><span>{b.summary.roomCount} {pluralize(b.summary.roomCount, 'room')}</span>{/if}
+					</div>
 					{#if data.availableTags.length}
-						<TagChips tags={tagsFor(b)} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
+						<TagChips tags={tagsFor(b)} limit={3} activeTag={tag} hrefForTag={(value) => filterHref(author, value)} />
 					{/if}
 					<div class="card-actions">
-						<a href={`/builds/${b.id}`}>View build <span aria-hidden="true">→</span></a>
-						<LikeButton buildId={b.id} initialCount={b.likeCount} initialLiked={b.liked} />
+						<CopyBlueprintButton shareCode={b.shareCode} buildTitle={b.title} compact />
+					</div>
 					</div>
 				</article>
 			{/each}
 		</div>
+		</section>
 	{/if}
+
+	{#if data.communityFinds.length}
+		<section class="community-finds" aria-labelledby="community-finds-title">
+			<div class="gallery-heading">
+				<div>
+					<p class="eyebrow">Beyond the native gallery</p>
+					<h2 id="community-finds-title">Elsewhere in the community</h2>
+				</div>
+				<a href="/finds">See all Community Finds →</a>
+			</div>
+			<p class="community-finds-intro">Curated links to original work by WoW housing creators. These are clearly separated from import-ready KwikShack builds.</p>
+			<div class="community-grid">
+				{#each data.communityFinds as find (find.id)}
+					<CommunityFindCard {find} />
+				{/each}
+			</div>
+		</section>
+	{/if}
+
+	<section class="how-it-works" aria-labelledby="how-it-works-title">
+		<div class="how-heading">
+			<p class="eyebrow">From gallery to game</p>
+			<h2 id="how-it-works-title">How KwikShack works</h2>
+		</div>
+		<ol class="steps">
+			<li>
+				<span class="step-number" aria-hidden="true">1</span>
+				<div><strong>Import a Blueprint</strong><p>Paste a blueprint code into the KwikShack addon in-game.</p></div>
+			</li>
+			<li>
+				<span class="step-number" aria-hidden="true">2</span>
+				<div><strong>Share Your Build</strong><p>Submit the blueprint and screenshots yourself, or let the companion app handle the upload.</p></div>
+			</li>
+			<li>
+				<span class="step-number" aria-hidden="true">3</span>
+				<div><strong>Find Your Next Idea</strong><p>Browse builds, explore how other players use decor, and copy blueprints to try yourself.</p></div>
+			</li>
+		</ol>
+	</section>
 </div>
 
 <style>
@@ -376,7 +436,7 @@
 	.hero {
 		position: relative;
 		overflow: hidden;
-		padding: clamp(2rem, 6vw, 4.25rem);
+		padding: clamp(1.65rem, 3.5vw, 2.35rem);
 		border: 1px solid rgb(200 161 68 / 0.28);
 		border-radius: 0.75rem;
 		background:
@@ -400,21 +460,19 @@
 		max-width: 48rem;
 	}
 	.hero h1 {
-		max-width: 16ch;
+		max-width: 18ch;
 		margin: 0.45rem 0 0;
 		background: linear-gradient(180deg, #fff3c7 0%, var(--gold-bright) 42%, #ae8430 100%);
 		background-clip: text;
 		color: transparent;
-		font-size: clamp(2.65rem, 7vw, 5.25rem);
+		font-size: clamp(2.35rem, 5vw, 3.7rem);
 		font-weight: 600;
 		line-height: 1.03;
 		letter-spacing: -0.035em;
 		text-shadow: 0 12px 34px rgb(0 0 0 / 0.14);
 		text-wrap: balance;
 	}
-	.eyebrow,
-	.how-it-works h2,
-	.browse-heading h2 {
+	.eyebrow {
 		margin: 0;
 		color: var(--gold-dim);
 		font-family: var(--font-display);
@@ -432,9 +490,17 @@
 		text-wrap: pretty;
 	}
 	.how-it-works {
-		margin-top: clamp(2.25rem, 5vw, 3.5rem);
-		padding-top: 1.4rem;
-		border-top: 1px solid rgb(200 161 68 / 0.18);
+		margin-top: clamp(3rem, 7vw, 5rem);
+		padding: clamp(1.4rem, 4vw, 2.25rem);
+		border: 1px solid rgb(200 161 68 / 0.2);
+		border-radius: 0.68rem;
+		background: linear-gradient(145deg, rgb(38 33 26 / 0.74), rgb(27 23 18 / 0.76));
+	}
+	.how-heading h2 {
+		margin: 0.35rem 0 0;
+		color: var(--text);
+		font-size: clamp(1.35rem, 3vw, 1.8rem);
+		font-weight: 600;
 	}
 	.steps {
 		display: grid;
@@ -482,27 +548,44 @@
 		line-height: 1.5;
 		text-wrap: pretty;
 	}
+	.discovery {
+		margin-top: clamp(1.25rem, 3vw, 2rem);
+		padding: clamp(1rem, 3vw, 1.4rem);
+		border: 1px solid rgb(138 116 63 / 0.46);
+		border-radius: 0.62rem;
+		background: rgb(20 17 13 / 0.62);
+		box-shadow: var(--shadow-low);
+	}
 	.browse-heading {
 		display: flex;
-		align-items: end;
+		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		margin-top: clamp(2.5rem, 6vw, 4rem);
-		padding-bottom: 0.8rem;
-		border-bottom: 1px solid var(--border);
+		padding-bottom: 0.9rem;
 	}
-	.browse-heading p {
+	.browse-heading h2 {
+		margin: 0.25rem 0 0;
+		color: var(--text);
+		font-size: clamp(1.15rem, 3vw, 1.55rem);
+		font-weight: 600;
+	}
+	.browse-heading > p {
+		max-width: 34rem;
 		margin: 0;
 		color: var(--text-muted);
-		font-size: 0.82rem;
+		font-size: 0.8rem;
+		text-align: right;
 	}
 	.filters {
-		margin: 1rem 0 1.5rem;
-	}
-	.filter-controls {
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(22rem, 1fr) auto;
 		gap: 0.65rem;
-		flex-wrap: wrap;
+		border-top: 1px solid var(--border);
+		padding-top: 0.9rem;
+	}
+	.search-row {
+		display: flex;
+		gap: 0.55rem;
 	}
 	.filters input,
 	.filters select {
@@ -517,8 +600,10 @@
 			border-color 150ms ease,
 			box-shadow 150ms ease;
 	}
-	.filter-controls > input {
-		flex: 1 1 16rem;
+	.search-row input {
+		flex: 1;
+		min-width: 0;
+		font-size: 0.95rem;
 	}
 	.filters input::placeholder {
 		color: #827866;
@@ -529,52 +614,74 @@
 			inset 0 1px 3px rgb(0 0 0 / 0.2),
 			0 0 0 3px rgb(200 161 68 / 0.08);
 	}
-	.filter-controls > button,
-	.submit-link {
+	.search-row button {
 		display: inline-flex;
 		min-height: 2.75rem;
 		align-items: center;
 		justify-content: center;
-		padding: 0.55rem 0.95rem;
-		border-radius: 0.42rem;
-		font-size: 0.84rem;
-		font-weight: 750;
-		transition:
-			border-color 150ms ease,
-			box-shadow 150ms ease,
-			filter 150ms ease,
-			transform 150ms ease;
-	}
-	.filter-controls > button {
+		padding: 0.55rem 1.2rem;
 		border: 1px solid #6f541c;
+		border-radius: 0.42rem;
 		background: linear-gradient(to bottom, #f1d686 0, #d2a944 9%, #9b7025 62%, #76511b 100%);
 		box-shadow:
 			inset 0 1px rgb(255 247 210 / 0.72),
 			inset 0 -1px rgb(55 32 4 / 0.62);
 		color: #1b1409;
+		font-size: 0.84rem;
+		font-weight: 750;
 		text-shadow: 0 1px rgb(255 232 154 / 0.32);
+		transition:
+			filter 150ms ease,
+			transform 150ms ease;
 	}
-	.submit-link {
-		margin-left: auto;
-		border: 1px solid var(--gold-dim);
-		background: rgb(200 161 68 / 0.07);
-		color: var(--gold-bright);
+	.filter-controls {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.55rem;
+		margin-top: 0;
+		flex-wrap: wrap;
+	}
+	.filter-controls label {
+		display: grid;
+		gap: 0.26rem;
+		min-width: 9.5rem;
+		color: var(--text-muted);
+		font-size: 0.66rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	.filter-controls select {
+		width: 100%;
+		min-width: 0;
+		font-size: 0.82rem;
+		text-transform: none;
+		letter-spacing: 0;
+	}
+	.clear-link {
+		display: inline-flex;
+		min-height: 2.75rem;
+		align-items: center;
+		padding: 0.55rem 0.7rem;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-weight: 700;
 		text-decoration: none;
 	}
+	.clear-link:hover {
+		color: var(--text);
+	}
 	@media (hover: hover) and (pointer: fine) {
-		.filter-controls > button:hover {
+		.search-row button:hover {
 			filter: brightness(1.12);
 			transform: translateY(-1px);
 		}
-		.submit-link:hover {
-			border-color: var(--gold);
-			background: rgb(200 161 68 / 0.12);
-			box-shadow: 0 4px 16px rgb(200 161 68 / 0.08);
-		}
 	}
 	.item-filter-row {
-		display: flex;
-		align-items: flex-end;
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: minmax(13rem, 0.7fr) minmax(18rem, 1.3fr);
+		align-items: end;
 		gap: 0.75rem;
 		margin-top: 0.75rem;
 		padding: 0.85rem;
@@ -582,7 +689,24 @@
 		border-radius: 0.52rem;
 		background: rgb(29 25 20 / 0.62);
 	}
+	.decor-intro {
+		display: grid;
+		gap: 0.28rem;
+		align-self: center;
+	}
+	.decor-intro strong {
+		color: var(--gold-bright);
+		font-family: var(--font-display);
+		font-size: 0.78rem;
+		letter-spacing: 0.045em;
+	}
+	.decor-intro span {
+		color: var(--text-muted);
+		font-size: 0.74rem;
+		line-height: 1.45;
+	}
 	.active-filters {
+		grid-column: 1 / -1;
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
@@ -616,29 +740,43 @@
 	.active-filters button:hover {
 		color: var(--text);
 	}
+	.style-browser {
+		grid-column: 1 / -1;
+		margin-top: 0.75rem;
+		border: 1px solid var(--border);
+		border-radius: 0.52rem;
+		background: rgb(29 25 20 / 0.45);
+	}
+	.style-browser summary {
+		min-height: 2.75rem;
+		padding: 0.78rem 0.85rem;
+		color: var(--gold-dim);
+		font-family: var(--font-display);
+		font-size: 0.69rem;
+		font-weight: 700;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+	.style-browser summary span {
+		margin-left: 0.35rem;
+		color: var(--text-muted);
+		font-family: system-ui, sans-serif;
+		font-size: 0.65rem;
+		font-weight: 500;
+		letter-spacing: 0;
+		text-transform: none;
+	}
 	.tag-browser {
 		display: flex;
 		align-items: center;
 		gap: 0.45rem;
 		flex-wrap: wrap;
-		margin-top: 0.75rem;
-		padding: 0.7rem 0.8rem;
-		border: 1px solid var(--border);
-		border-radius: 0.52rem;
-		background: rgb(29 25 20 / 0.45);
-	}
-	.tag-browser > span {
-		margin-right: 0.2rem;
-		color: var(--gold-dim);
-		font-family: var(--font-display);
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		padding: 0 0.8rem 0.8rem;
 	}
 	.tag-browser a {
 		display: inline-flex;
-		min-height: 2.75rem;
+		min-height: 2.5rem;
 		align-items: center;
 		gap: 0.35rem;
 		padding: 0.3rem 0.65rem;
@@ -650,7 +788,7 @@
 		font-size: 0.68rem;
 		font-weight: 700;
 		text-decoration: none;
-		text-transform: lowercase;
+		text-transform: capitalize;
 	}
 	.tag-browser a.active {
 		border-color: var(--gold);
@@ -667,16 +805,6 @@
 		position: relative;
 		flex: 1 1 22rem;
 		min-width: 0;
-	}
-	.item-autocomplete > label {
-		display: block;
-		margin-bottom: 0.42rem;
-		color: var(--gold-dim);
-		font-family: var(--font-display);
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
 	}
 	.item-search-box {
 		position: relative;
@@ -758,7 +886,7 @@
 	}
 	.item-chips {
 		display: flex;
-		flex: 2 1 28rem;
+		grid-column: 1 / -1;
 		gap: 0.45rem;
 		flex-wrap: wrap;
 	}
@@ -798,7 +926,7 @@
 		color: var(--text);
 	}
 	.featured {
-		margin: 1.5rem 0;
+		margin: clamp(1.5rem, 4vw, 2.5rem) 0;
 	}
 	.section-kicker {
 		display: flex;
@@ -819,11 +947,10 @@
 		font-size: 0.72rem;
 	}
 	.featured-card {
-		position: relative;
-		display: flex;
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
 		overflow: hidden;
-		min-height: clamp(18rem, 38vw, 25rem);
-		align-items: flex-end;
+		min-height: clamp(20rem, 36vw, 25rem);
 		border: 1px solid rgb(232 200 115 / 0.52);
 		border-radius: 0.72rem;
 		background:
@@ -832,18 +959,18 @@
 		box-shadow:
 			inset 0 1px rgb(255 245 204 / 0.11),
 			var(--shadow-high);
-		color: var(--text);
-		text-decoration: none;
 		transition:
 			border-color 160ms ease,
 			box-shadow 160ms ease,
 			transform 160ms ease;
 	}
-	.featured-card::after {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(90deg, rgb(16 13 10 / 0.97) 0%, rgb(16 13 10 / 0.8) 42%, rgb(16 13 10 / 0.15) 100%);
-		content: '';
+	.featured-visual {
+		position: relative;
+		display: block;
+		min-height: 20rem;
+		overflow: hidden;
+		border-right: 1px solid rgb(138 116 63 / 0.45);
+		background: #17130f;
 	}
 	.featured-image {
 		position: absolute;
@@ -853,10 +980,17 @@
 		object-fit: cover;
 	}
 	.featured-content {
-		position: relative;
-		z-index: 1;
-		width: min(34rem, 78%);
-		padding: clamp(1.4rem, 4vw, 2.6rem);
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		justify-content: center;
+		padding: clamp(1.35rem, 3vw, 2.15rem);
+	}
+	.featured-topline {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
 	}
 	.featured-type {
 		display: inline-block;
@@ -874,7 +1008,7 @@
 		margin: 0.75rem 0 0.35rem;
 		color: #fff3cf;
 		font-family: var(--font-display);
-		font-size: clamp(1.75rem, 5vw, 3.15rem);
+		font-size: clamp(1.55rem, 3.7vw, 2.45rem);
 		font-weight: 600;
 		line-height: 1.08;
 		text-wrap: balance;
@@ -882,12 +1016,6 @@
 	.featured-content h3 a {
 		color: inherit;
 		text-decoration: none;
-	}
-	.featured-code {
-		margin: 0.65rem 0 0;
-		color: var(--gold-bright);
-		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-		font-size: clamp(0.82rem, 2vw, 1rem);
 	}
 	.featured-author {
 		margin: 0.35rem 0 0;
@@ -902,7 +1030,8 @@
 	}
 	.featured-counts {
 		display: flex;
-		gap: 0.65rem;
+		gap: 0.42rem;
+		flex-wrap: wrap;
 		margin-top: 1.15rem;
 	}
 	.featured-counts span {
@@ -917,8 +1046,11 @@
 		color: var(--text);
 		font-size: 0.92rem;
 	}
+	.featured-action {
+		margin-top: 1rem;
+	}
 	@media (hover: hover) and (pointer: fine) {
-		.featured-card:hover {
+		.featured-card:has(.featured-visual:hover, h3 a:hover) {
 			border-color: var(--gold-bright);
 			box-shadow:
 				inset 0 1px rgb(255 245 204 / 0.14),
@@ -944,20 +1076,74 @@
 		font-size: clamp(1.05rem, 3vw, 1.3rem);
 		font-weight: 600;
 	}
+	.gallery {
+		margin-top: clamp(2rem, 5vw, 3.25rem);
+	}
+	.community-finds {
+		margin-top: clamp(2.5rem, 6vw, 4rem);
+		padding-top: clamp(1.5rem, 4vw, 2.25rem);
+		border-top: 1px solid var(--border);
+	}
+	.community-finds .gallery-heading {
+		align-items: center;
+		border-bottom: 0;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+	.community-finds .gallery-heading h2 {
+		margin-top: 0.28rem;
+	}
+	.community-finds .gallery-heading > a {
+		min-height: 2.75rem;
+		align-content: center;
+		font-size: 0.78rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+	.community-finds-intro {
+		max-width: 58ch;
+		margin: 0.7rem 0 1rem;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		line-height: 1.55;
+	}
+	.community-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+		gap: 1rem;
+	}
+	.gallery-heading {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 0.8rem;
+		padding-bottom: 0.65rem;
+		border-bottom: 1px solid var(--border);
+	}
+	.gallery-heading h2 {
+		margin: 0;
+		color: var(--gold-bright);
+		font-size: 0.9rem;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+	}
+	.gallery-heading span {
+		color: var(--text-muted);
+		font-size: 0.74rem;
+	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-		gap: 0.9rem;
+		grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+		gap: 1rem;
 	}
 	.card {
-		position: relative;
-		display: flex;
-		min-height: 18rem;
-		flex-direction: column;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		overflow: hidden;
+		min-height: 25rem;
 		border: 1px solid rgb(138 116 63 / 0.5);
-		border-radius: 0.58rem;
-		padding: 1.1rem;
-		text-decoration: none;
+		border-radius: 0.62rem;
 		color: var(--text);
 		background: linear-gradient(150deg, var(--surface-2), var(--surface));
 		box-shadow:
@@ -978,8 +1164,59 @@
 				0 0 22px rgb(200 161 68 / 0.08);
 		}
 	}
+	.card-image {
+		position: relative;
+		display: block;
+		aspect-ratio: 16 / 10;
+		overflow: hidden;
+		border-bottom: 1px solid rgb(138 116 63 / 0.42);
+		background: #17130f;
+	}
+	.card-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 220ms ease;
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.card-image:hover img {
+			transform: scale(1.025);
+		}
+	}
+	.image-placeholder {
+		display: grid;
+		width: 100%;
+		height: 100%;
+		place-content: center;
+		gap: 0.28rem;
+		background:
+			radial-gradient(circle at 50% 26%, rgb(232 200 115 / 0.18), transparent 8rem),
+			linear-gradient(145deg, #30271c, #18140f 72%);
+		color: var(--gold-dim);
+		text-align: center;
+	}
+	.image-placeholder > span {
+		font-family: Georgia, serif;
+		font-size: 2.2rem;
+	}
+	.image-placeholder small {
+		font-family: var(--font-display);
+		font-size: 0.65rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+	}
+	.image-placeholder.large > span {
+		font-size: 3.2rem;
+	}
+	.card-body {
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		padding: 1rem;
+	}
 	.card h2 {
-		margin: 0.65rem 0 0.3rem;
+		margin: 0.65rem 0 0.18rem;
 		color: var(--text);
 		font-size: 1.05rem;
 		font-weight: 600;
@@ -990,30 +1227,25 @@
 		color: inherit;
 		text-decoration: none;
 	}
-	.card h2 a::after {
-		position: absolute;
-		inset: 0;
-		content: '';
-	}
-	.code {
-		margin: 0.25rem 0;
+	.card h2 a:hover {
 		color: var(--gold-bright);
-		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-		font-size: 0.85rem;
 	}
-	.meta {
-		margin: 0.5rem 0 0;
+	.creator {
+		margin: 0;
 		color: var(--text-muted);
-		font-size: 0.85rem;
-	}
-	.author-link,
-	.card :global(.tag-chips),
-	.card-actions {
-		position: relative;
-		z-index: 1;
+		font-size: 0.78rem;
 	}
 	.author-link {
 		color: var(--text-muted);
+	}
+	.structured-meta {
+		display: flex;
+		gap: 0.35rem;
+		flex-wrap: wrap;
+		margin-top: 0.75rem;
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
 	}
 	.card :global(.tag-chips) {
 		margin-top: 0.8rem;
@@ -1021,16 +1253,10 @@
 	.card-actions {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: flex-start;
 		gap: 0.75rem;
 		margin-top: auto;
 		padding-top: 1rem;
-	}
-	.card-actions > a {
-		color: var(--gold-bright);
-		font-size: 0.78rem;
-		font-weight: 700;
-		text-decoration: none;
 	}
 	.card-head {
 		display: flex;
@@ -1048,14 +1274,13 @@
 		font-weight: 700;
 		letter-spacing: 0.035em;
 	}
-	.status.active {
-		color: var(--ok);
-	}
-	.status.expired {
-		color: var(--bad);
-	}
-	.status.unverified {
-		color: var(--warn);
+	@media (max-width: 900px) {
+		.filters {
+			display: block;
+		}
+		.filter-controls {
+			margin-top: 0.65rem;
+		}
 	}
 	@media (max-width: 700px) {
 		.wrap {
@@ -1065,7 +1290,7 @@
 			padding: 1.4rem;
 		}
 		.hero h1 {
-			font-size: clamp(2.35rem, 12vw, 3.45rem);
+			font-size: clamp(2.2rem, 11vw, 3.2rem);
 		}
 		.steps {
 			grid-template-columns: 1fr;
@@ -1076,31 +1301,63 @@
 			flex-direction: column;
 			gap: 0.3rem;
 		}
-		.filter-controls > input {
-			flex-basis: 100%;
+		.browse-heading > p {
+			text-align: left;
+		}
+		.filter-controls label {
+			flex: 1 1 8rem;
 		}
 		.item-filter-row {
-			align-items: stretch;
-			flex-direction: column;
+			grid-template-columns: 1fr;
 		}
 		.item-chips {
-			flex-basis: auto;
+			grid-column: auto;
 		}
-		.featured-card::after {
-			background: linear-gradient(0deg, rgb(16 13 10 / 0.97) 0%, rgb(16 13 10 / 0.58) 72%, rgb(16 13 10 / 0.18) 100%);
+		.featured-card {
+			grid-template-columns: 1fr;
+		}
+		.featured-visual {
+			min-height: 15rem;
+			border-right: 0;
+			border-bottom: 1px solid rgb(138 116 63 / 0.45);
 		}
 		.featured-content {
-			width: 100%;
+			padding: 1.25rem;
 		}
-		.submit-link {
-			margin-left: 0;
+		.grid {
+			grid-template-columns: 1fr;
 		}
 	}
 	@media (max-width: 430px) {
-		.filter-controls select,
-		.filter-controls > button,
-		.submit-link {
-			flex: 1 1 calc(50% - 0.65rem);
+		.discovery {
+			padding: 0.85rem;
+		}
+		.search-row {
+			align-items: stretch;
+			flex-direction: column;
+		}
+		.search-row button {
+			width: 100%;
+		}
+		.filter-controls {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+		}
+		.filter-controls label:last-of-type,
+		.clear-link {
+			grid-column: 1 / -1;
+		}
+		.clear-link {
+			justify-content: center;
+		}
+		.section-kicker {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.2rem;
+		}
+		.featured-topline {
+			align-items: flex-start;
+			flex-direction: column;
 		}
 	}
 </style>

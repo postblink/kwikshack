@@ -1,4 +1,5 @@
 import { buildSummary, getFeaturedBuild, listBuilds, type BuildSort } from '$lib/server/builds';
+import { listCommunityFinds } from '$lib/server/community-finds';
 import { getDecorItems } from '$lib/server/decor';
 import type { PageServerLoad } from './$types';
 
@@ -64,11 +65,13 @@ export const load: PageServerLoad = async ({ url, fetch }) => {
 		const item = selectedByID.get(itemID);
 		return item ? [item] : [];
 	});
-	const featured = getFeaturedBuild();
+	const isFiltered = Boolean(q || type || faction || author || activeTag || itemIDs.length || sort !== 'newest');
+	const featured = isFiltered ? null : getFeaturedBuild();
 	const featuredBuild = featured ? { ...featured, summary: buildSummary(featured.manifest) } : null;
 	return {
 		builds,
 		featuredBuild,
+		communityFinds: isFiltered ? [] : listCommunityFinds({ limit: 3 }),
 		selectedItems,
 		availableTags,
 		filters: { q, type, faction, author, tag: activeTag, sort }
