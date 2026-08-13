@@ -12,8 +12,11 @@
 <header class="site-header">
 	<div class="header-inner">
 		<a class="brand" href="/" aria-label="KwikShack home">
-			<span class="brand-mark" aria-hidden="true">⌂</span>
-			<span>KwikShack</span>
+			<span class="brand-word">Kwik</span>
+			<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+				<path d="M4 14.5 16 4l12 10.5v12h-8v-8h-8v8H4z" />
+			</svg>
+			<span class="brand-word">Shack</span>
 		</a>
 
 		<nav aria-label="Primary navigation">
@@ -69,28 +72,29 @@
 	.brand {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.62rem;
+		gap: 0.28rem;
 		color: var(--gold-bright);
-		font-family: var(--font-display);
+		font-family: ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
 		font-size: clamp(1.15rem, 3vw, 1.42rem);
-		font-weight: 700;
-		letter-spacing: 0.045em;
+		font-weight: 850;
+		letter-spacing: -0.035em;
+		line-height: 1;
 		text-decoration: none;
-		text-shadow: 0 2px 14px rgb(200 161 68 / 0.18);
+	}
+
+	.brand-word {
+		display: block;
 	}
 
 	.brand-mark {
-		display: grid;
-		width: 2rem;
-		height: 2rem;
-		place-items: center;
-		border: 1px solid var(--gold-dim);
-		border-radius: 0.32rem 0.32rem 0.46rem 0.46rem;
-		background: linear-gradient(145deg, var(--surface-2), var(--surface));
-		box-shadow: inset 0 1px rgb(232 200 115 / 0.12);
-		font-family: Georgia, serif;
-		font-size: 1.3rem;
-		line-height: 1;
+		width: 1.05em;
+		height: 1.05em;
+		flex: 0 0 auto;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2.5;
 	}
 
 	nav {
