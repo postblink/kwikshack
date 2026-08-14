@@ -1,0 +1,15 @@
+{
+  "source": "https://wago.tools/db2/HouseDecor/csv",
+  "file": "HouseDecor.12.1.0.69299.csv",
+  "gameVersion": "12.1.0.69299",
+  "gameBuild": 69299,
+  "liveRows": 2266,
+  "internalRowsExcluded": 645,
+  "retainedUnverified": [
+    {
+      "itemID": 267265,
+      "recordID": null,
+      "name": "Loose Wisps of Hay"
+    }
+  ]
+}

@@ -6,6 +6,7 @@
 	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
 	import { pluralize } from '$lib/pluralize';
+	import { blueprintScopeLabel } from '$lib/types/manifest';
 
 	let { data } = $props<{ data: PageData }>();
 	const b = $derived(data.build);
@@ -13,6 +14,7 @@
 	const typeLabels: Record<string, string> = { '1': 'Room', '2': 'Interior', '3': 'House', '4': 'Exterior' };
 
 	const typeLabel = $derived(typeLabels[String(b.blueprintType)] ?? b.blueprintType);
+	const buildKind = $derived(blueprintScopeLabel(b.blueprintScope) ?? typeLabel);
 	const tags = $derived.by(() => {
 		const value = (b as { tags?: unknown }).tags;
 		return Array.isArray(value) ? value.filter((tag): tag is string => typeof tag === 'string') : [];
@@ -23,7 +25,7 @@
 	const socialDescription = $derived(
 		(
 			b.description?.trim() ||
-				`${typeLabel} blueprint by ${b.authorName ?? 'an unknown builder'} with ${data.items.length} unique ${pluralize(data.items.length, 'decor item')}.`
+				`${buildKind} blueprint by ${b.authorName ?? 'an unknown builder'} with ${data.items.length} unique ${pluralize(data.items.length, 'decor item')}.`
 		).slice(0, 200)
 	);
 
@@ -70,7 +72,7 @@
 			<div>
 				<h1>{b.title}</h1>
 				<p class="meta">
-					{typeLabel} · {b.faction ?? 'Neutral'} · by {#if b.authorName}<a href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
+					{buildKind} blueprint · {b.faction ?? 'Neutral'} · by {#if b.authorName}<a href={`/?author=${encodeURIComponent(b.authorName)}`}>{b.authorName}</a>{:else}unknown{/if}
 				</p>
 			</div>
 			<div class="title-actions">

@@ -1,13 +1,14 @@
 import { db } from './db';
 import { builds, decorItems, likes, screenshots, users } from './db/schema';
 import { asc, desc, eq, inArray, like, and, or, isNull, count } from 'drizzle-orm';
-import type { BuildManifest, PlacementData } from '$lib/types/manifest';
+import type { BlueprintScope, BuildManifest, PlacementData } from '$lib/types/manifest';
 
 export interface BuildRecord {
 	id: string;
 	shareCode: string;
 	codeStatus: string;
 	blueprintType: string;
+	blueprintScope: BlueprintScope | null;
 	faction: string | null;
 	title: string;
 	description: string | null;
@@ -73,6 +74,7 @@ export function createBuild(input: {
 	title: string;
 	description?: string;
 	blueprintType: string;
+	blueprintScope?: BlueprintScope | null;
 	faction: string | null;
 	authorName?: string;
 	manifest: BuildManifest;
@@ -92,6 +94,7 @@ export function createBuild(input: {
 			shareCode: input.shareCode,
 			codeStatus: 'unverified',
 			blueprintType: input.blueprintType,
+			blueprintScope: input.blueprintScope ?? null,
 			faction: input.faction,
 			title: input.title,
 			description: input.description ?? '',
@@ -106,6 +109,7 @@ export function createBuild(input: {
 			set: {
 				codeStatus: 'unverified',
 				blueprintType: input.blueprintType,
+				blueprintScope: input.blueprintScope ?? null,
 				faction: input.faction,
 				title: input.title,
 				description: input.description ?? '',
@@ -255,6 +259,7 @@ function toBuildRecord(b: typeof builds.$inferSelect, authorName: string | null)
 		shareCode: b.shareCode,
 		codeStatus: b.codeStatus,
 		blueprintType: b.blueprintType,
+		blueprintScope: b.blueprintScope,
 		faction: b.faction,
 		title: b.title,
 		description: b.description,

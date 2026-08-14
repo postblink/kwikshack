@@ -29,6 +29,8 @@ export const builds = sqliteTable(
 		codeStatus: text('code_status').notNull().default('unverified'),
 		// House | Interior | Exterior | Room
 		blueprintType: text('blueprint_type').notNull().default('House'),
+		// Optional Blizzard blueprint export scope. Null preserves legacy rows.
+		blueprintScope: text('blueprint_scope', { enum: ['full_house', 'interior', 'exterior', 'room'] }),
 		// Alliance | Horde | null (interiors/rooms are faction-neutral)
 		faction: text('faction'),
 		title: text('title').notNull(),

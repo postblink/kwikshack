@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isBuildManifest, isSubmitPayload, validateSubmitPayload } from './manifest';
+import { blueprintScopeLabel, isBuildManifest, isSubmitPayload, validateSubmitPayload } from './manifest';
 
 const manifest = {
 	shareCode: 'valid-code',
@@ -64,5 +64,25 @@ describe('isSubmitPayload', () => {
 				screenshotUrls: ['/uploads/7b3c8d04-f64d-40ca-a82e-6131e2c01481.png']
 			})
 		).toBe(true);
+	});
+
+	it.each(['full_house', 'interior', 'exterior', 'room'])('accepts blueprint scope %s', (blueprintScope) => {
+		expect(isSubmitPayload({ shareCode: 'valid-code', blueprintScope, manifest })).toBe(true);
+	});
+
+	it.each([
+		['full_house', 'Full House'],
+		['interior', 'Interior'],
+		['exterior', 'Exterior'],
+		['room', 'Room']
+	])('renders blueprint scope %s as %s', (blueprintScope, label) => {
+		expect(blueprintScopeLabel(blueprintScope)).toBe(label);
+	});
+
+	it('keeps blueprint scope optional and rejects unknown values', () => {
+		expect(isSubmitPayload({ shareCode: 'valid-code', manifest })).toBe(true);
+		expect(validateSubmitPayload({ shareCode: 'valid-code', blueprintScope: 'garden', manifest })).toBe(
+			'blueprintScope must be full_house, interior, exterior, or room'
+		);
 	});
 });

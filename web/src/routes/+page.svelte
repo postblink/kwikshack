@@ -6,6 +6,7 @@
 	import TagChips from '$lib/components/TagChips.svelte';
 	import { iconUrl } from '$lib/icon';
 	import { pluralize } from '$lib/pluralize';
+	import { blueprintScopeLabel } from '$lib/types/manifest';
 	import { untrack } from 'svelte';
 	import type { PageData } from './$types';
 
@@ -87,6 +88,10 @@
 		if (!build || typeof build !== 'object') return [];
 		const tags = (build as { tags?: unknown }).tags;
 		return Array.isArray(tags) ? tags.filter((value): value is string => typeof value === 'string') : [];
+	}
+
+	function buildKind(build: { blueprintType: string; blueprintScope?: unknown }): string {
+		return blueprintScopeLabel(build.blueprintScope) ?? typeLabels[build.blueprintType] ?? build.blueprintType;
 	}
 
 	function applyFilters() {
@@ -319,7 +324,7 @@
 				</a>
 				<div class="featured-content">
 					<div class="featured-topline">
-						<span class="featured-type">{typeLabels[data.featuredBuild.blueprintType] ?? data.featuredBuild.blueprintType}</span>
+						<span class="featured-type">{buildKind(data.featuredBuild)}</span>
 						<BuildStatus codeStatus={data.featuredBuild.codeStatus} />
 					</div>
 					<h3><a href={`/builds/${data.featuredBuild.id}`}>{data.featuredBuild.title}</a></h3>
@@ -363,7 +368,7 @@
 					</a>
 					<div class="card-body">
 					<div class="card-head">
-						<span class="type">{typeLabels[b.blueprintType] ?? b.blueprintType}</span>
+						<span class="type">{buildKind(b)}</span>
 						<BuildStatus codeStatus={b.codeStatus} />
 					</div>
 					<h2><a href={`/builds/${b.id}`}>{b.title}</a></h2>

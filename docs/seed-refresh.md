@@ -12,14 +12,16 @@ add decor, so the catalog drifts from reality until someone re-runs this path.
 
 2. **Enrich** — `enrich_icons.mjs` attaches real icon IDs → `scripts/seed/catalog.enriched.json`.
 
-3. **Merge DB2** — `merge_db2.mjs` fetches the authoritative `HouseDecor` DB2
+3. **Merge DB2** — `merge_db2.mjs` fetches the game-derived `HouseDecor` DB2
    table from wago.tools and merges it into `catalog.enriched.json`. HDGR is a
-   community snapshot that misses items; DB2 has the full catalog (2268 items
-   vs HDGR's ~1906) plus a `recordID` (housing catalog id) and thumbnail icon
-   for every item — but **no style facets** (mood/culture/size are HDGR-only).
-   The merge backfills `recordID`/`icon` on items we already have, adds DB2-only
-   items (name + icon + recordID; tags/category left null for HDGR to fill
-   later), and keeps HDGR-only items (reclassified/removed). Run
+   community snapshot that misses items; DB2 has the complete client table plus
+   a `recordID` (housing catalog id) and thumbnail icon — but **no acquisition
+   source or style facets** (mood/culture/size are HDGR-only). The merge updates
+   DB2-backed names, record IDs, and thumbnails, adds DB2-only items, and rejects
+   explicit DNT, AUTOGEN, deprecated, and test rows. Seed-only rows that have no
+   current DB2 match are retained as unverified rather than silently deleted.
+   The exact input filename/build and retained rows are recorded in
+   `scripts/seed/catalog.provenance.json`. Run
    `node web/scripts/merge_db2.mjs` after each patch (it fetches the latest
    build itself; pass a local CSV path to work offline).
 
@@ -68,13 +70,20 @@ changes (new tables/columns). Review its printed statements before relying on it
 for anything destructive. `seed_db.mjs` is idempotent and must not delete builds
 or overwrite user data.
 
+`decor_items.source` is a best-effort single label, not a normalized acquisition
+model. It currently represents crafted professions and a small set of
+community-curated overrides. Vendor inventories, Endeavors, currencies, and
+unknown-yet-live sources need a separate one-to-many acquisition model before
+KwikShack can present them reliably.
+
 ## Checklist when a new patch ships decor
 
 - [ ] Re-pull the latest HDGR data (it updates per patch).
 - [ ] `node web/scripts/extract_catalog.mjs` → inspect item count + tag coverage.
 - [ ] `node web/scripts/enrich_icons.mjs`
-- [ ] `node web/scripts/merge_db2.mjs` → fetch latest HouseDecor, backfill recordID/icon, add DB2-only items.
+- [ ] `node web/scripts/merge_db2.mjs` → fetch latest HouseDecor, sync authoritative fields, add DB2-only items, and inspect exclusions.
 - [ ] Regenerate `deploy/kwikshack.db` (fresh `db:push` + `seed_db.mjs`) for next clean deploy.
-- [ ] `make verify` (luac/luacheck + svelte-check + vitest + companion decode still green).
+- [ ] `make verify` (luac/luacheck + svelte-check + companion decode still green).
+- [ ] `cd web && pnpm test && pnpm run build` (Vitest + production bundle still green).
 - [ ] Run the live-volume migration above if the catalog should update the running site now.
 - [ ] Redeploy.

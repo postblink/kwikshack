@@ -3,6 +3,24 @@
 
 import { isLocalUploadUrl } from '$lib/upload-path';
 
+export const BLUEPRINT_SCOPES = ['full_house', 'interior', 'exterior', 'room'] as const;
+export type BlueprintScope = (typeof BLUEPRINT_SCOPES)[number];
+
+export const BLUEPRINT_SCOPE_LABELS: Record<BlueprintScope, string> = {
+	full_house: 'Full House',
+	interior: 'Interior',
+	exterior: 'Exterior',
+	room: 'Room'
+};
+
+export function isBlueprintScope(value: unknown): value is BlueprintScope {
+	return typeof value === 'string' && (BLUEPRINT_SCOPES as readonly string[]).includes(value);
+}
+
+export function blueprintScopeLabel(value: unknown): string | null {
+	return isBlueprintScope(value) ? BLUEPRINT_SCOPE_LABELS[value] : null;
+}
+
 export interface BudgetEntry {
 	cost: number;
 	max: number;
@@ -80,6 +98,7 @@ export interface SubmitBuildPayload {
 	title?: string;
 	description?: string;
 	blueprintType?: string;
+	blueprintScope?: BlueprintScope;
 	faction?: string | null;
 	authorName?: string;
 	manifest: BuildManifest;
@@ -115,6 +134,9 @@ export function validateSubmitPayload(v: unknown): string | null {
 	if (!optionalString(p.authorName, 80)) return 'authorName must be at most 80 characters';
 	if (p.blueprintType !== undefined && !['House', 'Interior', 'Exterior', 'Room'].includes(String(p.blueprintType))) {
 		return 'blueprintType must be House, Interior, Exterior, or Room';
+	}
+	if (p.blueprintScope !== undefined && !isBlueprintScope(p.blueprintScope)) {
+		return 'blueprintScope must be full_house, interior, exterior, or room';
 	}
 	if (p.faction !== undefined && p.faction !== null && !['Alliance', 'Horde'].includes(String(p.faction))) {
 		return 'faction must be Alliance, Horde, or null';

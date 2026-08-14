@@ -24863,6 +24863,16 @@
   "tags": []
  },
  {
+  "itemID": 263709,
+  "name": "Amani Forgemaster's Workbench",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Blacksmithing)",
+  "icon": null,
+  "tags": [],
+  "recordID": 15266
+ },
+ {
   "itemID": 263883,
   "name": "Small Sturdy Wooden Trellis",
   "category": null,
@@ -28164,6 +28174,16 @@
   "tags": []
  },
  {
+  "itemID": 266170,
+  "name": "Flat Snakeskin Canopy",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Leatherworking)",
+  "icon": null,
+  "tags": [],
+  "recordID": 17800
+ },
+ {
   "itemID": 266233,
   "name": "Short Hanging Tavern Lantern",
   "category": "lighting",
@@ -28960,5 +28980,185 @@
   "tags": [
    "void"
   ]
+ },
+ {
+  "itemID": 275305,
+  "name": "Amani Forgemaster's Decorative Spear",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Blacksmithing)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26381
+ },
+ {
+  "itemID": 279329,
+  "name": "Amani Forgemaster's Rack",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Blacksmithing)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26382
+ },
+ {
+  "itemID": 279332,
+  "name": "Keen Hex Mask",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Enchanting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26379
+ },
+ {
+  "itemID": 279335,
+  "name": "Enchanted Voidwell Fish",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Enchanting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26496
+ },
+ {
+  "itemID": 279337,
+  "name": "Coiled Amani Hookshot",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Engineering)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26383
+ },
+ {
+  "itemID": 279339,
+  "name": "Proudmoore Ship-in-a-Bottle",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Engineering)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26485
+ },
+ {
+  "itemID": 279341,
+  "name": "Aetherlume Field Lamp",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Engineering)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26372
+ },
+ {
+  "itemID": 279343,
+  "name": "Piercing Amani Lapis",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Jewelcrafting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26489
+ },
+ {
+  "itemID": 279346,
+  "name": "Stretched Snakeskin Rack",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Leatherworking)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26378
+ },
+ {
+  "itemID": 279348,
+  "name": "Mounted Moby",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Leatherworking)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26363
+ },
+ {
+  "itemID": 279350,
+  "name": "Twilight's Blade Bedroll",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Tailoring)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26495
+ },
+ {
+  "itemID": 279353,
+  "name": "Tortollan Slingsack",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Tailoring)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26366
+ },
+ {
+  "itemID": 279356,
+  "name": "Opalescent Amani Peridot",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Jewelcrafting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26488
+ },
+ {
+  "itemID": 279359,
+  "name": "Ersatz Venom Splatter",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Alchemy)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26391
+ },
+ {
+  "itemID": 279362,
+  "name": "Furious Tiki Mask",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Enchanting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 5129
+ },
+ {
+  "itemID": 280752,
+  "name": "\"Cursed Gaze of Ula'tek\" Mural",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Inscription)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26384
+ },
+ {
+  "itemID": 280757,
+  "name": "Chiseled Amani Tablet",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Inscription)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26380
+ },
+ {
+  "itemID": 280762,
+  "name": "Roaring Amani Garnet",
+  "category": null,
+  "expansion": "Midnight",
+  "source": "Crafted (Jewelcrafting)",
+  "icon": null,
+  "tags": [],
+  "recordID": 26490
  }
 ]

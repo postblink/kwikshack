@@ -60,11 +60,11 @@ function parseFields(body) {
 			// crude: advance past the closing brace we found
 			re.lastIndex = m.index + m[0].length + t.end + 1;
 		} else {
-			const v = rest.match(/^("[^"]*"|'[^']*'|-?\d+(?:\.\d+)?)/);
+			const v = rest.match(/^("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|-?\d+(?:\.\d+)?)/);
 			if (!v) continue;
 			let val = v[1];
 			if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-				val = val.slice(1, -1);
+				val = val.slice(1, -1).replace(/\\(["'\\])/g, '$1');
 			} else if (val.includes('.')) {
 				val = parseFloat(val);
 			} else {
@@ -180,14 +180,19 @@ for (const { id, body, name } of iterEntries(decorSrc)) {
 	const f = parseFields(body);
 	const itemID = f.itemID;
 	if (!itemID) continue;
+	const decorName = typeof f.name === 'string' && f.name ? f.name : name;
+	const decorCategory = f.category === 'House Decor' ? null : (f.category ?? null);
+	const decorExpansion = typeof f.expansion === 'string' && typeof f.profession === 'string'
+		? f.expansion.replace(new RegExp(`\\s+${f.profession}$`), '')
+		: (f.expansion ?? null);
 	if (f.decorID) recordIDs.set(itemID, f.decorID);
 	const existing = catalog.get(itemID) ?? {
-		itemID, name, category: null, expansion: null, source: null, icon: null, tags: []
+		itemID, name: decorName, category: null, expansion: null, source: null, icon: null, tags: []
 	};
 	if (f.decorID) existing.recordID = f.decorID;
-	if (!existing.name && name) existing.name = name;
-	if (!existing.category) existing.category = f.category ?? null;
-	if (!existing.expansion) existing.expansion = f.expansion ?? null;
+	if (!existing.name && decorName) existing.name = decorName;
+	if (!existing.category) existing.category = decorCategory;
+	if (!existing.expansion) existing.expansion = decorExpansion;
 	existing.source = `Crafted (${f.profession ?? '?'})`;
 	catalog.set(itemID, existing);
 }

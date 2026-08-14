@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { decodeCompact, compactToPayload } from '$lib/compact-code';
+	import { BLUEPRINT_SCOPE_LABELS, BLUEPRINT_SCOPES, type BlueprintScope } from '$lib/types/manifest';
 	let shareCode = $state('');
 	let title = $state('');
 	let blueprintType = $state('House');
+	let blueprintScope = $state<BlueprintScope | ''>('');
 	let faction = $state('');
 	let authorName = $state('');
 	let submitKey = $state('');
@@ -107,6 +109,7 @@
 				shareCode,
 				title,
 				blueprintType,
+				blueprintScope: blueprintScope || undefined,
 				faction: faction || null,
 				authorName,
 				manifest,
@@ -162,15 +165,25 @@
 			Title
 			<input bind:value={title} placeholder="Cozy Goblin Shack" />
 		</label>
-		<div class="row">
+		<div class="row scope-row">
 			<label>
-				Type
+				Build type
 				<select bind:value={blueprintType}>
 					<option>House</option>
 					<option>Interior</option>
 					<option>Exterior</option>
 					<option>Room</option>
 				</select>
+			</label>
+			<label>
+				Blueprint scope
+				<select bind:value={blueprintScope}>
+					<option value="">Not specified</option>
+					{#each BLUEPRINT_SCOPES as scope (scope)}
+						<option value={scope}>{BLUEPRINT_SCOPE_LABELS[scope]}</option>
+					{/each}
+				</select>
+				<small>Which part of the house this code imports.</small>
 			</label>
 			<label>
 				Faction
@@ -319,6 +332,9 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
 		gap: 0.75rem;
+	}
+	.scope-row {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 	.error {
 		margin: 0;

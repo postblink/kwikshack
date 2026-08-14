@@ -46,6 +46,7 @@ beforeAll(() => {
 			share_code TEXT NOT NULL,
 			code_status TEXT DEFAULT 'unverified' NOT NULL,
 			blueprint_type TEXT DEFAULT 'House' NOT NULL,
+			blueprint_scope TEXT,
 			faction TEXT,
 			title TEXT NOT NULL,
 			description TEXT DEFAULT '',
@@ -218,12 +219,26 @@ describe('buildTags and listTags', () => {
 });
 
 describe('createBuild and listBuilds', () => {
+	it.each(['full_house', 'interior', 'exterior', 'room'] as const)('round-trips blueprint scope %s', (blueprintScope) => {
+		const record = createBuild({
+			shareCode: `scope-${blueprintScope}`,
+			title: `Scope ${blueprintScope}`,
+			blueprintType: blueprintScope === 'full_house' ? 'House' : blueprintScope[0].toUpperCase() + blueprintScope.slice(1),
+			blueprintScope,
+			faction: null,
+			manifest: { ...compactManifest, shareCode: `scope-${blueprintScope}` }
+		});
+
+		expect(getBuild(record.id)?.blueprintScope).toBe(blueprintScope);
+	});
+
 	it('round-trips a build through the isolated SQLite database', () => {
 		const created = createBuild({
 			shareCode: compactManifest.shareCode,
 			title: 'Compact Build',
 			description: 'Round-trip test',
 			blueprintType: 'Interior',
+			blueprintScope: 'room',
 			faction: null,
 			authorName: 'Builder',
 			manifest: compactManifest,
@@ -238,6 +253,7 @@ describe('createBuild and listBuilds', () => {
 			title: 'Compact Build',
 			description: 'Round-trip test',
 			blueprintType: 'Interior',
+			blueprintScope: 'room',
 			authorName: 'Builder',
 			manifest: compactManifest,
 			primaryScreenshot: '/uploads/test.png'

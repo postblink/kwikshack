@@ -37,6 +37,13 @@ const upsert = db.prepare(`
 		expansion = excluded.expansion,
 		tags = excluded.tags,
 		updated_at = excluded.updated_at
+	WHERE decor_items.record_id IS NOT excluded.record_id
+		OR decor_items.name IS NOT excluded.name
+		OR decor_items.icon IS NOT excluded.icon
+		OR decor_items.category IS NOT excluded.category
+		OR decor_items.source IS NOT excluded.source
+		OR decor_items.expansion IS NOT excluded.expansion
+		OR decor_items.tags IS NOT excluded.tags
 `);
 
 const tx = db.transaction((items) => {
