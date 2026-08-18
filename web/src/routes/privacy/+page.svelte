@@ -180,7 +180,7 @@
 	<section id="contact">
 		<h2>Contact</h2>
 		<p>
-			Privacy questions, takedown requests, and corrections: <a href="mailto:privacy@kwikshack.com">privacy@kwikshack.com</a>.
+			Privacy questions, takedown requests, and corrections: <a href="mailto:privacy@postblink.wtf">privacy@postblink.wtf</a>.
 		</p>
 		<p class="fine">
 			Game data shown on KwikShack is provided by Blizzard's APIs on an "as is" basis. See our

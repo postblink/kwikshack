@@ -60,7 +60,7 @@
 		</p>
 		<p>
 			If your work is on this site and you'd like it corrected, claimed, or removed, email
-			<a href="mailto:privacy@kwikshack.com">privacy@kwikshack.com</a>. We remove on request — you don't have to prove
+			<a href="mailto:privacy@postblink.wtf">privacy@postblink.wtf</a>. We remove on request — you don't have to prove
 			ownership first.
 		</p>
 	</section>
