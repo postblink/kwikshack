@@ -19,6 +19,16 @@ ENV NODE_ENV=production
 COPY --from=build /app/build ./build
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
+# Migration runner + SQL, so the entrypoint can migrate before the app starts.
+COPY --from=build /app/migrations ./migrations
+COPY --from=build /app/scripts/migrate.mjs ./scripts/migrate.mjs
+COPY --from=build /app/src/lib/server/db/apply-migrations.js ./src/lib/server/db/apply-migrations.js
+# Scheduled jobs. `maintenance.mjs` enforces Blizzard's 30-day retention rule and
+# must be run by the deployment scheduler — see docs/retention.md.
+COPY --from=build /app/scripts/maintenance.mjs ./scripts/maintenance.mjs
+COPY --from=build /app/scripts/sync-decor.mjs ./scripts/sync-decor.mjs
+COPY --from=build /app/src/lib/server/decor-sync.js ./src/lib/server/decor-sync.js
+COPY --from=build /app/src/lib/server/blizzard-game-data.js ./src/lib/server/blizzard-game-data.js
 COPY deploy/entrypoint.sh ./entrypoint.sh
 COPY deploy/kwikshack.db ./seed/kwikshack.db
 RUN chmod +x entrypoint.sh

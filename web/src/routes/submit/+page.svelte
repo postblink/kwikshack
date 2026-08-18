@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { decodeCompact, compactToPayload } from '$lib/compact-code';
 	import { BLUEPRINT_SCOPE_LABELS, BLUEPRINT_SCOPES, type BlueprintScope } from '$lib/types/manifest';
 	let shareCode = $state('');
@@ -16,6 +17,7 @@
 	const MAX_IMAGE_EDGE = 1920;
 	const JPEG_QUALITY = 0.85;
 	const MAX_SCREENSHOTS = 8;
+	const fromCommunityFind = $derived(page.url.searchParams.get('from') === 'community-find');
 
 	async function resizeImageForUpload(file: File): Promise<File> {
 		if (!file.type.startsWith('image/')) return file;
@@ -147,9 +149,24 @@
 <div class="wrap">
 	<a class="back" href="/">← All builds</a>
 	<h1>Submit a build</h1>
-	<p class="tag">
-		Use <code>/kshack copy</code> in-game, paste the JSON here. Screenshots are auto-uploaded.
-	</p>
+	<p class="tag">Bring the complete in-game blueprint manifest, then add your build details and screenshots.</p>
+	<section class="export-guide" aria-labelledby="export-guide-title">
+		<strong id="export-guide-title">From WoW to KwikShack</strong>
+		<ol>
+			<li>In WoW, export or copy the blueprint you want to submit.</li>
+			<li>Run <code>/kshack copy</code>.</li>
+			<li>KwikShack opens the export window with the complete manifest selected.</li>
+			<li>Press <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy it.</li>
+			<li>Paste the export into <strong>Manifest JSON</strong> below.</li>
+		</ol>
+		<small>The KwikShack export window is separate from Blizzard's blueprint-code clipboard message.</small>
+	</section>
+	{#if fromCommunityFind}
+		<section class="find-context" aria-labelledby="find-context-title">
+			<strong id="find-context-title">Bring your Community Find onto KwikShack</strong>
+			<p>This creates a separate native submission with your screenshots, blueprint information, decor requirements, and proper creator attribution. It does not automatically transfer ownership or bypass the Founding Builder invitation key.</p>
+		</section>
+	{/if}
 
 	<form onsubmit={(e) => { e.preventDefault(); submit(); }}>
 		<label>
@@ -274,6 +291,40 @@
 		line-height: 1.65;
 		text-wrap: pretty;
 	}
+	.export-guide {
+		margin: 1rem 0 1.25rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid color-mix(in srgb, var(--gold-dim) 65%, var(--border));
+		border-radius: 0.5rem;
+		background: color-mix(in srgb, var(--gold) 6%, var(--surface));
+	}
+	.export-guide > strong {
+		color: var(--gold-bright);
+		font-family: var(--font-display);
+	}
+	.export-guide ol {
+		margin: 0.65rem 0 0.55rem;
+		padding-left: 1.35rem;
+		color: var(--text);
+		font-size: 0.84rem;
+		line-height: 1.55;
+	}
+	.export-guide li + li {
+		margin-top: 0.2rem;
+	}
+	.export-guide small {
+		color: var(--text-muted);
+		font-size: 0.74rem;
+		line-height: 1.45;
+	}
+	kbd {
+		padding: 0.08rem 0.28rem;
+		border: 1px solid var(--border);
+		border-radius: 0.22rem;
+		background: var(--surface-2);
+		box-shadow: 0 1px 0 var(--border);
+		font: 650 0.76rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	}
 	form {
 		display: flex;
 		flex-direction: column;
@@ -339,6 +390,23 @@
 	.error {
 		margin: 0;
 		color: var(--bad);
+	}
+	.find-context {
+		margin: 1rem 0 1.25rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--gold-dim);
+		border-radius: 0.5rem;
+		background: rgb(200 161 68 / 0.08);
+	}
+	.find-context strong {
+		color: var(--gold-bright);
+		font-family: var(--font-display);
+	}
+	.find-context p {
+		margin: 0.35rem 0 0;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		line-height: 1.55;
 	}
 	.thumbs {
 		display: flex;

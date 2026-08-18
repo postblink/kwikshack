@@ -17,7 +17,11 @@
 		<span class="badge">Community Find</span>
 		<h1>{find.title}</h1>
 		<p class="creator">by <strong>{find.creatorName}</strong></p>
+		<p class="blurb">{find.curationBlurb}</p>
 		{#if find.attribution}<p class="attribution">{find.attribution}</p>{/if}
+		<ul class="tags" aria-label="Community Find tags">
+			{#each find.tags as tag (tag)}<li>{tag}</li>{/each}
+		</ul>
 	</header>
 
 	<section class="source-box" aria-labelledby="source-title">
@@ -53,7 +57,7 @@
 				<h2>Are you the creator?</h2>
 				<p>Use the claim intake to verify ownership, clarify media permission, and provide a blueprint if you want a native KwikShack listing.</p>
 			</div>
-			<a href={find.claimUrl}>Claim this find →</a>
+			<a href={find.claimUrl}>Claim this Find →</a>
 		</section>
 	{/if}
 </div>
@@ -97,6 +101,7 @@
 		line-height: 1.06;
 	}
 	.creator,
+	.blurb,
 	.attribution {
 		margin: 0;
 		color: var(--text-muted);
@@ -104,9 +109,31 @@
 	.creator strong {
 		color: var(--text);
 	}
+	.blurb {
+		max-width: 62ch;
+		margin-top: 1rem;
+		color: var(--text);
+		font-size: 1rem;
+		line-height: 1.65;
+	}
 	.attribution {
 		margin-top: 0.7rem;
 		line-height: 1.6;
+	}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 1rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.tags li {
+		padding: 0.28rem 0.55rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text-muted);
+		font-size: 0.7rem;
 	}
 	.source-box,
 	.native-link,
@@ -181,6 +208,7 @@
 		font-size: 0.82rem;
 		font-weight: 750;
 		text-decoration: none;
+		white-space: nowrap;
 	}
 	.claim {
 		border-color: var(--border);

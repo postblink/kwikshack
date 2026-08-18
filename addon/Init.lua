@@ -42,7 +42,7 @@ local function _split(msg)
     return (cmd or ""):lower(), rest or ""
 end
 
-local function _printJSON(label, tbl)
+local function _serializeJSON(tbl)
     -- WoW Lua: no built-in JSON library. Serialise with minimal escaping.
     -- Lists are {...}, dicts are {...} with quoted keys. Handles nil, string, number, boolean.
     local function esc(s) return s:gsub('"', '\\"'):gsub('\n', '\\n') end
@@ -84,17 +84,7 @@ local function _printJSON(label, tbl)
             return "{" .. table.concat(parts, ",") .. "}"
         end
     end
-    local json = _ser(tbl)
-    print("|cFFFFFFFF[KwikShack]|r " .. label .. " (" .. #json .. " chars)")
-    -- Chunk print into WoW-chat-friendly segments (chat line limit ~2000 chars)
-    local pos, chunk = 1, 1
-    while pos <= #json do
-        local seg = json:sub(pos, pos + 1499)
-        print("|cFFAAAAAA" .. chunk .. "|r " .. seg)
-        pos = pos + 1500
-        chunk = chunk + 1
-    end
-    print("|cFFFFFFFF[KwikShack]|r --- end ---")
+    return _ser(tbl)
 end
 
 SlashCmdList["KWIKSHACK"] = function(msg)
@@ -102,7 +92,7 @@ SlashCmdList["KWIKSHACK"] = function(msg)
     if cmd == "" or cmd == "help" then
         print("|cFF00FF00[KwikShack]|r Commands:")
         print("  /kshack inspect <code>         — resolve a blueprint share code")
-        print("  /kshack copy                   — print the last resolved manifest as JSON")
+        print("  /kshack copy                   — open the latest manifest for Ctrl+C")
         print("  /kshack code                   — print the last share code")
         print("  /kshack export <type> <name>   — export this house (types: house, interior, exterior, room)")
 
@@ -130,7 +120,13 @@ SlashCmdList["KWIKSHACK"] = function(msg)
             faction = nil,
             manifest = m,
         }
-        _printJSON("Manifest for " .. m.shareCode, payload)
+        local dialog = KwikShack.ExportDialog
+        if not dialog or not dialog.Show then
+            print("|cFFFF0000[KwikShack]|r Export window is unavailable. Reload the UI and try again.")
+            return
+        end
+        dialog:Show(_serializeJSON(payload))
+        print("|cFF00FF00[KwikShack]|r Export ready — press Ctrl+C in the export window.")
 
     elseif cmd == "code" then
         if not BP.GetLatestManifest then

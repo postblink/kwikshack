@@ -3,6 +3,8 @@ export interface CommunityFind {
 	id: string;
 	title: string;
 	creatorName: string;
+	curationBlurb: string;
+	tags: string[];
 	sourcePlatform: string;
 	sourceUrl: string;
 	attribution: string | null;

@@ -14,7 +14,11 @@
 		<div class="community-label">Curated external discovery</div>
 		<h3><a href={`/finds/${find.id}`}>{find.title}</a></h3>
 		<p class="creator">by <strong>{find.creatorName}</strong></p>
+		<p class="blurb">{find.curationBlurb}</p>
 		{#if find.attribution}<p class="attribution">{find.attribution}</p>{/if}
+		<ul class="tags" aria-label="Community Find tags">
+			{#each find.tags as tag (tag)}<li>{tag}</li>{/each}
+		</ul>
 		<div class="community-actions">
 			<a class="source-link" href={find.sourceUrl} target="_blank" rel="noopener noreferrer">
 				View original <span aria-hidden="true">↗</span>
@@ -98,6 +102,7 @@
 		color: var(--gold-bright);
 	}
 	.creator,
+	.blurb,
 	.attribution {
 		margin: 0;
 		color: var(--text-muted);
@@ -107,9 +112,28 @@
 		color: var(--text);
 		font-weight: 650;
 	}
+	.blurb {
+		margin-top: 0.65rem;
+		line-height: 1.5;
+	}
 	.attribution {
 		margin-top: 0.6rem;
 		line-height: 1.5;
+	}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin: 0.8rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+	.tags li {
+		padding: 0.22rem 0.45rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		color: var(--text-muted);
+		font-size: 0.66rem;
 	}
 	.community-actions {
 		display: flex;

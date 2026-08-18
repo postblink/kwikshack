@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import Database from 'better-sqlite3';
-import { unlinkSync } from 'node:fs';
 import type { BuildManifest } from '$lib/types/manifest';
 
 const testDatabase = vi.hoisted(() => ({
@@ -23,6 +22,7 @@ import {
 	toggleBuildLike
 } from './builds';
 import { searchDecorItems } from './decor';
+import { migrateTestDatabase, removeTestDatabase } from './test-db';
 
 const compactManifest: BuildManifest = {
 	shareCode: 'compact-code',
@@ -33,59 +33,11 @@ const compactManifest: BuildManifest = {
 };
 
 beforeAll(() => {
+	// Build the schema from the real migrations rather than restating it here.
+	// A hand-written copy of the schema in tests is the same drift mechanism that
+	// bit the deployed database.
+	migrateTestDatabase(testDatabase.path);
 	const sqlite = new Database(testDatabase.path);
-	sqlite.exec(`
-		PRAGMA foreign_keys = ON;
-		CREATE TABLE users (
-			id TEXT PRIMARY KEY NOT NULL,
-			name TEXT NOT NULL,
-			created_at INTEGER NOT NULL
-		);
-		CREATE TABLE builds (
-			id TEXT PRIMARY KEY NOT NULL,
-			share_code TEXT NOT NULL,
-			code_status TEXT DEFAULT 'unverified' NOT NULL,
-			blueprint_type TEXT DEFAULT 'House' NOT NULL,
-			blueprint_scope TEXT,
-			faction TEXT,
-			title TEXT NOT NULL,
-			description TEXT DEFAULT '',
-			author_id TEXT REFERENCES users(id),
-			manifest TEXT NOT NULL,
-			placement_data TEXT,
-			last_verified_at INTEGER,
-			created_at INTEGER NOT NULL,
-			updated_at INTEGER NOT NULL
-		);
-		CREATE UNIQUE INDEX builds_share_code_idx ON builds (share_code);
-		CREATE TABLE screenshots (
-			id TEXT PRIMARY KEY NOT NULL,
-			build_id TEXT NOT NULL REFERENCES builds(id) ON DELETE CASCADE,
-			url TEXT NOT NULL,
-			caption TEXT DEFAULT '',
-			is_primary INTEGER DEFAULT 0 NOT NULL,
-			sort_order INTEGER DEFAULT 0 NOT NULL
-		);
-		CREATE TABLE likes (
-			build_id TEXT NOT NULL REFERENCES builds(id) ON DELETE CASCADE,
-			client_id TEXT NOT NULL,
-			created_at INTEGER NOT NULL,
-			PRIMARY KEY (build_id, client_id)
-		);
-		CREATE INDEX likes_build_idx ON likes (build_id);
-		CREATE TABLE decor_items (
-			item_id INTEGER PRIMARY KEY NOT NULL,
-			record_id INTEGER,
-			name TEXT NOT NULL,
-			icon TEXT DEFAULT '',
-			category TEXT DEFAULT '',
-			source TEXT DEFAULT '',
-			expansion TEXT DEFAULT '',
-			tags TEXT NOT NULL DEFAULT '[]',
-			updated_at INTEGER NOT NULL
-		);
-		CREATE INDEX decor_items_record_id_idx ON decor_items (record_id);
-	`);
 	const insert = sqlite.prepare(
 		'INSERT INTO decor_items (item_id, record_id, name, icon, updated_at) VALUES (?, ?, ?, ?, ?)'
 	);
@@ -98,7 +50,7 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-	unlinkSync(testDatabase.path);
+	removeTestDatabase(testDatabase.path);
 });
 
 describe('enrichItems', () => {
@@ -120,10 +72,13 @@ describe('enrichItems', () => {
 			blockingRequirements: null
 		};
 
+		// No canonical decor is synced in this suite, so every entry falls back to
+		// the legacy catalog and then to the submitted name — and none is marked
+		// canonical. Canonical-wins behaviour is covered in decor-canonical.test.ts.
 		expect(enrichItems(manifest)).toEqual([
-			{ key: 101, itemID: 101, recordID: null, name: 'Compact Table', icon: '654321', count: 2 },
-			{ key: 200, itemID: 100, recordID: 200, name: 'Catalog Chair', icon: '123456', count: 3 },
-			{ key: 999, itemID: null, recordID: 999, name: 'Unmapped Decor', icon: null, count: 1 }
+			{ key: 101, itemID: 101, recordID: null, name: 'Compact Table', icon: '654321', count: 2, decorId: null, canonical: false, category: '' },
+			{ key: 200, itemID: 100, recordID: 200, name: 'Catalog Chair', icon: '123456', count: 3, decorId: null, canonical: false, category: 'Seating' },
+			{ key: 999, itemID: null, recordID: 999, name: 'Unmapped Decor', icon: null, count: 1, decorId: null, canonical: false, category: null }
 		]);
 	});
 });

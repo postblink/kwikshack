@@ -18,8 +18,23 @@ export UPLOADS_DIR="${UPLOADS_DIR:-$DATA_DIR/uploads}"
 # Endpoint-specific checks enforce tighter JSON and 5MB image limits.
 export BODY_SIZE_LIMIT="${BODY_SIZE_LIMIT:-6M}"
 
+# Schema evolution happens here, before the server opens the database, so a
+# failed migration stops the deploy instead of half-starting the app. The
+# runner takes a timestamped backup of an existing database first and rolls
+# each migration back on error. The server also self-migrates on boot, so this
+# step is belt-and-braces for the hosted deploy.
+if [ -f /app/scripts/migrate.mjs ]; then
+  node /app/scripts/migrate.mjs --database "$DATABASE_URL"
+else
+  echo "[entrypoint] WARNING: migration runner missing from image; relying on server-side migration"
+fi
+
 if [ -z "${KWIKSHACK_SUBMIT_KEY:-}" ]; then
   echo "[entrypoint] WARNING: KWIKSHACK_SUBMIT_KEY is unset; production submissions will return 503"
+fi
+
+if [ -z "${BNET_CLIENT_ID:-}" ] || [ -z "${BNET_CLIENT_SECRET:-}" ]; then
+  echo "[entrypoint] NOTE: BNET_CLIENT_ID/BNET_CLIENT_SECRET unset; Sign in with Battle.net is disabled"
 fi
 
 # adapter-node behind a TLS proxy: build request URLs from the proxy headers

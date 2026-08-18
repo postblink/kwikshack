@@ -201,6 +201,70 @@ in-game. The website alone cannot resolve codes — there is no public API.
 For spatial data (positions/rotations), the addon may additionally capture the
 player's OWN house layout via C_HousingLayout / C_HouseEditor. Unverified.
 
+## Blizzard now ships housing Web APIs (verified 2026-08-17)
+
+Checked while implementing Battle.net sign-in. These did not exist when the
+catalog pipeline was built, and they change what "authoritative" means for
+decor data. Full detail and the OAuth findings are in
+[battlenet-identity.md](battlenet-identity.md).
+
+**Game Data (client-credentials, no user involved)** — a first-party decor catalog:
+
+- `/data/wow/decor/index`, `/data/wow/decor/{decorId}`, `/data/wow/search/decor`
+- `/data/wow/fixture/index`, `/data/wow/fixture-hook/index`, `/data/wow/room/index`
+  (each with `/{id}` and `/search/` variants)
+- `/data/wow/neighborhood-map/index` and neighborhood lookups
+
+**Profile (user-authorized)**:
+
+- `/profile/user/wow/collections/decor` — the housing decor an account has collected
+
+**Character House API: documented, then disabled.** Blizzard announced it on
+2025-12-19; the announcement thread then filled with privacy objections about
+letting anyone view the inside of any player's house, and on 2026-02-11 a
+community member reported it had been "disabled for aforementioned privacy
+concerns a few weeks ago". No Blizzard reply, and no announced restoration. The
+Developer Portal still documents it — at a *different* path than the
+announcement used (`house/house-{houseNumber}` vs `house/{houseId}`), so its
+presence in the docs proves nothing.
+
+An unauthenticated probe on 2026-08-17 returned 404, but so did known-good
+endpoints, so the probe was non-discriminating. **Treat as unavailable.** Nothing
+in KwikShack uses it, and the roadmap item that assumed server-side house layout
+has been removed. Full evidence trail in
+[battlenet-identity.md](battlenet-identity.md).
+
+**Still no blueprint endpoint.** Nothing maps a share code to its contents or to
+its author. The addon remains the only way to resolve a code, and there is no
+API basis for proving blueprint authorship — which is why claiming is reviewed
+by a person.
+
+## Decor identifier mapping (open question)
+
+`/data/wow/decor/*` is now wired up as the canonical decor source, but **the
+identifier mapping is unconfirmed** and could not be settled without API
+credentials:
+
+- The Developer Portal's example `{decorId}` is **80** — a small number.
+  KwikShack manifests carry `recordID` values in the thousands. Suggestive that
+  the two are not the same space, but not evidence either way.
+- The decor detail response schema is **not published**. Whether it contains an
+  `item` reference — the field that would authoritatively bridge `decorId` to
+  `itemID` — is unknown until someone calls it.
+
+So the implementation does not guess. Every link is stored with the evidence
+that produced it (`blizzard_item_reference` > `blizzard_decor_id` > `name_exact`),
+stronger evidence overwrites weaker, and `pnpm decor:probe` prints the field
+names Blizzard actually returns without writing anything. **Run the probe before
+the first real import** and correct the parser if the shape differs.
+
+Search behaviour worth knowing: `/data/wow/search/decor` supports `_page` and
+`_pageSize` (default 100, max 1000) but caps a result set at 1000 entries total,
+so it cannot enumerate a larger catalog — the index endpoint is the enumeration
+path. The search guide also still claims only `realm` and `connected-realm`
+document types are supported, which the endpoint list contradicts; the guide is
+stale.
+
 ## Technical Gaps to Probe
 
 - **Probe 1**: Does the raw `HOUSING_BLUEPRINT_CONTENTS_RECEIVED` payload

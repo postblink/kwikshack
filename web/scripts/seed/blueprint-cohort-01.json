@@ -1,0 +1,245 @@
+{
+  "cohort": "01",
+  "curatedAt": "2026-08-17",
+  "notes": [
+    "First curated batch of indexed public blueprints. Every record was read manually at its",
+    "source; nothing here was scraped or inferred. Each creator posted the code themselves,",
+    "explicitly for other players to import.",
+    "",
+    "Fields are only filled in where the CREATOR stated the fact. In particular `faction` is set",
+    "only where the creator described the build as Horde/Alliance — an orc-themed interior is not",
+    "evidence of a faction requirement, and guessing would put inferred data in a factual field.",
+    "`blueprintScope` is likewise taken from the creator's own words ('Full Layout', 'Interior",
+    "Only', 'Display Room'), never from the shape of the code.",
+    "",
+    "Observed but deliberately NOT relied on: share codes appear to encode scope in their third",
+    "character (AgT… on both exterior-only codes, AgN…/AgO… on interiors). Two samples is a",
+    "hypothesis, not a rule, and nothing here depends on it.",
+    "",
+    "All entries are `unresolved`: KwikShack cannot resolve a code from the web — that needs the",
+    "in-game addon. The listings say so rather than implying verification."
+  ],
+  "listings": [
+    {
+      "shareCode": "AgHfwDXQsetFnLOYL5bG9NXs",
+      "title": "The Magician's Inn",
+      "attributedCreator": "Krawwly-2524994",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/the-magicians-inn/2336734",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "House",
+      "blueprintScope": "full_house",
+      "faction": "Horde",
+      "internalNotes": "Creator's own thread, posted 2026-08-14. Creator states 'horde exterior' and offers full/interior/exterior/portal-room codes; this record is the 'Full Layout' code they listed. Floating build on the Tree House shop exterior, hidden rooms behind walls, portal room to different biomes, entrance modelled on the Benbow Inn. Interior-only (AgNAYwGMy3dPIoIXm4B+Gllz) and exterior-only (AgTv0996mDpF14D2Nt8h4YRw) codes exist for the same build and were deliberately NOT indexed as separate listings for this batch — they are alternate scopes, not different builds.",
+      "curationReason": "Most ambitious build in the batch. Tavern/inn social space, secret rooms, and a genuinely distinctive concept."
+    },
+    {
+      "shareCode": "AgI03u11DjVAEqLah5erC3qk",
+      "title": "Octagonal Portal Room",
+      "attributedCreator": "Krawwly-2524994",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/the-magicians-inn/2336734",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Room",
+      "blueprintScope": "room",
+      "internalNotes": "Same thread as The Magician's Inn. Creator lists this separately as 'Octagonal Portal Room (4 Exits)' — a standalone room others can drop into their own house, not merely a slice of the larger build. Indexed on that basis. Second listing for this creator; cap of 2 respected.",
+      "curationReason": "A reusable room-scale component. Shows that blueprints are not only whole houses."
+    },
+    {
+      "shareCode": "AgG0W/qCijRArZE+F5FVdfdw",
+      "title": "Pirate theme house",
+      "attributedCreator": "Tink-45690",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/pirate-theme-house/2337366",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "House",
+      "blueprintScope": "full_house",
+      "internalNotes": "Creator's own thread, 2026-08-16. Describes a secret trophy room, fight arena, black market, bar and kitchen; notes it 'works best on plot 40' and that they play a gnome. Gnome is Alliance, but the creator made no claim about a faction requirement, so `faction` is left null rather than inferred.",
+      "curationReason": "Strong themed whole-house build with several distinct interior spaces."
+    },
+    {
+      "shareCode": "AgPhS7mvFY1GYZhS+gVqRqcj",
+      "title": "Dalaran Sewers Theme",
+      "attributedCreator": "Krispy-3270454",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/dalaran-sewers-theme/2336257",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Interior",
+      "blueprintScope": "interior",
+      "internalNotes": "Creator's own thread, 2026-08-13. States housing rank 9 and ~4297 total decor required, and describes a mini-city with kafa shop, bakery, tavern, tea shop, toy shop and restaurant. Creator says it is unfinished and was last updated in 12.0.7, and flags uncertainty about whether multi-floor stairwell rooms export correctly — worth re-checking availability once the addon can resolve it. Requirement figures are the creator's claim, not KwikShack-derived, so they are not published as metadata.",
+      "curationReason": "Largest and most unusual interior in the batch — an entire city district with multiple shop interiors."
+    },
+    {
+      "shareCode": "AgORzia3LWBPKIG0NFLKRKNu",
+      "title": "My Spaceport",
+      "attributedCreator": "Slith-2207681",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/my-spaceport/2336233",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Interior",
+      "blueprintScope": "interior",
+      "faction": "Horde",
+      "internalNotes": "Creator's own thread, 2026-08-13. Creator states 'Horde with medium belf exterior' and recommends plot 12. Twelve custom ship designs, library, kitchen, spa, duelling arena, working treadmills. Exterior-only code (AgTIKm/z+tZKt6zaoktYiHIr) exists in the same post and was not indexed separately — alternate scope of the same build.",
+      "curationReason": "Best example of decor used as sculpture. Sci-fi builds are far outside the default fantasy palette, which is exactly the range the first gallery should show."
+    },
+    {
+      "shareCode": "AgREism8tqxIbqEoxvr7jTDe",
+      "title": "Large Night Elf Exterior",
+      "attributedCreator": "Tharna-2680702",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/any-new-housing-blueprint-codes-out-there/2335562/36",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Exterior",
+      "blueprintScope": "exterior",
+      "internalNotes": "Posted by the creator in the community code-sharing thread, 2026-08-13, with their own imgur preview (https://imgur.com/a/Q3i41GO). Image NOT copied — link only. Source URL points at the specific post, not the thread top, so attribution is unambiguous.",
+      "curationReason": "Only pure exterior in the batch, and the clearest nature/Night Elf entry."
+    },
+    {
+      "shareCode": "AgRSmjWuhuJCCYgMd7R5DOag",
+      "title": "Pink Treehouse for Whales",
+      "attributedCreator": "Tharna-2680702",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/any-new-housing-blueprint-codes-out-there/2335562/36",
+      "discoveredAt": "2026-08-17",
+      "internalNotes": "Same post as the Night Elf exterior. Creator's own imgur preview (https://imgur.com/a/NkflVt2) — link only, image not copied. Creator gave no scope wording, so blueprintType is left at the default and blueprintScope is null rather than guessed.",
+      "curationReason": "Novelty build with a memorable name. Second listing for this creator; cap respected."
+    },
+    {
+      "shareCode": "AgJWLFqUNlBNGKj+nPhKKsE2",
+      "title": "Season 1 Trophy Hall",
+      "attributedCreator": "mastergib-1215205",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/season-1-trophy-hall/2337213",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Room",
+      "blueprintScope": "room",
+      "internalNotes": "Creator's own thread, 2026-08-15. Described as 'A small Silvermoon Display Room with a layout for trophies / pray statues'. Silvermoon is blood elf (Horde) styling, but the creator asserted no faction requirement, so `faction` is null.",
+      "curationReason": "A room built around displaying achievements — a use of housing that is not decoration for its own sake."
+    },
+    {
+      "shareCode": "AgKDO5n38SVEobCZcURRn/l+",
+      "title": "Stone wall great hall",
+      "attributedCreator": "backspace-3310469",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/stone-wall-great-hall/2337186",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Room",
+      "blueprintScope": "room",
+      "internalNotes": "Creator's own thread, 2026-08-15. Replaces the great hall's cottage walls with stone, including the tall rear window. Creator lists the requirement as 13 plain interior walls and 2 plain narrow interior walls — their figure, not KwikShack-derived, so not published as metadata.",
+      "curationReason": "The clearest technique entry: a build shared to save other players time rather than to show off. Exactly the kind of utility blueprint that makes an index worth visiting."
+    },
+    {
+      "shareCode": "AgHDCpZDWxtANbL4+ED1ODnC",
+      "title": "Orcish collector of collections",
+      "attributedCreator": "Lyoo-45842",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/orcish-collector-of-collections/2336776",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "House",
+      "blueprintScope": "full_house",
+      "internalNotes": "Creator's own thread, 2026-08-14. Creator describes it as 'a VERY simple Orc house'. Orc styling implies Horde, but that is an aesthetic reading and not a stated faction requirement, so `faction` is null.",
+      "curationReason": "Deliberately simple whole house. A first gallery that only contains 4,000-decor epics would misrepresent what most players can actually build."
+    },
+    {
+      "shareCode": "AgHCc9YOikNOhpk2PKsvbF7a",
+      "title": "Cozy small packed house",
+      "attributedCreator": "Orilas-2654652",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/cozy-small-packed-house/2336368",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "House",
+      "blueprintScope": "full_house",
+      "internalNotes": "Creator's own thread, 2026-08-14. 'Heres my blueprint, feel free to use it' — explicit sharing intent, minimal description.",
+      "curationReason": "The cosy/rustic small-build entry, and a small whole house at the opposite end of the scale from the Spaceport."
+    },
+    {
+      "shareCode": "AgJhHwcvZ8tIQZ1I+Pgefylg",
+      "title": "Just a Jar on a table",
+      "attributedCreator": "ABunchOf-612452",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/just-a-jar-on-a-table/2336293",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Room",
+      "blueprintScope": "room",
+      "internalNotes": "Creator's own thread, 2026-08-13: 'its a Jar on a table with a viewing chair and art'. Minimal by design, and read as deadpan rather than low-effort.",
+      "curationReason": "The smallest possible blueprint, shared straight-faced. It sets the tone that KwikShack indexes what people actually share, not only showpieces."
+    },
+    {
+      "shareCode": "AgLcI4068KxBTbKMRV767SQL",
+      "title": "Rainbow Room Night Club",
+      "attributedCreator": "Deo",
+      "platform": "youtube",
+      "sourceUrl": "https://www.youtube.com/watch?v=EVvpRPEvhjw",
+      "discoveredAt": "2026-08-17",
+      "blueprintType": "Room",
+      "blueprintScope": "room",
+      "internalNotes": "Codes are published by the creator in their own YouTube video description (video 2026-08-13), which is why YouTube is the canonical source rather than the forum. The creator's forum thread (https://us.forums.blizzard.com/en/wow/t/4-free-blueprints-pool-party-rainbow-room-night-club-rainbow-hallway-and-my-personal-summer-home/2336488) points readers to that video and is recorded as a second provenance source. Creator states 'ALL of my blueprints will ALWAYS be free'. Video and thumbnail NOT reproduced — link only.",
+      "curationReason": "The most visually distinctive build found. Strong colour work that other players in the thread were actively asking how to reproduce."
+    },
+    {
+      "shareCode": "AgIYkJY1TOZJeamHsuenHnKC",
+      "title": "Pool Party",
+      "attributedCreator": "Deo",
+      "platform": "youtube",
+      "sourceUrl": "https://www.youtube.com/watch?v=EVvpRPEvhjw",
+      "discoveredAt": "2026-08-17",
+      "internalNotes": "Same creator video as Rainbow Room Night Club; forum thread recorded as a second source. Creator gave no scope wording for this build, so blueprintType stays at the default and blueprintScope is null. Another player asked in the thread how the deep water effect was achieved, which suggests a non-obvious technique worth surfacing if the creator claims the listing. Second listing for this creator; cap respected.",
+      "curationReason": "Social/outdoor space using a water technique other builders openly wanted explained."
+    }
+  ],
+  "extraSources": [
+    {
+      "shareCode": "AgLcI4068KxBTbKMRV767SQL",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/4-free-blueprints-pool-party-rainbow-room-night-club-rainbow-hallway-and-my-personal-summer-home/2336488",
+      "attributedCreator": "Deo-2555642",
+      "internalNotes": "Creator's own forum announcement pointing at the YouTube video that carries the codes. Recorded as provenance; the video stays the canonical public link."
+    },
+    {
+      "shareCode": "AgIYkJY1TOZJeamHsuenHnKC",
+      "platform": "blizzard-forums",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/4-free-blueprints-pool-party-rainbow-room-night-club-rainbow-hallway-and-my-personal-summer-home/2336488",
+      "attributedCreator": "Deo-2555642",
+      "internalNotes": "Creator's own forum announcement pointing at the YouTube video that carries the codes."
+    }
+  ],
+  "consideredAndRejected": [
+    {
+      "shareCode": "AgF3nlpajedJ2Z7rJAqzcDnf",
+      "creator": "Stormwulf-3363082",
+      "reason": "Genuine share with clear intent, and a second player (Scaresome-3135354) quoted the same code back in the thread confirming it worked — a real duplicate-source case. Rejected from this batch only because the post carries no build description at all ('my house in regular mode'), so there is nothing honest to present beyond a code. Revisit if the creator adds detail."
+    },
+    {
+      "shareCode": "AgQ8F4uPnHdDsqx+JoPhz9NK",
+      "creator": "Stormwulf-3363082",
+      "reason": "Creator explicitly calls it a work-in-progress Halloween variation they are 'tinkering with for October'. Would have filled the gothic/spooky gap, but indexing something the creator considers unfinished misrepresents it."
+    },
+    {
+      "shareCode": "AgQSDvB+CzJMeKt6Aqmky83i",
+      "creator": "Psychotropy-2130114",
+      "reason": "Creator is asking for inspiration and is 'unsure what direction I want to go with it'. Sharing intent is real but the build is explicitly unfinished."
+    },
+    {
+      "shareCode": "AgEEtoj4MopIep34NDD8RIBu",
+      "creator": "Libby-2859349",
+      "reason": "Bare code with no title, description, or context of any kind. Nothing to attribute or describe honestly."
+    },
+    {
+      "shareCode": "AgQeS5wwd/hLEZJmviLWMiQa",
+      "creator": "SoFinSicc-2353728",
+      "reason": "Only context is the word 'Alliance'. Too thin to present as a listing."
+    },
+    {
+      "shareCode": "AgGMVuiMzbxDn57h9b72Vbgw",
+      "creator": "DarthStar-2716548",
+      "reason": "Has an imgur preview, but the thread title is 'Heres mine!' and the post gives the build no name. Would have required KwikShack to invent a title on the creator's behalf."
+    }
+  ],
+  "communityFindCandidates": [
+    {
+      "creator": "Dreka-3368600",
+      "sourceUrl": "https://us.forums.blizzard.com/en/wow/t/my-blueprint-is-freely-available/2335884",
+      "note": "Night Elf house, offered freely — but by invitation to visit and export in-game, with NO code posted. Not indexable as a public blueprint. Fits Community Finds if curated later. Creator runs the YouTube channel @Gladrielle_NightElfHousing and said explicitly that they would be pleased if someone remixed their build. Strong outreach candidate."
+    }
+  ]
+}

@@ -256,7 +256,7 @@ function BM:OnContentsReceived(raw)
             KwikShackDB._lastCompact = ccode
         end
     end
-    print("|cFF00FF00[KwikShack]|r Manifest ready. /kshack copy to view JSON — paste at kwikshack.com/submit")
+    print("|cFF00FF00[KwikShack]|r Manifest ready. Run /kshack copy to open the export window.")
     -- Auto-export if enabled
     if KwikShackDB.autoExport then
         KwikShack:ExportToAPI(m)

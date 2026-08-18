@@ -11,3 +11,8 @@ web/.svelte-kit
 web/data
 web/static/uploads
 *.log
+# Local env files must never enter a build layer. Runtime config comes from the
+# platform's environment; today web/.env only holds a dev DATABASE_URL, but this
+# is where a Blizzard client secret would otherwise get baked into an image.
+web/.env
+web/.env.*

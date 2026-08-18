@@ -4,7 +4,8 @@ KwikShack companion (OPTIONAL) — auto-submits resolved builds to the website.
 
 CONTRACT (by design, please keep it this way):
   - OPTIONAL: the addon works fully without this script. Manual path:
-    in-game `/kshack copy`, then paste the JSON at kwikshack.com/submit.
+    in-game `/kshack copy`, press Ctrl+C in the export window, then paste the
+    JSON at kwikshack.com/submit.
   - LEAN: zero dependencies, Python stdlib only, ~150 lines, tiny footprint.
     It reads one local file and makes one HTTP POST per new build.
   - OPEN SOURCE: MIT-licensed, shipped in the KwikShack repo, no telemetry,

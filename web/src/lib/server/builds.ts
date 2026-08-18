@@ -1,7 +1,8 @@
 import { db } from './db';
-import { builds, decorItems, likes, screenshots, users } from './db/schema';
+import { blueprintAuditEvents, builds, decorItems, indexedBlueprints, likes, screenshots, users } from './db/schema';
 import { asc, desc, eq, inArray, like, and, or, isNull, count } from 'drizzle-orm';
 import type { BlueprintScope, BuildManifest, PlacementData } from '$lib/types/manifest';
+import { lookupCanonical } from './decor-canonical';
 
 export interface BuildRecord {
 	id: string;
@@ -69,6 +70,76 @@ export function ingestRecordPairs(manifest: BuildManifest): void {
 	}
 }
 
+/**
+ * Reconcile a native submission with an indexed listing for the same share code.
+ *
+ * Both directions of this collision now have a defined outcome. `indexBlueprint`
+ * already refuses a code a native build owns; this closes the reverse, where a
+ * native submission takes a code that was already indexed.
+ *
+ * That happens for two very different reasons which are indistinguishable at
+ * this endpoint:
+ *
+ *   1. The genuine creator submits their own build, which we had also indexed
+ *      from their public post. Architecture says native wins.
+ *   2. An operator points the companion at a third-party code to "resolve" it.
+ *      This is misuse — the supported path is the admin ?/resolve form — but it
+ *      is one wrong tool away and used to corrupt three things silently.
+ *
+ * So the outcome is made safe for both, without guessing which one occurred:
+ *
+ *   * The records are LINKED, so one blueprint is never two unrelated entries.
+ *   * A PUBLISHED listing is archived — native takes precedence in presentation.
+ *     A draft is left alone: archiving curated review work would destroy it for
+ *     no visitor-facing benefit, since a draft is not public anyway.
+ *   * The caller skips catalog learning entirely (see createBuild). We have
+ *     positive evidence this code came from someone else's public share, and
+ *     submission is not proof the submitter authored it — that is what claiming
+ *     is for. `attachResolvedManifest` never taught the catalog; now neither
+ *     does this path.
+ *   * An audit event records the collision so an operator can see it happened.
+ *
+ * Uses the tables directly rather than importing blueprint-index, which imports
+ * from this module.
+ *
+ * @returns true when the code was already indexed
+ */
+function reconcileWithIndexedListing(buildId: string, shareCode: string): boolean {
+	const listing = db
+		.select()
+		.from(indexedBlueprints)
+		.where(eq(indexedBlueprints.shareCode, shareCode))
+		.get();
+	if (!listing) return false;
+
+	const now = new Date();
+	db.transaction((tx) => {
+		tx.update(indexedBlueprints)
+			.set({
+				nativeBuildId: buildId,
+				publication: listing.publication === 'published' ? 'archived' : listing.publication,
+				updatedAt: now
+			})
+			.where(eq(indexedBlueprints.id, listing.id))
+			.run();
+		tx.insert(blueprintAuditEvents)
+			.values({
+				id: crypto.randomUUID(),
+				blueprintId: listing.id,
+				event: 'native_build_submitted',
+				actorAccountId: null,
+				detail: {
+					buildId,
+					previousPublication: listing.publication,
+					catalogLearningSkipped: true
+				},
+				createdAt: now
+			})
+			.run();
+	});
+	return true;
+}
+
 export function createBuild(input: {
 	shareCode: string;
 	title: string;
@@ -128,8 +199,15 @@ export function createBuild(input: {
 	// A concurrent create may have won the unique-key race. Never let this
 	// public create path mutate that winner's catalog associations or images.
 	if (!input.overwriteExisting && record.id !== id) return record;
-	// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
-	ingestRecordPairs(input.manifest);
+
+	// This code may already exist as an indexed third-party blueprint. If it
+	// does, reconcile the two records and — importantly — do NOT let this
+	// manifest teach the decor catalog. See reconcileWithIndexedListing.
+	const wasAlreadyIndexed = reconcileWithIndexedListing(record.id, input.shareCode);
+	if (!wasAlreadyIndexed) {
+		// Learn recordID↔itemID pairs from this manifest (self-healing catalog map)
+		ingestRecordPairs(input.manifest);
+	}
 	// Replace screenshots when the submission carries any (idempotent on re-submit).
 	if (input.screenshotUrls?.length) {
 		db.delete(screenshots).where(eq(screenshots.buildId, record.id)).run();
@@ -479,6 +557,11 @@ export interface EnrichedItem {
 	name: string;
 	icon: string | null;
 	count: number;
+	/** Blizzard's decor id, when this entry resolved to canonical data. */
+	decorId?: number | null;
+	/** True when the name/category came from Blizzard's Housing Decor API. */
+	canonical?: boolean;
+	category?: string | null;
 }
 
 /**
@@ -531,16 +614,33 @@ export function enrichItems(manifest: BuildManifest): EnrichedItem[] {
 	const byItemID = new Map(itemRows.map((r) => [r.itemID, r]));
 	const byRecordID = new Map(recordRows.flatMap((r) => (r.recordID === null ? [] : [[r.recordID, r] as const])));
 
+	// Canonical decor from Blizzard's Housing Decor API wins over the legacy
+	// catalog, which in turn wins over the name the submitter supplied. A missing
+	// canonical row is normal and simply falls through — decor never disappears
+	// from a build because a lookup came up empty.
+	const canonical = lookupCanonical({
+		itemIDs: [...acc.values()].flatMap((a) => (a.itemID !== null ? [a.itemID] : [])),
+		recordIDs: [...acc.values()].flatMap((a) => (a.recordID !== null ? [a.recordID] : []))
+	});
+
 	return [...acc.values()].map((a) => {
 		const cat = a.itemID !== null ? byItemID.get(a.itemID) : a.recordID !== null ? byRecordID.get(a.recordID) : undefined;
+		const official =
+			(a.itemID !== null ? canonical.byItemID.get(a.itemID) : undefined) ??
+			(a.recordID !== null ? canonical.byRecordID.get(a.recordID) : undefined);
 		const key = a.itemID ?? a.recordID!;
 		return {
 			key,
-			itemID: cat?.itemID ?? a.itemID,
+			itemID: official?.itemId ?? cat?.itemID ?? a.itemID,
 			recordID: a.recordID,
-			name: cat?.name ?? a.name ?? (a.itemID !== null ? `Item ${a.itemID}` : `Decor ${key}`),
+			name: official?.name ?? cat?.name ?? a.name ?? (a.itemID !== null ? `Item ${a.itemID}` : `Decor ${key}`),
+			// Blizzard's media reference is a URL; the legacy catalog stores a
+			// FileDataID that the UI expands into a Wowhead icon path.
 			icon: cat?.icon ?? null,
-			count: a.count
+			count: a.count,
+			decorId: official?.decorId ?? null,
+			canonical: Boolean(official),
+			category: official?.category ?? cat?.category ?? null
 		};
 	});
 }

@@ -16,6 +16,20 @@ end
 do
 	local frame = newFrame()
 	local chat = {}
+	local shownExports = {}
+	local latestManifest = {
+		shareCode = "TEST01",
+		blueprintType = "1",
+		contentGroups = { { contentType = 3, entries = { { recordID = 726, total = 2, name = "Chair" } } } },
+		budgetInfo = { interiorBudgets = {}, exteriorBudgets = {} },
+		blockingRequirements = {
+			missingBudgets = false,
+			missingRooms = false,
+			missingDecor = false,
+			factionMismatch = false,
+			rawFlags = 0,
+		},
+	}
 	_G.CreateFrame = function() return frame end
 	_G.SlashCmdList = {}
 	_G.KwikShackDB = nil
@@ -31,7 +45,8 @@ do
 	local kwik = { Log = function(self, m) chat[#chat + 1] = m end,
 		BlueprintManifest = { RegisterEvents = function() end,
 			InspectCode = function() end, ExportBlueprint = function() end,
-			ExportRoomBlueprint = function() end, GetLatestManifest = function() end } }
+			ExportRoomBlueprint = function() end, GetLatestManifest = function() return latestManifest end },
+		ExportDialog = { Show = function(self, text) shownExports[#shownExports + 1] = text end } }
 	local chunk = assert(loadfile("addon/Init.lua"))
 	chunk("KwikShack", kwik)
 	local handler = frame._scripts.OnEvent
@@ -39,6 +54,109 @@ do
 	handler(frame, "ADDON_LOADED", "KwikShack")
 	ok(type(_G.KwikShackDB) == "table", "Init: KwikShackDB initialised")
 	ok(type(_G.SlashCmdList["KWIKSHACK"]) == "function", "Init: slash command registered")
+
+	chat = {}
+	_G.SlashCmdList["KWIKSHACK"]("copy")
+	local expected = '{"blueprintType":"1","manifest":{"blockingRequirements":{"factionMismatch":false,"missingBudgets":false,"missingDecor":false,"missingRooms":false,"rawFlags":0},"blueprintType":"1","budgetInfo":{"exteriorBudgets":{},"interiorBudgets":{}},"contentGroups":[{"contentType":3,"entries":[{"name":"Chair","recordID":726,"total":2}]}],"shareCode":"TEST01"},"shareCode":"TEST01","title":"TEST01"}'
+	ok(shownExports[1] == expected, "Init: /copy sends the exact expected manifest to the dialog")
+	ok(#chat == 1 and chat[1]:find("Export ready") ~= nil, "Init: /copy prints only a short confirmation")
+	ok(not table.concat(chat, "\n"):find('{"blueprintType"', 1, true), "Init: /copy does not dump JSON into chat")
+
+	latestManifest = {
+		shareCode = "TEST02",
+		blueprintType = "2",
+		contentGroups = {},
+		budgetInfo = {},
+		blockingRequirements = {},
+	}
+	_G.SlashCmdList["KWIKSHACK"]("copy")
+	ok(#shownExports == 2 and shownExports[2]:find("TEST02", 1, true) ~= nil,
+		"Init: rerunning /copy sends the latest manifest")
+end
+
+-- ========================= addon/ExportDialog.lua =========================
+do
+	local created = {}
+	local function newWidget(kind)
+		local widget = {
+			_kind = kind,
+			_scripts = {},
+			_width = kind == "ScrollFrame" and 600 or 0,
+			_height = kind == "ScrollFrame" and 300 or 0,
+			_text = "",
+			_shown = false,
+		}
+		function widget:SetScript(name, fn) self._scripts[name] = fn end
+		function widget:SetSize(width, height)
+			self._width, self._height = width, height
+			if self._scripts.OnSizeChanged then self._scripts.OnSizeChanged(self, width, height) end
+		end
+		function widget:SetWidth(width) self._width = width end
+		function widget:SetHeight(height) self._height = height end
+		function widget:GetWidth() return self._width end
+		function widget:GetHeight() return self._height end
+		function widget:SetText(value)
+			self._text = value
+			if self._scripts.OnTextChanged then self._scripts.OnTextChanged(self) end
+		end
+		function widget:GetText() return self._text end
+		function widget:GetNumLines() return math.max(1, math.ceil(#self._text / 80)) end
+		function widget:GetFont() return "font.ttf", 14, "" end
+		function widget:GetSpacing() return 0 end
+		function widget:SetFocus() self._focused = true end
+		function widget:ClearFocus() self._focused = false end
+		function widget:HighlightText() self._highlighted = true end
+		function widget:Show() self._shown = true end
+		function widget:Hide() self._shown = false end
+		function widget:IsShown() return self._shown end
+		function widget:SetVerticalScroll(value) self._verticalScroll = value end
+		function widget:CreateFontString()
+			local child = newWidget("FontString")
+			created[#created + 1] = child
+			return child
+		end
+		widget.StartMoving = function() end
+		widget.StopMovingOrSizing = function() end
+		local noops = {
+			"SetFrameStrata", "SetClampedToScreen", "EnableMouse", "SetMovable",
+			"RegisterForDrag", "SetBackdrop", "SetBackdropColor", "SetBackdropBorderColor",
+			"SetPoint", "SetTextColor", "SetJustifyH", "SetMultiLine", "SetAutoFocus",
+			"SetFontObject", "SetTextInsets", "SetMaxLetters", "SetScrollChild",
+			"UpdateScrollChildRect", "ClearAllPoints",
+		}
+		for _, method in ipairs(noops) do widget[method] = function() end end
+		return widget
+	end
+
+	_G.UIParent = newWidget("UIParent")
+	_G.UIParent._width = 1280
+	_G.UIParent._height = 720
+	_G.ChatFontNormal = {}
+	_G.C_Timer = { After = function(_, fn) fn() end }
+	_G.CreateFrame = function(kind)
+		local widget = newWidget(kind)
+		created[#created + 1] = widget
+		return widget
+	end
+
+	local kwik = {}
+	local chunk = assert(loadfile("addon/ExportDialog.lua"))
+	chunk("KwikShack", kwik)
+	local dialog = kwik.ExportDialog
+	local longManifest = '{"manifest":"' .. string.rep("decor-entry-", 5000) .. '"}'
+	dialog:Show(longManifest)
+	local originalFrame = dialog.frame
+	ok(dialog.editBox:GetText() == longManifest, "ExportDialog: long manifest is preserved exactly")
+	ok(dialog.editBox._focused and dialog.editBox._highlighted, "ExportDialog: text is focused and selected")
+	ok(dialog.editBox:GetHeight() > dialog.scrollFrame:GetHeight(), "ExportDialog: long manifest creates scrollable content")
+	ok(dialog.frame:IsShown(), "ExportDialog: dialog opens")
+
+	dialog.frame:Hide()
+	dialog:Show('{"shareCode":"SECOND"}')
+	ok(dialog.frame == originalFrame and dialog.frame:IsShown(), "ExportDialog: rerun reuses and reopens the dialog")
+	ok(dialog.editBox:GetText() == '{"shareCode":"SECOND"}', "ExportDialog: rerun replaces the prior manifest")
+	dialog.closeButton._scripts.OnClick()
+	ok(not dialog.frame:IsShown() and not dialog.editBox._focused, "ExportDialog: Close hides the dialog and clears focus")
 end
 
 -- ======================== addon/BlueprintManifest.lua ======================

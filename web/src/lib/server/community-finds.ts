@@ -10,6 +10,8 @@ export interface CommunityFindInput {
 	id: string;
 	title: string;
 	creatorName: string;
+	curationBlurb: string;
+	tags: string[];
 	sourcePlatform: string;
 	sourceUrl: string;
 	attribution?: string;
@@ -34,6 +36,10 @@ function isWebUrl(value: string): boolean {
 
 function isClaimUrl(value: string): boolean {
 	try {
+		if (value.startsWith('/') && !value.startsWith('//')) {
+			const url = new URL(value, 'https://kwikshack.local');
+			return url.origin === 'https://kwikshack.local' && url.pathname === '/submit';
+		}
 		const url = new URL(value);
 		return url.protocol === 'https:' || url.protocol === 'http:' || url.protocol === 'mailto:';
 	} catch {
@@ -52,11 +58,19 @@ export function validateCommunityFind(input: CommunityFindInput): string[] {
 	if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.id)) errors.push('id must be a lowercase URL slug');
 	if (!input.title.trim()) errors.push('title is required');
 	if (!input.creatorName.trim()) errors.push('creatorName is required');
+	if (!input.curationBlurb.trim()) errors.push('curationBlurb is required');
+	if (!Array.isArray(input.tags) || input.tags.length === 0) {
+		errors.push('at least one tag is required');
+	} else {
+		const normalizedTags = input.tags.map((tag) => tag.trim().toLowerCase());
+		if (input.tags.some((tag) => !tag.trim())) errors.push('tags cannot be blank');
+		if (new Set(normalizedTags).size !== normalizedTags.length) errors.push('tags must be unique');
+	}
 	if (!input.sourcePlatform.trim()) errors.push('sourcePlatform is required');
 	if (!isWebUrl(input.sourceUrl)) errors.push('sourceUrl must be an absolute HTTP(S) URL');
 	if (!isDate(input.discoveredAt)) errors.push('discoveredAt must be YYYY-MM-DD');
 	if (!isDate(input.addedAt)) errors.push('addedAt must be YYYY-MM-DD');
-	if (input.claimUrl && !isClaimUrl(input.claimUrl)) errors.push('claimUrl must be HTTP(S) or mailto');
+	if (input.claimUrl && !isClaimUrl(input.claimUrl)) errors.push('claimUrl must be /submit, HTTP(S), or mailto');
 	if (input.publication === 'published' && !['granted', 'external-link-only'].includes(input.permission)) {
 		errors.push('published finds require granted or external-link-only permission');
 	}
@@ -81,6 +95,8 @@ export function toPublicCommunityFind(input: CommunityFindInput): CommunityFind 
 		id: input.id,
 		title: input.title.trim(),
 		creatorName: input.creatorName.trim(),
+		curationBlurb: input.curationBlurb.trim(),
+		tags: input.tags.map((tag) => tag.trim()),
 		sourcePlatform: input.sourcePlatform.trim(),
 		sourceUrl: input.sourceUrl,
 		attribution: input.attribution?.trim() || null,
