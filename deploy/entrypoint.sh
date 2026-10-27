@@ -4,6 +4,22 @@
 set -e
 
 DATA_DIR="${DATA_DIR:-/data}"
+
+# Privilege drop. Platforms mount the data volume root-owned, so start as root only
+# long enough to create the data directories and hand them to the unprivileged `node`
+# user, then re-run this script as `node` so migrations and the server never run as
+# root. If the volume refuses the chown we keep running as root with a warning rather
+# than refusing to boot (availability first; fix the volume permissions to enable the drop).
+# Operators who run scripts (e.g. maintenance.mjs) by hand should do so as `node`
+# (`su-exec node node /app/scripts/maintenance.mjs`) so they don't create root-owned files.
+if [ "$(id -u)" = "0" ]; then
+  mkdir -p "$DATA_DIR/uploads"
+  if find "$DATA_DIR" ! -user node -exec chown node:node {} + ; then
+    exec su-exec node:node "$0" "$@"
+  fi
+  echo "[entrypoint] WARNING: could not chown $DATA_DIR to node; continuing as root"
+fi
+
 mkdir -p "$DATA_DIR/uploads"
 
 # First boot: seed the database from the image copy.
