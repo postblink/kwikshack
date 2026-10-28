@@ -16,6 +16,9 @@ RUN pnpm build
 FROM node:22-alpine AS run
 WORKDIR /app
 ENV NODE_ENV=production
+# su-exec lets the entrypoint fix the (root-owned) data volume, then drop to the
+# unprivileged `node` user before running migrations and the server.
+RUN apk add --no-cache su-exec
 COPY --from=build /app/build ./build
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json
